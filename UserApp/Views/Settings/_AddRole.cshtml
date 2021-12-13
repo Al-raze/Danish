@@ -1,0 +1,88 @@
+﻿@using AkraTechFramework.Helpers;
+@model Infrastructure.Core.Models.AddUser
+
+@{string pageName = "ManageUser";}
+
+@using (Html.BeginForm("AddRole", "Settings", FormMethod.Post, new {  @id = "frmAddRole" }))
+{
+    <div class="modal hide fade" id="modalAddUser">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3> @LanguageHelper.GetLabelCaption("ManageUser.AddUserInformation", pageName)</h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">
+                       @LanguageHelper.GetLabelCaption("ManageUser.UserName", pageName)</label>
+                    @Html.TextBoxFor(model => model.UserName, new { @class = "input-large", @placeholder =   @LanguageHelper.GetLabelCaption("ManageUser.UserName", pageName) })
+                    @Html.ValidationMessageFor(model => model.UserName)
+                </div>
+                <div class="control-group">
+                    <label class="control-label">
+                          @LanguageHelper.GetLabelCaption("ManageUser.Password", pageName)</label>
+                    @Html.PasswordFor(model => model.Password, new { @class = "input-large", @placeholder =  @LanguageHelper.GetLabelCaption("ManageUser.EnterPassword", pageName) })
+                    @Html.ValidationMessageFor(model => model.Password)
+                </div>
+@*                <div class="control-group">
+                    <label class="control-label">
+                          @LanguageHelper.GetLabelCaption("ManageUser.ConfirmPassword", pageName)</label>
+                    @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "input-large", @placeholder =  @LanguageHelper.GetLabelCaption("ManageUser.EnterPassword", pageName) })
+                    @Html.ValidationMessageFor(model => model.ConfirmPassword)
+                </div>*@
+                <div class="control-group">
+                    <label class="control-label">
+                        @LanguageHelper.GetLabelCaption("ManageUser.Email", pageName)</label>
+                    @Html.TextBoxFor(model => model.Email, new { @class = "input-large", @placeholder =  @LanguageHelper.GetLabelCaption("ManageUser.EnterEmail", pageName) })
+                    @Html.ValidationMessageFor(model => model.Email)
+                </div>
+                <div class="control-group">
+                    <label class="control-label">
+                       @LanguageHelper.GetLabelCaption("ManageUser.Phone", pageName)</label>
+                    @Html.TextBoxFor(model => model.Phone, new { @class = "input-large", @placeholder =   @LanguageHelper.GetLabelCaption("ManageUser.EnterPhone", pageName) })
+                    @Html.ValidationMessageFor(model => model.Phone )
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">@LanguageHelper.GetLabelCaption("ManageUser.Close", pageName)</a>
+            <button type="button" id="btnAddUser" onclick="addUserDetails()" class="btn btn-success">@LanguageHelper.GetLabelCaption("ManageUser.Button.Add", pageName)</button>
+        </div>
+    </div>
+}
+
+<script>
+
+    function addUserDetails()
+    {
+        $('#btnAddUser').prop('disabled', true);
+        var data = $('#frmAddUser').serialize();
+
+        if ($('#frmAddUser').valid())
+        {
+            $.ajax({
+                url: $('#frmAddUser').attr('action'),
+                type: $('#frmAddUser').attr('method'),
+                data: data,
+                success: onSuccessAddUser,
+                error: onErrorAddUser
+            });
+        }
+        $('#btnAddUser').prop('disabled', false);
+    }
+
+    function onSuccessAddUser()
+    {
+        $('#successMessage').text('User Created Successfully')
+        $('#successAlert').show();
+        $('#userTable').jtable('reload');
+        $('#modalAddUser').modal('hide');
+    }
+
+    function onErrorAddUser()
+    {
+        $('#errorAlert').show();
+        $('#modalAddUser').modal('hide');
+    }
+
+</script>

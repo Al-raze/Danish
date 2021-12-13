@@ -1,0 +1,125 @@
+﻿@using AkraTechFramework.Helpers;
+@using Infrastructure.Core.Models;
+@model Infrastructure.Core.Models.AddUser
+
+@{string pageName = "ManageUser";
+  List<MenuItem> menuItems = Context.ApplicationInstance.Application.Get(Infrastructure.Constants.GlobalConstants.USER_MENUS) as List<MenuItem>;
+}
+
+
+@using (Html.BeginForm("AddUser", "Settings", FormMethod.Post, new {  @id = "frmAddUser" }))
+{
+    <div class="modal hide fade" id="modalAddUser">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3> Add User Information</h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">UserName</label>                       
+                    @Html.TextBoxFor(model => model.UserName, new { @class = "input-large", @placeholder ="UserName" })
+                    @Html.ValidationMessageFor(model => model.UserName)
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Password</label>                       
+                    @Html.PasswordFor(model => model.Password, new { @class = "input-large", @placeholder =  "Enter Password" })
+                    @Html.ValidationMessageFor(model => model.Password)
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Email</label>                        
+                    @Html.TextBoxFor(model => model.Email, new { @class = "input-large", @placeholder =  "Enter Email" })
+                    @Html.ValidationMessageFor(model => model.Email)
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Phone</label>
+                    @Html.TextBoxFor(model => model.Phone, new { @class = "input-large", @placeholder =   "Enter Phone" })
+                    @Html.ValidationMessageFor(model => model.Phone )
+                </div>
+                <div class="control-group">
+                    <label class="control-label">UserRights</label>                    
+                    @Html.ValidationMessageFor(model => model.AccessList)
+                    @foreach (var item in menuItems.Where(m=>m.ActionUrl.Length>3))
+                    {
+                      <label class="checkbox">
+                          <input type="checkbox" id="add_@item.MenuContolID" value="@item.MenuID" name="AccessList"/>@(item.Name)<br/>
+                      </label>  
+                    }
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">Close</a>
+            <button type="button" id="btnAddUser" onclick="addUserDetails()" class="btn btn-success">Add</button>
+        </div>
+    </div>
+}
+
+<script>
+
+    function addUserDetails()
+    {
+        $('#btnAddUser').prop('disabled', true);
+        var data = $('#frmAddUser').serialize();
+
+
+        if ($("#frmAddUser :checkbox:checked").length < 2) {
+            alert('Please select atleast atleast (2) user options for access');
+            $('#btnAddUser').prop('disabled', false);
+            return
+        }
+
+        if ($('#frmAddUser').valid())
+        {
+            var userExists = CheckUserExists();
+            if (userExists == 'True') {
+                alert('User already exists,Please select a different username');
+                $('#btnAddUser').prop('disabled', false);
+                return
+            }
+
+            $.ajax({
+                url: $('#frmAddUser').attr('action'),
+                type: $('#frmAddUser').attr('method'),
+                data: data,
+                success: onSuccessAddUser,
+                error: onErrorAddUser
+            });
+        }
+        $('#btnAddUser').prop('disabled', false);
+    }
+
+    function onSuccessAddUser()
+    {
+        $('#successMessage').text('User Created Successfully')
+        $('#successAlert').show();
+        $('#userTable').jtable('reload');
+        $('#modalAddUser').modal('hide');
+    }
+    
+    function CheckUserExists() {
+
+        var userName = $('#UserName').val();
+        var userExists = 'False'
+
+        $.ajax({
+            url: '@Url.Action("CheckUserExistance")',  
+            data: { userName: userName },
+            type: "POST",
+            success: function (result) {               
+                userExists = result
+            },
+            async: false
+        });
+
+        return userExists;
+    }
+
+
+    function onErrorAddUser()
+    {
+        $('#errorAlert').show();
+        $('#modalAddUser').modal('hide');
+    }
+
+</script>

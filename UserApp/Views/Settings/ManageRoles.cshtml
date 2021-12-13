@@ -1,0 +1,101 @@
+﻿@using AkraTechFramework.Helpers
+@{
+    ViewBag.Title = "ManageUsers";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+    string pageName = "ManageRoles";
+}
+
+<div class="alert alert-success" style="display: none" id="successAlert">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    <div id="successMessage"></div>
+</div>
+<div class="alert alert-danger" id="errorAlert" style="display: none">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    You have encountered an unexpected error.
+</div>
+<div id="userTable"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(UserTable);
+
+    function UserTable()
+    {
+        $('#userTable').jtable({
+            title: '@LanguageHelper.GetLabelCaption("ManageUser.UserInfo", pageName)',
+            actions: {
+                listAction: '@Url.Action("GetRoleDetails")'
+            },
+            fields: {
+                RoleID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                RoleName: {
+                    title: '@LanguageHelper.GetLabelCaption("ManageUser.UserName", pageName)',
+                    width: '15%'
+                },
+                RoleDescription: {
+                    title: '@LanguageHelper.GetLabelCaption("ManageUser.Email", pageName)'
+                },
+                Edit: {
+                    display: function (data)
+                    {
+                        return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"@LanguageHelper.GetLabelCaption("ManageUser.Button.Edit", pageName)\" onclick=\"editUser(" + data.record.UserID + ")\" />";
+                    },
+                    width: '4%'
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: '@LanguageHelper.GetLabelCaption("ManageUser.Button.Add", pageName)',
+                    click: addUser
+                }]
+            }
+
+
+        });
+            $('#userTable').jtable('load');
+        }
+
+        function addUser()
+        {
+            clearForm();
+            $('#modalAddUser').modal('show');
+        }
+
+        function editUser(userID)
+        {
+            $.ajax({
+                url: '@Url.Action("GetUserByID/")' + userID,
+                type: 'POST',
+                success: onSuccessEditUser
+            });
+        }
+
+        function onSuccessEditUser(result)
+        {
+            $('#edtUserID').val(result.UserID)
+            $('#edtUserName').val(result.UserName)
+            $('#edtPhone').val(result.Phone)
+            $('#edtEmail').val(result.Email)
+
+            clearForm();
+            $('#modalUpdateUser').modal('show');
+        }
+
+        function clearForm()
+        {
+            $('#UserName').val('')
+            $('#Password').val('')
+            $('#ConfirmPassword').val('')
+            $('#Phone').val('')
+            $('#Email').val('')
+        }
+
+
+
+</script>

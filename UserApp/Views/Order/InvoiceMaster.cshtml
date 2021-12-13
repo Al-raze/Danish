@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "Invoices";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+<div class="container">
+    <div class="row text-right span9">
+        <a href='#' class="btn btn-success" onclick="javascript:printIframe();">Print Invoices</a>
+        <a href='@Url.Action("Index")' class="btn btn-success">Cancel</a>
+    </div>    
+    <div>
+        <iframe src="PrintInvoice?selectedvalues=@Request.QueryString[0]" id="invoiceIframe" onload="iframeLoaded()"></iframe>
+    </div>
+</div>
+
+
+<script>
+
+    function printIframe() {
+        var iFrameID = document.getElementById('invoiceIframe');
+        iFrameID.contentWindow.print();
+    }
+
+    function iframeLoaded() {
+        var iFrameID = document.getElementById('invoiceIframe');
+
+        if (iFrameID) {
+            // here you can make the height, I delete it first, then I make it again
+            //alert(iFrameID.contentWindow.document.body.scrollHeight)
+            iFrameID.height = iFrameID.contentWindow.document.body.scrollHeight - 200 + "px";
+            iFrameID.width = iFrameID.contentWindow.document.body.scrollWidth + "px";
+        }
+    }
+   
+
+</script>

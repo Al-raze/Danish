@@ -1,0 +1,140 @@
+﻿@{
+    ViewBag.Title = "Sale Report";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers
+
+<div>
+    <div class="row-fluid">
+        <div class="span6 control-group">
+            <label class="control-label" for="ItemName">From Date</label>
+            @Html.TextBox("txtStartDate", DateTime.Now.Subtract(new TimeSpan(4, 0, 0, 0, 0)).ToShortDateString(), new
+                  {
+                      @class = "span12 datepicker",
+                      @readonly = "readonly",
+                      @style = "cursor:pointer; background-color:white",
+                      @placeholder = "From Date"
+                  })
+
+        </div>
+        <div class="span6 control-group">
+            <label class="control-label" for="ItemName">To Date</label>
+            @Html.TextBox("txtEndDate", DateTime.Now.ToShortDateString(), new
+                  {
+                      @class = "span12 datepicker",
+                      @readonly = "readonly",
+                      @style = "cursor:pointer; background-color:white",
+                      @placeholder = "To Date"
+                  })
+
+        </div>
+
+    </div>
+
+        <div class="span3 control-group">
+            
+            <button type="submit" id="LoadRecordsButton" class="btn" style="margin-bottom: 10px;margin-left: 10px;" onclick="FindOrders()">Load Report</button>
+        
+        </div>
+
+    </div>
+</div>
+
+<div id="tblItems" style="width:1150px"></div>
+<div id="divLoading" style="display:none"></div>
+
+<script>
+            $(document).ready(pageLoad);
+
+            jQuery(document).ready(function () {
+                jQuery(".chosen").data("placeholder", "Select ...").chosen();
+            });
+
+
+    function pageLoad() {
+        $(".datepicker").datepicker();
+        $(".datepicker").datepicker("option", "dateFormat", "d M, y");
+
+        loadItems();
+        FindOrders();
+    }
+
+
+    function FindOrders() {
+        $('#tblItems').jtable('load', { startDate: $('#txtStartDate').val(), endDate: $('#txtEndDate').val() });
+    }
+
+
+    function loadItems() {
+        $('#tblItems').jtable({
+            title: 'Sales Report',
+            useBootstrap: true,
+            sorting: true,
+            selectingCheckboxes: true,
+            actions: {
+                listAction: '@Url.Action("GetSalesReport")' + '?startDate=' + $('#txtStartDate').val() + '&endDate=' + $('#txtEndDate').val()
+            },
+            recordsLoaded: function (event, data) {
+                //data.records.length
+                //startDate=' + $('#txtStartDate').val() + '&endDate=' + $('#txtEndDate').val()
+                var recordsFound = String.format(" {0} Records - Sale Report from {1} to {2}", data.records.length, $('#txtStartDate').val(), $('#txtEndDate').val())
+                $('#tblItems').find('.jtable-title-text').html(recordsFound);
+            },
+            fields: {
+                OrderNo: {
+                    title: 'OrderNo',
+                    width: '10%'
+                },
+                OrderDate: {
+                    title: 'OerderDate',
+                    width: '10%'
+                },
+                Image:{
+                    title: '',
+                    width: '2%',
+                    sorting:false,
+                    display: function (data) {
+                        return String.format("<img src='{0}' style='height: 45px;width:45px'/></img>", data.record.ImageUrl);
+                    }
+                },
+                ItemTitle: {
+                    title: 'ItemTitle',
+                    width: '10%'
+                },
+                Asin: {
+                    title: 'Asin/ItemNo',
+                    width: '3%'
+                },
+                SKU: {
+                    title: 'SKU',
+                    width: '5%'
+                },
+
+                ItemCost: {
+                    title: 'Actual Cost',
+                    width: '2%'
+                },
+                VatRate: {
+                    title: 'VatRate',
+                    width: '5%'
+                },
+                Vat: {
+                    title: 'Vat',
+                    width: '2%'
+                },
+                TotalCost: {
+                    title: 'TotalCost',
+                    width: '5%'
+                },
+                CustomerPrice: {
+                    title: ' CustomerPrice',
+                    width: '2%'
+                }
+                
+            }
+        });
+
+    }
+
+</script>

@@ -1,0 +1,65 @@
+﻿@using AkraTechFramework.Helpers;
+@model Infrastructure.Core.Models.Settings
+
+
+@{string pageName = "CompanyName";}
+
+
+
+@using (Html.BeginForm("UpdateCompany", "Settings", FormMethod.Post, new { @id = "frmUpdateCompany" }))
+{
+    <div class="modal hide fade" id="modalUpdateCompany">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>    @LanguageHelper.GetLabelCaption("CompanyName.UpdateCompanyDetails", pageName) </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                 @Html.HiddenFor(model => model.CompanyID, new { @id="edtCompanyID"})
+                <div class="control-group">
+                    <label class="control-label"> @LanguageHelper.GetLabelCaption("CompanyName.CompanyName", pageName)
+                   </label>
+                    @Html.TextBoxFor(model => model.CompanyName, new { @class = "input-large",@id="edtCompanyName" })
+                    @Html.ValidationMessageFor(model => model.CompanyName)
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">@LanguageHelper.GetLabelCaption("CompanyName.Close", pageName)</a>
+            <button type="button"  id="btnUpdateCompany" onclick="updateCompany()" class="btn btn-success"> @LanguageHelper.GetLabelCaption("CompanyName.Update", pageName)</button>
+        </div>
+    </div>
+}
+
+<script>
+
+    function updateCompany() {
+
+        $('#btnUpdateCompany').prop('disabled', true);
+        var data = $('#frmUpdateCompany').serialize();
+
+        if ($('#frmUpdateCompany').valid()) {
+            $.ajax({
+                url: '@Url.Action("UpdateCompany")',
+                type: 'POST',
+                data: data,
+                success: onSuccessUpdateCompany,
+                error: onErrorUpdateCompany
+            });
+        }
+        $('#btnUpdateCompany').prop('disabled', false);
+    }
+
+    function onSuccessUpdateCompany() {
+        $('#successMessage').text('Company Updated Successfully')
+        $('#successAlert').show();
+        $('#companyTable').jtable('reload');
+        $('#modalUpdateCompany').modal('hide');
+    }
+
+    function onErrorUpdateCompany() {
+        $('#errorAlert').show();
+        $('#modalUpdateCompany').modal('hide');
+    }
+
+</script>

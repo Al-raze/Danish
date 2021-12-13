@@ -1,0 +1,64 @@
+﻿@model List<Infrastrucutre.Core.Models.ItemHistory>
+﻿@{
+    ViewBag.Title = "Item History";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+<div style="padding: 5px">
+    <b>Item Change History</b>
+</div>
+<div style="padding-left: 10px;">
+    <div class="row">
+        <div style="overflow: auto;">
+            <table class="table table-bordered pull-left">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>User</th>
+                        <th>Item Name</th>
+                        <th>Item Code</th>
+                        <th>Description</th>
+                        <th>Supplier</th>
+                        <th>Brand</th>
+                        <th>Dimension</th>
+                        <th>Item Weight</th>
+                        <th>VAT</th>
+                        <th>Item Cost</th>
+                        <th>Total Cost</th>
+                        <th>Selling Price</th>
+                        <th>BarCode</th>
+                        <th>L</th>
+                        <th>W</th>
+                        <th>H</th>                        
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td nowrap>@item.ModifiedDate.Value.ToString("dd/MM/yyyy hh:mm:ss tt")</td>
+                            <td>@item.UserName</td>
+                            <td nowrap>@item.ItemName</td>
+                            <td>@item.ItemCode</td>
+                            <td>@item.Description</td>
+                            <td nowrap>@item.SupplierName</td>
+                            <td>@item.Brand</td>
+                            <td>@item.Dimension</td>
+                            <td>@item.ItemWeight</td>
+                            <td>@item.VAT</td>
+                            <td>@item.ItemCost</td>
+                            <td>@item.TotalCost</td>
+                            <td>@item.SellingPrice</td>
+                            <td>@item.BarCode</td>
+                            <td>@item.Length</td>
+                            <td>@item.Width</td>
+                            <td>@item.Height</td>                            
+                            <td nowrap>@item.Notes</td>
+                        </tr>
+    
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

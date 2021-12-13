@@ -1,0 +1,88 @@
+﻿@using AkraTechFramework.Helpers;
+@model Infrastructure.Core.Models.Settings
+
+@using AkraTechFramework.Helpers
+@{
+   
+    string pageName = "AddRivals";
+}
+
+@using (Html.BeginForm("AddRivalDetails", "Settings", FormMethod.Post, new { @id = "frmAddRival" }))
+{
+    <div class="modal hide fade" id="modalAddRival">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>@LanguageHelper.GetLabelCaption("AddRivals.AddRivalInfo", pageName)</h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+               
+                <div class="control-group">
+                    <label class="control-label">
+                        @LanguageHelper.GetLabelCaption("AddRivals.RivalName", pageName)</label>
+                    @Html.TextBoxFor(model => model.RivalName, new { @class = "input-large", @placeholder =  @LanguageHelper.GetLabelCaption("AddRivals.RivalName", pageName) })
+                    @Html.ValidationMessageFor(model => model.RivalName)
+                </div>
+                <div class="control-group">
+                    <label class="control-label">
+                        @LanguageHelper.GetLabelCaption("AddRivals.Address", pageName)1
+                        </label>
+                    @Html.TextBoxFor(model => model.Address1, new { @class = "input-large", @placeholder =  @LanguageHelper.GetLabelCaption("AddRivals.Address", pageName) })
+                    @Html.ValidationMessageFor(model => model.Address1)
+                </div>
+                <div class="control-group">
+                    <label class="control-label">
+                      @LanguageHelper.GetLabelCaption("AddRivals.Address", pageName)2</label>
+                    @Html.TextBoxFor(model => model.Address2, new { @class = "input-large", @placeholder = @LanguageHelper.GetLabelCaption("AddRivals.Address", pageName) })
+                    @Html.ValidationMessageFor(model => model.Address2)
+                </div>
+                <div class="control-group">
+                    <label class="control-label">
+                        @LanguageHelper.GetLabelCaption("AddRivals.Address", pageName)3</label>
+                    @Html.TextBoxFor(model => model.Address3, new { @class = "input-large", @placeholder =  @LanguageHelper.GetLabelCaption("AddRivals.Address", pageName) })
+                    @Html.ValidationMessageFor(model => model.Address3)
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn"> @LanguageHelper.GetLabelCaption("AddRivals.Close", pageName)</a>
+            <button type="button" id="btnAddRival" onclick="addRival()" class="btn btn-success"> @LanguageHelper.GetLabelCaption("AddRivals.AddRival", pageName)</button>
+        </div>
+    </div>
+}
+
+<script>
+
+    function addRival()
+    {
+        $('#btnAddRival').prop('disabled', true);
+        var data = $('#frmAddRival').serialize();
+
+        if ($('#frmAddRival').valid())
+        {
+            $.ajax({
+                url: $('#frmAddRival').attr('action'),
+                type: $('#frmAddRival').attr('method'),
+                data: data,
+                success: onSuccessAddRivalMaster,
+                error: onErrorAddRivalMaster
+            });
+        }
+        $('#btnAddRival').prop('disabled', false);
+    }
+
+    function onSuccessAddRivalMaster()
+    {
+        $('#successMessage').text('Rival Added Successfully')
+        $('#successAlert').show();
+        $('#rivalTable').jtable('reload');
+        $('#modalAddRival').modal('hide');
+    }
+
+    function onErrorAddRivalMaster()
+    {
+        $('#errorAlert').show();
+        $('#modalAddRival').modal('hide');
+    }
+
+</script>

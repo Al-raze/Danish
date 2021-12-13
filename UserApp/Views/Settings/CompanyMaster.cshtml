@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "CompanyMaster";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers;
+@model Infrastructure.Core.Models.Settings
+
+
+@{string pageName = "CompanyName";}
+
+
+<div class="alert alert-success" style="display: none" id="successAlert">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    <div id="successMessage"></div>
+</div>
+<div class="alert alert-danger" id="errorAlert" style="display: none">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    You have encountered an unexpected error.
+</div>
+<legend> @LanguageHelper.GetLabelCaption("CompanyName.CompanyDetails", pageName)    </legend>
+<div id="companyTable"></div>
+@Html.Partial("_AddCompany")
+@Html.Partial("_EditCompany")
+
+<script type="text/javascript">
+
+    $(document).ready(CompanyJTable);
+
+    function CompanyJTable() {
+        $('#companyTable').jtable({
+            title: ' @LanguageHelper.GetLabelCaption("CompanyName.CompanyDetails", pageName)',
+            actions: {
+                listAction: '@Url.Action("GetCompanyDetails")'
+            },
+            fields: {
+                CompanyID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                CompanyName: {
+                    title: '@LanguageHelper.GetLabelCaption("CompanyName.CompanyName", pageName)',
+                    width: '15%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"@LanguageHelper.GetLabelCaption("CompanyName.Edit", pageName)\" onclick=\"editCompany(" + data.record.CompanyID + ")\" />";
+                    },
+                    width: '4%'
+           @*     },
+                Delete: {
+                    display: function (data) {
+                        return String.format("<a href='@Url.Action("/"){0}' class=\"btn btn-success btn-small\" >@LanguageHelper.GetLabelCaption("TenderAdd.Delete", pageName) </a>", data.record.CompanyID);
+                    },
+                    width: '4%'*@
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: '@LanguageHelper.GetLabelCaption("CompanyName.Add", pageName)',
+                    click: showCompnay
+                }]
+            }
+
+
+        });
+        $('#companyTable').jtable('load');
+    }
+
+    function showCompnay() {
+        clearForm();
+        $('#modalAddCompany').modal('show');
+    }
+
+    function editCompany(companyID) {
+        $.ajax({
+            url: '@Url.Action("GetCompanyByID/")' + companyID,
+            type: 'POST',
+            success: onSuccessEditCompany
+        });
+    }
+
+    function onSuccessEditCompany(result) {
+        $('#edtCompanyID').val(result.CompanyID)
+        $('#edtCompanyName').val(result.CompanyName)
+
+
+        clearForm();
+        $('#modalUpdateCompany').modal('show');
+    }
+
+    function clearForm() {
+        $('#UserName').val('')
+
+    }
+
+
+
+</script>
+

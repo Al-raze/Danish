@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "WebSettings";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+    string pageName = "Websettings";
+}
+@using AkraTechFramework.Helpers
+
+
+@model Infrastructure.Core.Models.ViewModels.WebSetting
+
+<legend>Application Settings</legend>
+<div class="container-fluid span7">
+    @using (Html.BeginForm("UpdateSettings", "Settings", FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmDocUpload", @class = "form-inline well" }))
+    {
+        <div class="control-group">
+            <div class="control-group">
+                <label class="control-label">Company Name</label>
+                <div class="controls">                    
+                    @Html.TextBoxFor(model => model.CompanyName)
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Company Logo</label>                 
+                <img src= "@Url.Content("../Content/Upload/"+ Model.CompanyLogo)" alt="Image" />
+                <input type="file" class="span3" name="file" id="fileToUpload"/>                
+            </div>
+            <button class="btn btn-success" type="submit">Update</button>
+        </div>
+    }   
+</div>
+

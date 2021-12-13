@@ -1,0 +1,271 @@
+﻿@model Infrastrucutre.Core.Models.ItemColor
+
+@{
+    ViewBag.Title = "Postal Carriers";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+<legend> Postal Carriers </legend>
+<div id="carriersTable"></div>
+
+@Html.Partial("_addPostalCarrier")
+
+
+<script type="text/javascript">
+
+    $(document).ready(UserTable);
+
+    function UserTable() {
+        $('#carriersTable').jtable({
+            title: 'Carriers',
+            actions: {
+                listAction: '@Url.Action("GetCarriers")',
+                deleteAction: '@Url.Action("DeleteCarrierByID/")'
+
+            },
+            fields: {
+                PostalCarrierID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                PostalCarrierName: {
+                    title: 'POSTAL_CARRIER_NAME',
+                    width: '6%'
+                },
+                Dimension: {
+                    title: 'DIMENSION',
+                    width: '3%'
+                },
+                Weight: {
+                    title: 'Weight',
+                    width: '3%'
+                },
+                Price: {
+                    title: 'PRICE',
+                    width: '3%'
+                },
+                Local: {
+                    title: 'LOCAL',
+                    width: '3%'
+                },
+                FBAUK: {
+                    title: 'UK-FBA',
+                    width: '3%'
+                },
+                FBADE: {
+                    title: 'DE-FBA',
+                    width: '3%'
+                },
+                FBADE1: {
+                    title: 'DE2-FBA',
+                    width: '3%'
+                },
+                FBAFR: {
+                    title: 'FR-FBA',
+                    width: '3%'
+                },
+                FBAIT: {
+                    title: 'IT-FBA',
+                    width: '3%'
+                },
+                FBAES: {
+                    title: 'ES-FBA',
+                    width: '3%'
+                },
+                FBANL: {
+                    title: 'NL-FBA',
+                    width: '3%'
+                },
+                FBASE: {
+                    title: 'SE-FBA',
+                    width: '3%'
+                },
+		        FBAPL: {
+                    title: 'PL-FBA',
+                    width: '3%'
+                },
+		        CDisc: {
+                    title: 'CDISC',
+                    width: '3%'
+                },
+                FBAUSA: {
+                    title: 'USA-FBA',
+                    width: '3%'
+                },
+
+                FBACA: {
+                    title: 'CA-FBA',
+                    width: '3%'
+                },
+
+
+                FBAAU: {
+                    title: 'AU-FBA',
+                    width: '3%'
+                },
+
+                MX: {
+                    title: 'MX',
+                    width: '3%'
+                },
+                OTHER: {
+                    title: 'OTHER',
+                    width: '3%'
+                },
+                OTHER1: {
+                    title: 'OTHER1',
+                    width: '3%'
+                },
+                OTHER2: {
+                    title: 'OTHER2',
+                    width: '3%'
+                },
+                //CarrierImage:{
+                //    title: 'PostalCarrierImage',
+                //    display: function (data) {
+                //        return String.format("<div><img src='../Content/Upload/{0}' style='height: 70px;width:100px'/></div>", data.record.CarrierImage);
+                //    }
+                //},
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"Edit\" onclick=\"edit(" + data.record.PostalCarrierID + ")\" />";
+                    },
+                    width: '3%'
+                },
+
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: 'Add Carrier',
+                    click: add
+                }]
+            }
+
+
+        });
+        $('#carriersTable').jtable('load');
+        }
+
+    function add() {
+            clearForm();
+            $('#btnAdd').text('Add Carrier');
+            $('#mode').val('ADD');
+            $('#modalAdd').modal('show');
+            //$("#lblCarrierImage").hide();
+            $("#fileToUpload").hide();
+
+        }
+
+    function edit(id) {
+            clearForm();
+            $('#mode').val('EDIT');
+            $('#btnAdd').text('Update Carrier');
+            $("#lblCarrierImage").show();
+            $("#fileToUpload").show();
+            $.ajax({
+                url: '@Url.Action("GetCarrierByID/")' + id,
+                type: 'POST',
+                success: onSuccessEdit
+            });
+    }
+
+
+    function onSuccessEdit(result) {
+            clearForm();
+            $('#PostalCarrierName').val(result.PostalCarrierName)
+            $('#PostalCarrierID').val(result.PostalCarrierID)
+            $('#CarrierID').val(result.PostalCarrierID)
+            $('#Weight').val(result.Weight)
+        $('#Price').val(result.Price)
+        //-----------------Code Developed By Danish 28-01-2021------------//
+        $('#Local').val(result.Local)
+        $('#Dimension').val(result.Dimension)
+        $('#FBAUK').val(result.FBAUK)
+        $('#FBADE').val(result.FBADE)
+        $('#FBADE1').val(result.FBADE1)
+        $('#FBACA').val(result.FBACA)
+        $('#FBAFR').val(result.FBAFR)
+        $('#FBAIT').val(result.FBAIT)
+        $('#FBAES').val(result.FBAES)
+        $('#FBANL').val(result.FBANL)
+        $('#FBASE').val(result.FBASE)
+        $('#FBAUSA').val(result.FBAUSA)
+        $('#FBAPL').val(result.FBAPL)
+        $('#FBAAU').val(result.FBAAU)
+        $('#CDisc').val(result.CDisc)
+        $('#MX').val(result.MX)
+        $('#OTHER').val(result.OTHER)
+        $('#OTHER1').val(result.OTHER1)
+        $('#OTHER2').val(result.OTHER2)
+        //----------------------------------------------------------------//
+            $('#modalAdd').modal('show');
+    }
+    //-----------------------------------------Delete Record ------------ 28/01/2021-------//
+    function Delete(id) {
+
+
+        $("#dialog-confirm").dialog({
+            resizable: true,
+            height: 140,
+            modal: true,
+            buttons: {
+                "Yes": function () {
+                    $.ajax({
+                        url: '@Url.Action("ItemController/DeleteCarrierByID/")' + id,
+                        type: 'post',
+                        dataType: 'html',
+                        success: function (result) {
+                            $('#carriersTable').jtable('load');
+                        }
+                    });
+                    $(this).dialog("close");
+                },
+                "No": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+
+
+    //--------------------------------------------------------------------------------------//
+        function clearForm() {
+            $('#PostalCarrierName').val('')
+            $('#Weight').val('')
+            $('#Price').val('')
+            //-------------------Code Developed By Danish 28-01-2021-------------------//
+            $('#Local').val('')
+            $('#Dimension').val('')
+            $('#FBAUK').val('')
+            $('#FBADE').val('')
+            $('#FBADE1').val('')
+            $('#FBAFR').val('')
+            $('#FBAIT').val('')
+            $('#FBAES').val('')
+            $('#FBANL').val('')
+            $('#FBASE').val('')
+            $('#FBAUSA').val('')
+            $('#FBAPL').val('')
+            $('#FBAAU').val('')
+            $('#OTHER').val('')
+            $('#OTHER1').val('')
+            $('#OTHER2').val('')
+            $('#CDisc').val('')
+            $('#MX').val('')
+            //------------------------------------------------------------------------//
+        }
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode != 46 && charCode > 31
+            && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+
+
+</script>
+

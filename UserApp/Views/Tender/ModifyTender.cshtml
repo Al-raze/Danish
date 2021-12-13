@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "ModifyTender";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers;
+
+@{string pageName = "ModifyTender";}
+
+@{
+    List<Infrastructure.Core.Models.Tender> statusName = ViewBag.StatusName;
+   
+   
+}
+
+<legend>@LanguageHelper.GetLabelCaption("TenderModify.Header", pageName)</legend>
+<select onchange="loadStatusTable(this.value)" name="StatusID" id="StatusID">
+    <option value="0">--  @LanguageHelper.GetLabelCaption("TenderModify.SelectTenderStatus", pageName) -- </option>
+    @foreach (var item in statusName)
+    {
+        <option value="@item.StatusID">@LanguageHelper.GetLabelCaption(item.StatusValue, "ModifyTender")</option>
+    }
+</select>
+
+<div id="tenderInfo"></div>
+<div id="dialog-confirm" title="@LanguageHelper.GetLabelCaption("TenderModify.Deletemsg", pageName)"></div>
+<script type="text/javascript">
+
+    $(document).ready(pageLoad);
+
+    function pageLoad() {
+        tenderGrid();
+    }
+    function loadStatusTable() {
+        debugger
+        $('#tenderInfo').jtable('load', {
+            StatusID: $('#StatusID').val()
+
+        });
+    }
+
+    function tenderGrid() {
+        debugger
+        $('#tenderInfo').jtable({
+            title: '@LanguageHelper.GetLabelCaption("TenderModify.Header", pageName)',
+            actions: {
+                listAction: '@Url.Action("GetTenderDetails")'
+            },
+            fields: {
+                TenderID: {
+                    key: true,
+                    list: false
+                },
+                TenderNo: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.TenderNo", pageName)',
+                    width: '20%'
+                },
+                TenderName: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.TendorName", pageName)',
+                    width: '20%'
+                },
+                CompanyName: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.CompanyName", pageName)',
+                    width: '20%'
+                },
+                BankName: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.BankName", pageName)',
+                    width: '20%'
+                },
+                StatusValue: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.TenderStatus", pageName)',
+                    width: '20%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-mini\" value=\"@LanguageHelper.GetLabelCaption("TenderAdd.Edit", pageName)\" onclick=\"editTender(" + data.record.TenderID + ")\" />";
+                    },
+                    width: '4%'
+                },
+                Delete: {
+                    display: function (data) {
+                        return String.format("<a href='#' onclick=\"get({0})\" class=\"btn btn-success btn-mini\"  id=\"buttonID\">@LanguageHelper.GetLabelCaption("TenderAdd.Delete", pageName) </a>", data.record.TenderID);
+
+                    },
+                    width: '4%'
+                }
+
+
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: '@LanguageHelper.GetLabelCaption("TenderAdd.AddTender", pageName)',
+                    click: addTender
+                }]
+            }
+
+        });
+
+        $('#tenderInfo').jtable('load', { StatusID: $('#StatusID').val() });
+    }
+
+    function addTender() {
+        $(location).attr('href', '@Url.Action("AddTender")');
+    }
+
+    function editTender(tenderID) {
+        debugger
+        $(location).attr('href', '@Url.Action("EditTender/")' + tenderID);
+        }
+
+    function get(id) {
+            $("#dialog-confirm").dialog({
+                resizable: true,
+                height: 140,
+                modal: true,
+                buttons: {
+                    "@LanguageHelper.GetLabelCaption("TenderModify.Yes", pageName)": function () {
+                        $(location).attr('href', "/Tender/DeleteTender/" + id);
+                    },
+                    "@LanguageHelper.GetLabelCaption("TenderModify.No", pageName)": function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+</script>
+
+

@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "RivalMaster";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers
+@{
+  
+    string pageName = "AddRivals";
+}
+
+<div class="alert alert-success" style="display: none" id="successAlert">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    <div id="successMessage"></div>
+</div>
+<div class="alert alert-danger" id="errorAlert" style="display: none">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    You have encountered an unexpected error.
+</div>
+<legend>@LanguageHelper.GetLabelCaption("AddRivals.RivalInfo", pageName)</legend>
+<div id="rivalTable"></div>
+
+@Html.Partial("_addRival")
+@Html.Partial("_editRival")
+
+<script type="text/javascript">
+
+    $(document).ready(rivalJTable);
+
+    function rivalJTable() {
+        $('#rivalTable').jtable({
+            title: '@LanguageHelper.GetLabelCaption("AddRivals.RivalInfo", pageName)',
+            actions: {
+                listAction: '@Url.Action("GetRivalMaster")'
+            },
+            fields: {
+                RivalMasterID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                RivalName: {
+                    title: '@LanguageHelper.GetLabelCaption("AddRivals.RivalName", pageName)',
+                    width: '15%'
+                },
+                Address1: {
+                    title: '@LanguageHelper.GetLabelCaption("AddRivals.Address", pageName)1'
+                },
+                Address2: {
+                    title: '@LanguageHelper.GetLabelCaption("AddRivals.Address", pageName)2'
+                },
+                Address3: {
+                    title: '@LanguageHelper.GetLabelCaption("AddRivals.Address", pageName)3',
+                    width: '12%'
+                },
+                //IsActive: {
+                //    title: 'IsActive',
+                //    width: '12%',
+                   
+                //},
+                Edit: {
+                    display: function (data) {
+                        var but = "<input type=\"button\" class=\"btn btn-success btn-mini\" value=\"@LanguageHelper.GetLabelCaption("AddRivals.Edit", pageName)\" onclick=\"editRivalMaster(" + data.record.RivalMasterID + ")\" />";
+                        return but;
+                    },
+                    width: '4%'
+             @*   },
+                Delete: {
+                    display: function (data) {
+                        return String.format("<a href='@Url.Action("/"){0}' class=\"btn btn-success btn-mini\" >@LanguageHelper.GetLabelCaption("AddRivals.Delete", pageName) </a>", data.record.UserID);
+                    },
+                    width: '4%'*@
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: '@LanguageHelper.GetLabelCaption("AddRivals.AddRival", pageName)',
+                    click: addRivalMaster
+                }]
+            }
+
+
+        });
+        $('#rivalTable').jtable('load');
+        }
+
+    function addRivalMaster() {
+            clearForm();
+            $('#modalAddRival').modal('show');
+        }
+
+    function editRivalMaster(rivalMasterID) {
+        debugger
+            $.ajax({
+                url: '@Url.Action("GetRivalByID/")' + rivalMasterID,
+                type: 'POST',
+                success: onSuccessEditRival
+            });
+        }
+
+    function onSuccessEditRival(result) {
+            $('#edtRivalMasterID').val(result.RivalMasterID)
+            $('#edtRivalName').val(result.RivalName)
+            $('#edtAddres1').val(result.Address1)
+            $('#edtAddres2').val(result.Address2)
+            $('#edtAddres3').val(result.Address3)
+
+            clearForm();
+            $('#modalUpdateRival').modal('show');
+        }
+
+        function clearForm() {
+            $('#UserName').val('')
+        }
+
+
+
+</script>

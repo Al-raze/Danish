@@ -1,0 +1,84 @@
+﻿@model Infrastrucutre.Core.Models.ItemCategory
+
+<form id="frmAddUpdate" name="frmAddUpdate">
+    <div class="modal hide fade" id="modalAdd">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>
+                 Add Item Category
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">
+                         Category Name
+                        </label>
+                    @Html.TextBoxFor(model => model.CategoryName, new { @class = "input-large", @placeholder = "Enter Category Name" })
+                    @Html.ValidationMessageFor(model => model.CategoryName)
+                    @Html.Hidden("ItemCategoryID","0")
+                    @Html.Hidden("mode")
+                </div>
+               
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">
+                 Close
+            </a>
+            <button type="button" id="btnAdd" onclick="addCategoryDetails()" class="btn btn-success">
+                 Add Category
+            </button>
+        </div>
+    </div>
+</form>
+<script>
+
+    function addCategoryDetails() {
+        $('#btnAdd').prop('disabled', true);
+        var data = $('#frmAddUpdate').serialize();
+        var posturl = '';
+        var formMode = $("#mode").val();
+
+        debugger
+
+        if (formMode == 'ADD') {
+            posturl = '@Url.Action("AddItemCategory", "Item")'
+        }
+        else {
+            posturl = '@Url.Action("UpdateItemCategory", "Item")'
+        }
+
+
+        if ($('#frmAddUpdate').valid()) {
+            $.ajax({
+                url: posturl,
+                type:'post',
+                data: data,
+                success: onSuccessAdd,
+                error: onErrorAdd
+            });
+        }
+
+        $('#btnAdd').prop('disabled', false);
+    }
+
+    function onSuccessAdd() {
+        var formMode = $("#mode").val();
+        if (formMode == 'ADD') {
+            $('#successMessage').text('Category Added Successfully')
+        }
+        else {
+            $('#successMessage').text('Category Updated Successfully')
+        }
+        $('#successAlert').show();
+        $('#categoriesTable').jtable('reload');
+        $('#modalAdd').modal('hide');
+    }
+
+    function onErrorAdd() {
+        $('#errorAlert').show();
+        $('#modalAddBank').modal('hide');
+    }
+
+</script>

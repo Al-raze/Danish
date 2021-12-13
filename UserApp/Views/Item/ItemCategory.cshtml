@@ -1,0 +1,86 @@
+﻿@model Infrastrucutre.Core.Models.ItemCategory
+
+@{
+    ViewBag.Title = "Item Categories";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+<legend> Item Categories </legend>
+<div id="categoriesTable"></div>
+
+@Html.Partial("_addCategory")
+@*@Html.Partial("_editCategory")*@
+
+<script type="text/javascript">
+
+    $(document).ready(UserTable);
+
+    function UserTable() {
+        $('#categoriesTable').jtable({
+            title: 'Item Categories',
+            actions: {
+                listAction: '@Url.Action("GetItemCategories")'
+            },
+            fields: {
+                ItemCategoryID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                CategoryName: {
+                    title: 'Category Name',
+                    width: '15%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"Edit\" onclick=\"edit(" + data.record.ItemCategoryID + ")\" />";
+                    },
+                    width: '4%'
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: 'Add Category',
+                    click: add
+                }]
+            }
+
+
+        });
+        $('#categoriesTable').jtable('load');
+        }
+
+    function add() {
+        clearForm();
+            $('#btnAdd').text('Add Category');
+            $('#mode').val('ADD');
+            $('#modalAdd').modal('show');
+        }
+
+    function edit(id) {
+            clearForm();
+            $('#mode').val('EDIT');
+            $('#btnAdd').text('Update Category');
+            $.ajax({
+                url: '@Url.Action("GetItemCategoryByID/")' + id,
+                type: 'POST',
+                success: onSuccessEdit
+            });
+        }
+
+    function onSuccessEdit(result) {
+            clearForm();
+            $('#CategoryName').val(result.CategoryName)
+            $('#ItemCategoryID').val(result.ItemCategoryID)            
+            $('#modalAdd').modal('show');
+        }
+
+        function clearForm() {
+            $('#CategoryName').val('')
+        }
+
+
+
+</script>
+

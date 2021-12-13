@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "FBA Request Form";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers
+<h2>FBA Request List</h2>
+
+
+<div id="tblItems"></div>
+
+<script>
+
+    $(document).ready(pageLoad);
+
+    function pageLoad() {
+        loadItems()
+    }
+
+    function loadItems() {
+        $('#tblItems').jtable({
+            title: 'FBA Requests List',
+            useBootstrap: true,
+            sorting: true,
+            actions: {
+                listAction: '@Url.Action("GetListingRequests")'
+            },
+            fields: {
+                FBARequestID: {
+                    key: true,
+                    list: false
+                },
+                ItemName: {
+                    title: 'Item Name',
+                    display: function (data) {
+                        return data.record.Item.ItemName;
+                    },
+                    width: '3%'
+                },
+                ItemCode: {
+                    title: 'Item Code',
+                    display: function (data) {
+                        return data.record.Item.ItemCode;
+                    },
+                    width: '3%'
+                },
+                FNSKU: {
+                    title: 'FNSKU',
+                    display: function (data) {
+                        return data.record.Item.FNSKU;
+                    },
+                    width: '3%'
+                },
+                ItemWeight: {
+                    title: 'Box Weight',
+                    display: function (data) {
+                        return data.record.Item.BoxWeight;
+                    },
+                    width: '3%'
+                },
+                Dimension: {
+                    title: 'Dimension',
+                    display: function (data) {
+                        return data.record.Item.Dimension;
+                    },
+                    width: '3%'
+                },
+                Qty: {
+                    title: 'Qty/Box',
+                    display: function (data) {
+                        return data.record.Item.Qty;
+                    },
+                    width: '3%'
+                },
+                SoldByMonth: {
+                    title: 'Sold By Month',
+                    display: function (data) {
+                        return data.record.Item.SoldByMonth;
+                    },
+                    width: '3%'
+                },
+                StockIn: {
+                    title: 'Stock In FBA',
+                    width: '3%'
+                },
+                Warhouse: {
+                    title: 'Warehouse Stock',
+                    width: '3%'
+                },
+                Location: {
+                    title: 'FBA Root',
+                    width: '3%'
+                },
+                FBARecedQty: {
+                    title: 'FBA Recd Qty',
+                    width: '3%'
+                },
+                RequestQty: {
+                    title: 'Req Qty',
+                    width: '3%'
+                },
+                LableStatus: {
+                    title: 'Lable Status',
+                    width: '3%'
+                },
+                LableLink: {
+                    title: 'Lable Sources',
+                    width: '3%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return String.format("<a class='btn btn-success btn-mini' href='Order/GetFbaRequestByID/{0}'>Edit</a>", data.record.FBARequestID);
+                    },
+                    width: '2%'
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add_icon.png',
+                    text: 'Add FBA Request',
+                    click: addItem
+                }]
+            }
+        });
+        $('#tblItems').jtable('load');
+    }
+
+    function addItem() {
+        $(location).attr("href", "@Url.Action("FbaRequest")")
+    }
+
+</script>

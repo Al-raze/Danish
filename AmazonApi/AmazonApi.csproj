@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{109A8D49-7800-4D7C-9874-AF868B2E1435}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AmazonApi</RootNamespace>
+    <AssemblyName>AmazonApi</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AmazonApi\Core\AbstractMwsObject.cs" />
+    <Compile Include="AmazonApi\Core\IMwsCall.cs" />
+    <Compile Include="AmazonApi\Core\IMwsObject.cs" />
+    <Compile Include="AmazonApi\Core\IMwsReader.cs" />
+    <Compile Include="AmazonApi\Core\IMwsRequestType.cs" />
+    <Compile Include="AmazonApi\Core\IMwsWriter.cs" />
+    <Compile Include="AmazonApi\Core\MwsAQCall.cs" />
+    <Compile Include="AmazonApi\Core\MwsConnection.cs" />
+    <Compile Include="AmazonApi\Core\MwsException.cs" />
+    <Compile Include="AmazonApi\Core\MwsResponseHeaderMetadata.cs" />
+    <Compile Include="AmazonApi\Core\MwsResponseMetadata.cs" />
+    <Compile Include="AmazonApi\Core\MwsUtil.cs" />
+    <Compile Include="AmazonApi\Core\MwsXmlBuilder.cs" />
+    <Compile Include="AmazonApi\Core\MwsXmlReader.cs" />
+    <Compile Include="AmazonApi\Core\MwsXmlWriter.cs" />
+    <Compile Include="AmazonApi\MarketplaceWebServiceOrders.cs" />
+    <Compile Include="AmazonApi\MarketplaceWebServiceOrdersClient.cs" />
+    <Compile Include="AmazonApi\MarketplaceWebServiceOrdersConfig.cs" />
+    <Compile Include="AmazonApi\MarketplaceWebServiceOrdersException.cs" />
+    <Compile Include="AmazonApi\MarketplaceWebServiceOrdersSample.cs" />
+    <Compile Include="AmazonApi\Model\Address.cs" />
+    <Compile Include="AmazonApi\Model\GetOrderRequest.cs" />
+    <Compile Include="AmazonApi\Model\GetOrderResponse.cs" />
+    <Compile Include="AmazonApi\Model\GetOrderResult.cs" />
+    <Compile Include="AmazonApi\Model\GetServiceStatusRequest.cs" />
+    <Compile Include="AmazonApi\Model\GetServiceStatusResponse.cs" />
+    <Compile Include="AmazonApi\Model\GetServiceStatusResult.cs" />
+    <Compile Include="AmazonApi\Model\IMWSResponse.cs" />
+    <Compile Include="AmazonApi\Model\InvoiceData.cs" />
+    <Compile Include="AmazonApi\Model\ListOrderItemsByNextTokenRequest.cs" />
+    <Compile Include="AmazonApi\Model\ListOrderItemsByNextTokenResponse.cs" />
+    <Compile Include="AmazonApi\Model\ListOrderItemsByNextTokenResult.cs" />
+    <Compile Include="AmazonApi\Model\ListOrderItemsRequest.cs" />
+    <Compile Include="AmazonApi\Model\ListOrderItemsResponse.cs" />
+    <Compile Include="AmazonApi\Model\ListOrderItemsResult.cs" />
+    <Compile Include="AmazonApi\Model\ListOrdersByNextTokenRequest.cs" />
+    <Compile Include="AmazonApi\Model\ListOrdersByNextTokenResponse.cs" />
+    <Compile Include="AmazonApi\Model\ListOrdersByNextTokenResult.cs" />
+    <Compile Include="AmazonApi\Model\ListOrdersRequest.cs" />
+    <Compile Include="AmazonApi\Model\ListOrdersResponse.cs" />
+    <Compile Include="AmazonApi\Model\ListOrdersResult.cs" />
+    <Compile Include="AmazonApi\Model\Message.cs" />
+    <Compile Include="AmazonApi\Model\Money.cs" />
+    <Compile Include="AmazonApi\Model\Order.cs" />
+    <Compile Include="AmazonApi\Model\OrderItem.cs" />
+    <Compile Include="AmazonApi\Model\PaymentExecutionDetailItem.cs" />
+    <Compile Include="AmazonApi\Model\ResponseHeaderMetadata.cs" />
+    <Compile Include="AmazonApi\Model\ResponseMetadata.cs" />
+    <Compile Include="Class1.cs" />
+    <Compile Include="FBA\FBAInventoryServiceMWS.cs" />
+    <Compile Include="FBA\FBAInventoryServiceMWSClient.cs" />
+    <Compile Include="FBA\FBAInventoryServiceMWSConfig.cs" />
+    <Compile Include="FBA\FBAInventoryServiceMWSException.cs" />
+    <Compile Include="FBA\FBAInventoryServiceMWSSample.cs" />
+    <Compile Include="FBA\Mock\FBAInventoryServiceMWSMock.cs" />
+    <Compile Include="FBA\Model\GetServiceStatusRequest.cs" />
+    <Compile Include="FBA\Model\GetServiceStatusResponse.cs" />
+    <Compile Include="FBA\Model\GetServiceStatusResult.cs" />
+    <Compile Include="FBA\Model\IMWSResponse.cs" />
+    <Compile Include="FBA\Model\InventorySupply.cs" />
+    <Compile Include="FBA\Model\InventorySupplyDetail.cs" />
+    <Compile Include="FBA\Model\InventorySupplyDetailList.cs" />
+    <Compile Include="FBA\Model\InventorySupplyList.cs" />
+    <Compile Include="FBA\Model\ListInventorySupplyByNextTokenRequest.cs" />
+    <Compile Include="FBA\Model\ListInventorySupplyByNextTokenResponse.cs" />
+    <Compile Include="FBA\Model\ListInventorySupplyByNextTokenResult.cs" />
+    <Compile Include="FBA\Model\ListInventorySupplyRequest.cs" />
+    <Compile Include="FBA\Model\ListInventorySupplyResponse.cs" />
+    <Compile Include="FBA\Model\ListInventorySupplyResult.cs" />
+    <Compile Include="FBA\Model\ResponseHeaderMetadata.cs" />
+    <Compile Include="FBA\Model\ResponseMetadata.cs" />
+    <Compile Include="FBA\Model\SellerSkuList.cs" />
+    <Compile Include="FBA\Model\Timepoint.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="FBA\Mock\FBAInventoryServiceMWS.Model.GetServiceStatusResponse.xml" />
+    <Content Include="FBA\Mock\FBAInventoryServiceMWS.Model.ListInventorySupplyByNextTokenResponse.xml" />
+    <Content Include="FBA\Mock\FBAInventoryServiceMWS.Model.ListInventorySupplyResponse.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

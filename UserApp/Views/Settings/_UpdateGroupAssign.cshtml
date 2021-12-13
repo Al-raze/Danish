@@ -1,0 +1,112 @@
+﻿@using AkraTechFramework.Helpers;
+@using Infrastructure.Core.Models;
+@model Infrastructure.Core.Models.AddUser
+@{
+    string pageName = "ManageUser";
+    List<MenuItem> menuItems = Context.ApplicationInstance.Application.Get(Infrastructure.Constants.GlobalConstants.USER_MENUS) as List<MenuItem>;
+}
+
+@using (Html.BeginForm("UpdateGroupAssign", "Item", FormMethod.Post, new { @id = "frmUpdateGroupAssign" }))
+{
+    <div class="modal hide fade" id="modalUpdateUser">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>
+                @LanguageHelper.GetLabelCaption("ManageUser.UpdateUserInfo", pageName)
+
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+
+                @Html.HiddenFor(model => model.UserID, new { @id = "edtUserID" })
+                <div class="control-group">
+                    <label class="control-label">
+                        @LanguageHelper.GetLabelCaption("ManageUser.UserName", pageName)
+                    </label>
+                    @Html.TextBoxFor(model => model.UserName, new { @class = "input-large", @id = "edtUserName", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.UserName)
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        @LanguageHelper.GetLabelCaption("ManageUser.Password", pageName)
+                    </label>
+                    @Html.PasswordFor(model => model.Password, new { @class = "input-large", @id = "edtPassword" })
+                    @Html.ValidationMessageFor(model => model.Password)
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        @LanguageHelper.GetLabelCaption("ManageUser.Email", pageName)
+                    </label>
+                    @Html.TextBoxFor(model => model.Email, new { @class = "input-large", @id = "edtEmail" })
+                    @Html.ValidationMessageFor(model => model.Email)
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        @LanguageHelper.GetLabelCaption("ManageUser.Phone", pageName)
+                    </label>
+                    @Html.TextBoxFor(model => model.Phone, new { @class = "input-large", @id = "edtPhone" })
+                    @Html.ValidationMessageFor(model => model.Phone)
+                </div>
+                <div class="control-group">
+                    <label class="control-label">
+                        @LanguageHelper.GetLabelCaption("ManageUser.UserRigths", pageName)
+                    </label>
+                    @foreach (var item in menuItems.Where(m => m.ActionUrl.Length > 3))
+                    {
+                        <label class="checkbox">
+                            <input type="checkbox" id="edit_@item.MenuContolID" value="@item.MenuID" name="AccessList" />@item.Name<br />
+                        </label>
+                    }
+
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">@LanguageHelper.GetLabelCaption("ManageUser.Close", pageName)</a>
+            <button type="button" href="#" id="btnUpdateUser" onclick="updateUser()" class="btn btn-success">@LanguageHelper.GetLabelCaption("ManageUser.Update", pageName)</button>
+        </div>
+    </div>
+}
+
+<script>
+
+    function updateUser() {
+
+        $('#btnUpdateUser').prop('disabled', true);
+        var data = $('#frmUpdateGroupAssign').serialize();
+
+        if ($("#frmUpdateGroupAssign :checkbox:checked").length < 2) {
+            alert('@LanguageHelper.GetLabelCaption("ManageUser.UserRightNotSelected", pageName)');
+            $('#btnUpdateUser').prop('disabled', false);
+            return true
+        }
+
+        if ($('#frmUpdateGroupAssign').valid()) {
+            $.ajax({
+                url: '@Url.Action("UpdateGroup")',
+                type: 'POST',
+                data: data,
+                success: onSuccessUpdateUser,
+                error: onErrorUpdateUser
+            });
+        }
+        $('#btnUpdateUser').prop('disabled', false);
+    }
+
+    function onSuccessUpdateUser() {
+        $('#successMessage').text('User Updated Successfully')
+        $('#successAlert').show();
+        $('#userTable').jtable('reload');
+        $('#modalUpdateUser').modal('hide');
+    }
+
+    function onErrorUpdateUser() {
+        $('#errorAlert').show();
+        $('#modalUpdateGroupAssign').modal('hide');
+    }
+
+</script>

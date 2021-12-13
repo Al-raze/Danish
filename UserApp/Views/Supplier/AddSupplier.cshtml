@@ -1,0 +1,96 @@
+﻿@model Infrastrucutre.Core.Models.Supplier
+
+@{
+    ViewBag.Title = "AddSupplier";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+<h2>
+      @if (ViewBag.Mode == "Create")
+       {
+          @Html.DisplayText("Add Supplier");
+       }
+      else
+      {
+          @Html.DisplayText("Edit Supplier");
+      } 
+</h2>
+
+@using (Html.BeginForm("AddSupplier","Supplier" ))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    if (ViewBag.Mode == "Create")
+    {
+        @Html.Hidden("SupplierID","0")
+    }
+    else
+    {
+        @Html.HiddenFor(m=>m.SupplierID)    
+    }
+
+    <fieldset>
+        <legend>Supplier Details</legend>
+        <div class="row-fluid">
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.SupplierName, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.SupplierName, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.SupplierName)
+            </div>
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.Address, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.Address, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.Address)
+            </div>
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.Email, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.Email, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.Email)
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.PhoneNumber, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.PhoneNumber)
+            </div>
+
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.SalesRepName, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.SalesRepName, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.SalesRepName)
+            </div>
+
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.WebAddress, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.WebAddress, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.WebAddress)
+            </div>                        
+        </div>
+        <div class="row-fluid">
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.BankDetails, new { @class = "control-label" })
+                @Html.TextAreaFor(model => model.BankDetails, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.BankDetails)
+            </div>
+        </div>
+
+       <div class="text-center widget-footer">                      
+           @Html.ActionLink("Back to List", "Index", null, new {@class="btn" })
+
+             @if (ViewBag.Mode == "Create")
+            {
+                <button type="submit" class="btn btn-success" name="command" value="Save">Save</button>   
+            }
+            else
+            {
+                <button type="submit"  class="btn btn-success" name="command" value="Update">Update</button>     
+            }           
+       </div>
+    </fieldset>
+}
+
+<div>
+    
+</div>

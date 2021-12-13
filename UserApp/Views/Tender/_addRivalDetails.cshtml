@@ -1,0 +1,102 @@
+﻿@using AkraTechFramework.Helpers;
+@using Infrastructure.Core.Models
+@using Infrastructure.Core.DataAccess
+@model Infrastructure.Core.Models.Settings
+
+@{
+    string pageName = "RivalDetails";
+    List<Rival> tender = new TenderRepository().GetTenderName();
+    List<Rival> rivalMaster = new TenderRepository().GetRivalName();
+}
+
+@using (Html.BeginForm("AddRivalDetails", "Tender", FormMethod.Post, new { @id = "frmAddRivalDetails" }))
+{
+    <div class="modal hide fade" id="modalAddRivalDetails">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>@LanguageHelper.GetLabelCaption("RivalDetails.AddRivalDetails", pageName)</h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                 @Html.HiddenFor(model => model.TenderID)
+                <div class="control-group">
+                    <label class="control-label">@LanguageHelper.GetLabelCaption("RivalDetails.RivalName", pageName)</label>
+                    <select class="span3" data-val="true" data-val-required=" " id="RivalMasterID" name="RivalMasterID">
+                        <option value="">@LanguageHelper.GetLabelCaption("RivalDetailsHolder.SelectRivalName", pageName)     </option>
+                        @foreach (var item in rivalMaster)
+                        {
+                            <option value="@item.RivalMasterID">@item.RivalName</option>
+                        }
+                    </select>
+                     @Html.ValidationMessageFor(model => model.RivalMasterID)
+                </div>
+                <div class="control-group">
+                    <label class="control-label">  @LanguageHelper.GetLabelCaption("RivalDetails.ProjectValue", pageName)</label>
+                    @Html.TextBoxFor(model => model.ProjectValue, new { @class = "span3", @placeholder =   @LanguageHelper.GetLabelCaption("RivalDetails.EnterProjectValue", pageName),@id = "rProjectValue" })
+                    @Html.ValidationMessageFor(model => model.ProjectValue)
+                </div>
+                <div class="control-group">
+                    <label class="control-label"> @LanguageHelper.GetLabelCaption("RivalDetails.IncrementValue", pageName)     </label>
+                    @Html.TextBoxFor(model => model.IncrementValue, new { @class = "span3", @placeholder = @LanguageHelper.GetLabelCaption("RivalDetails.EnterIncrementValue", pageName) })
+                    @Html.ValidationMessageFor(model => model.IncrementValue)
+                </div>
+                <div class="control-group">
+                    <label class="control-label">@LanguageHelper.GetLabelCaption("RivalDetails.Discount", pageName)</label>
+                    @Html.TextBoxFor(model => model.Discount, new { @class = "span3", @placeholder = @LanguageHelper.GetLabelCaption("RivalDetails.EnterDiscount", pageName) })
+                    @Html.ValidationMessageFor(model => model.Discount)
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">@LanguageHelper.GetLabelCaption("RivalDetails.Note", pageName) </label>
+                    @Html.TextAreaFor(model => model.Note, new { @class = "span3", @placeholder = @LanguageHelper.GetLabelCaption("RivalDetails.EnterNote", pageName)  })
+                    @Html.ValidationMessageFor(model => model.Note)
+                </div>
+
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">@LanguageHelper.GetLabelCaption("RivalDetails.Close", pageName) </a>
+            <a id="btnAddRivalDetailss" onclick="addRival()" class="btn btn-success">@LanguageHelper.GetLabelCaption("RivalDetails.Add", pageName)</a>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+
+    function addRival() {
+        debugger
+        $('#btnAddRivalDetailss').prop('disabled', true);
+        var data = $('#frmAddRivalDetails').serialize();
+
+        if ($('#frmAddRivalDetails').valid()) {
+            $.ajax({
+                url: $('#frmAddRivalDetails').attr('action'),
+                type: $('#frmAddRivalDetails').attr('method'),
+                data: data,
+                success: onSuccessAddRivalDetails,
+                error: onErrorAddRivalDetails
+            });
+        }
+        $('#btnAddRivalDetailss').prop('disabled', false);
+    }
+
+    function onSuccessAddRivalDetails() {
+        $('#successMessage').text('Rival Added Successfully')
+        $('#successAlert').show();
+        $('#rivalDetailsjTable').jtable('reload');
+        $('#modalAddRivalDetails').modal('hide');
+    }
+
+    function onErrorAddRivalDetails() {
+        $('#errorAlert').show();
+        $('#modalAddRivalDetails').modal('hide');
+    }
+
+    $('#IncrementValue').keyup(function () {
+        $('#Discount').val(0)
+    });
+    $('#Discount').keyup(function () {
+        $('#IncrementValue').val(0)
+    });
+
+</script>

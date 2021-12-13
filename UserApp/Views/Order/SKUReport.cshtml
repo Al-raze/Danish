@@ -1,0 +1,345 @@
+﻿@model Infrastrucutre.Core.Models.ItemDetails
+    @{
+        ViewBag.Title = "SKU Report";
+        Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+    }
+
+    @using AkraTechFramework.Helpers
+    <div id="SKUReport"></div>
+   
+    <div>
+        <div class="row-fluid">
+            <div class="span6 control-group">
+                <label class="control-label" for="ItemName">From Date</label>
+                @Html.TextBox("txtStartDate", DateTime.Now.Subtract(new TimeSpan(4, 0, 0, 0, 0)).ToShortDateString(), new
+                      {
+                          @class = "span12 datepicker",
+                          @readonly = "readonly",
+                          @style = "cursor:pointer; background-color:white",
+                          @placeholder = "From Date"
+                      })
+
+            </div>
+            <div class="span6 control-group">
+                <label class="control-label" for="ItemName">To Date</label>
+                @Html.TextBox("txtEndDate", DateTime.Now.ToShortDateString(), new
+                      {
+                          @class = "span12 datepicker",
+                          @readonly = "readonly",
+                          @style = "cursor:pointer; background-color:white",
+                          @placeholder = "To Date"
+                      })
+
+            </div>
+
+        </div>
+        <div class="row-fluid">
+            <div class="span3 control-group">
+                <label class="control-label">Seller List</label>
+
+                @if (ViewBag.SellerID != null)
+                {
+                    //@Html.DropDownListFor(model => model.SellerIndex, ViewBag.SellerID as SelectList, "--Select Seller--", new { @class = "control-label chosen" })
+                    <select class="control-label chosen" , Style="width:350px" data-val="true" id="SellerIndex" name="SellerIndex">
+
+                        @foreach (var item in (ViewBag.SellerID as System.Web.Mvc.SelectList).Items as List
+                        <Infrastrucutre.Core.Models.SellerAccount>
+                            )
+                        {
+                            <option value="@item.SellerIndex ">@item.SellerID</option>
+                        }
+                    </select>
+                }
+
+
+            </div>
+            <div class="span3 control-group">
+                <label class="control-label"> Users List</label>
+                <select class="control-label chosen" , Style="width:350px" data-val="true" id="UserID" name="UserID">
+
+                    @foreach (var item in (ViewBag.UserID as System.Web.Mvc.SelectList).Items as List
+                    <Infrastrucutre.Core.Models.UserInformation>
+                        )
+                    {
+                        <option value="@item.UserID ">@item.UserName</option>
+                    }
+                </select>
+                @*@Html.DropDownListFor(model => model.UserID, ViewBag.UserID as SelectList, "", new { @class = "control-label chosen", @Style = "width:350px" })*@
+
+            </div>
+            <div class="span3 control-group">
+                <label class="control-label">Items</label>
+                @Html.DropDownListFor(model => model.ItemMasterID, new SelectList(""), "--Selecte Item--", new { @class = "control-label chosen" })
+            </div>
+
+            <div class="span3 control-group">
+                <label class="control-label">AsinNo</label>
+                @Html.DropDownListFor(model => model.StockId, new SelectList(""), "", new { @class = "control-label chosen" })
+
+            </div>
+
+
+            <div class="span3 control-group">
+                <label class="control-label">SKU</label>
+                @Html.DropDownListFor(model => model.SKU, new SelectList(""), " ", new { @class = "control-label chosen" })
+
+            </div>
+            <label class="control-label">.</label>
+            <button type="submit" id="LoadRecordsButton" class="btn" style="margin-bottom: 10px;margin-left: 10px;" onclick="FindOrders()">Load Report</button>
+
+        </div>
+
+    </div>
+
+    <div id="tblItem" style="width:auto"></div>
+
+
+    <div id="tblItems" style="width:auto"> </div>
+    <div id="divLoading" style="display:none"> </div>
+
+    <script>
+
+        $(document).ready(function () {
+            $("#ItemMasterID").empty();
+            $("#UserID").change(function () {
+                //alert($(this).val());
+                $.get("/Order/GetUserItemListById", { UserID: $("#UserID").val() }, function (data) {
+                    $("#ItemMasterID").empty();
+                    $.each(data, function (index, row) {
+                        $("#ItemMasterID").append("<option value='" + row.ItemMasterID + "'>" + row.ItemName + "</option>").trigger("chosen:updated");
+                    });
+
+                })
+            });
+
+        });
+
+
+        //$(document).ready(function () { 
+
+        //    $('#ItemMasterID').empty(); //Get Item By Seller
+        //    $("#SellerIndex").change(function () {
+        //        //alert($(this).val());
+        //        $.get("/Order/GetItemsListById", { SellerID: $("#SellerIndex").val() }, function (data) {
+        //            $("#ItemMasterID").empty();
+        //            $.each(data, function (index, row) {
+        //                $("#ItemMasterID").append("<option value='" + row.ItemMasterID + "'>" + row.ItemName + "</option>").trigger("chosen:updated");
+        //            });
+
+        //        })
+        //    }); // END Get Items By Seller
+
+            $('#stockId').empty();
+            $("#ItemMasterID").change(function () {
+                //alert($(this).val());
+                $.get("/Order/GetASINListById", { ItemMasterID: $("#ItemMasterID").val() }, function (data) {
+                    $("#StockId").empty();
+                    $.each(data, function (index, row) {
+                        $("#StockId").append("<option value='" + row.ListingItemNo + "'>" + row.ListingItemNo + "</option>").trigger("chosen:updated");
+                    });
+
+                })
+            });
+
+            $("#StockId").change(function () {
+                $("#SKU").empty();
+                //alert($(this).val());
+                $.get("/Order/GetSKUListById", { ListingItemNo: $("#StockId").val() }, function (data) {
+                    $("#SKU").empty();
+                    $.each(data, function (index, row) {
+                        $("#SKU").append("<option value='" + row.SKU + "'>" + row.SKU + "</option>").trigger("chosen:updated");
+                    });
+
+                })
+            });
+        
+
+
+        //----------------------//
+
+    </script>
+
+    
+
+    <script>
+        $(document).ready(pageLoad);
+
+        jQuery(document).ready(function () {
+            jQuery(".chosen").data("placeholder", "Select ...").chosen();
+
+        });
+
+
+
+    function pageLoad() {
+        $(".datepicker").datepicker();
+        $(".datepicker").datepicker("option", "dateFormat", "dd M yy");
+
+        loadItems();
+        FindOrders();
+
+    }
+
+    function FindOrders() {
+
+        //$('#tblItem').jtable('load', { startDate: $('#txtStartDate').val(), endDate: $('#txtEndDate').val(), Asin: $('#StockId').val(), SKU: $('#SKU').val(), ItemMasterID: $('#ItemMasterID').val(), SellerID: $('#SellerIndex').val() });
+        $('#tblItem').jtable('load', { startDate: $('#txtStartDate').val(), endDate: $('#txtEndDate').val(), Asin: $('#StockId').val(), SKU: $('#SKU').val(), SellerID: $('#SellerIndex').val() });
+        $('#tblItems').jtable('load', { startDate: $('#txtStartDate').val(), endDate: $('#txtEndDate').val(), Asin: $('#StockId').val(), SKU: $('#SKU').val(), ItemMasterID: $('#ItemMasterID').val(), SellerID: $('#SellerIndex').val() });
+
+    }
+
+
+    function loadItems()
+    {
+        $('#tblItems').jtable({
+            title: 'SKU Report',
+            useBootstrap: true,
+            sorting: true,
+            selectingCheckboxes: true,
+            actions: {
+                listAction: '@Url.Action("GetSKUReport")' + '?startDate=' + $('#txtStartDate').val() + '&endDate=' + $('#txtEndDate').val() + '&Asin=' + $('#StockId').val() + '&SKU=' + $('#SKU').val() + '&ItemMasterID=' + $('#ItemMasterID').val() + '&SellerID=' + $('#SellerIndex').val()  //Get SKU Report Procedure
+
+            },
+            recordsLoaded: function (event, data) {
+
+                var recordsFound = String.format(" {0} Records - SKU Report   - [ {1} ] From {2} to {3}", data.records.length, $('#ItemMasterID :Selected').text(), $('#txtStartDate').val(), $('#txtEndDate').val(),$('#txtEndDate').val())
+                $('#tblItems').find('.jtable-title-text').html(recordsFound);
+
+                },
+            fields:
+            {
+                OrderDate: {
+                    title: 'OrderDate',
+                    width: '10%'
+                    },
+                OrderReferenceNo: {
+                    title: 'OrderNo',
+                    width: '10%'
+                },
+                Country: {
+                    title: 'Country',
+                    width: '3%'
+                },
+                Channel: {
+                    title: 'Channel',
+                    width: '5%'
+                },
+                Quantity: {
+                    title: 'Sold',
+                    width: '3%'
+                },
+                AmountPaid: {
+                    title: 'Price',
+                    width: '6%'
+                },
+                TotalCostByQuantity: {
+                    title: 'TotalCost',
+                    width : '5%'
+                },
+
+                DCharg: {
+                    title: 'AD-Charge',
+                    width: '10%'
+                },
+                FBACharge: {
+                    title: 'Fba Charge',
+                    width: '10%'
+                },
+                Promo: {
+                    title: 'Promo',
+                    width: '10%'
+                },
+                Profit: {
+                    title: 'Profit',
+                    width: '10%'
+                },
+                PLevel: {
+                    title: 'P.Level',
+                    width: '10%'
+                }
+
+            }
+
+        });
+
+        $('#tblItem').jtable({
+            title: 'SUMMARY Total Count Quantity By Country',
+            useBootstrap: true,
+            sorting: true,
+            selectingCheckboxes: true,
+            actions: {
+               
+                listAction: '@Url.Action("Get_SKUReport")' + '?startDate=' + $('#txtStartDate').val() + '&endDate=' + $('#txtEndDate').val() + '&Asin=' + $('#StockId').val() + $('#SKU').val() + $('#SellerIndex').val()
+
+            },
+            fields:
+                {
+
+                    GB: {
+                        title: 'UK',
+                        width: '0.02%'
+                    },
+                    DE: {
+                        title: 'DE',
+                        width: '0.01%'
+                    },
+                    FR: {
+                        title: 'FR',
+                        width: '0.01%'
+                    },
+                    IT: {
+                        title: 'IT',
+                        width: '0.02%'
+                    },
+
+                    ES: {
+                        title: 'ES',
+                        width: '0.01%'
+                    },
+                    NL: {
+                        title: 'NL',
+                        width: '0.01%'
+                    },
+                    SE: {
+                        title: 'SE',
+                        width: '0.01%'
+                    },
+                    USA: {
+                        title: 'USA',
+                        width: '0.01%'
+                    },
+                    CA: {
+                        title: 'CA',
+                        width: '0.01%'
+                    },
+                Smaya: {
+                    title: 'SMAYA',
+                    width:'0.01%'
+                },
+                Salsabil: {
+                    title: 'SAL-SABIL',
+                    width: '0.01%'
+                },
+                Etsy: {
+                    title: 'Etsy',
+                    width: '0.01%'
+                },
+                CDisc: {
+                    title: 'C-Disc',
+                    width: '0.01%'
+                }
+                ,
+                Total: {
+                    title: 'TOTAL-QTY',
+                    width: '0.01%'
+                }
+
+            }
+
+        });
+
+    }
+
+
+    </script>
+

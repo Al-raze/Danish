@@ -1,0 +1,85 @@
+﻿@model Infrastrucutre.Core.Models.EbayCategory
+
+@{
+    ViewBag.Title = "Categories For Ebay";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+<legend> Item Categories </legend>
+<div id="categoriesTable"></div>
+
+@Html.Partial("_addEbayCategory")
+
+<script type="text/javascript">
+
+    $(document).ready(UserTable);
+
+    function UserTable() {
+        $('#categoriesTable').jtable({
+            title: 'Ebay Item Categories',
+            actions: {
+                listAction: '@Url.Action("GetEbayItemCategories")'
+            },
+            fields: {
+                EbayCategoryID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                EbayCategoryName: {
+                    title: 'Ebay Category Name',
+                    width: '15%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"Edit\" onclick=\"edit(" + data.record.EbayCategoryID + ")\" />";
+                    },
+                    width: '4%'
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: 'Add Ebay Category',
+                    click: add
+                }]
+            }
+
+
+        });
+        $('#categoriesTable').jtable('load');
+    }
+
+    function add() {
+        clearForm();
+        $('#btnAdd').text('Add Category');
+        $('#mode').val('ADD');
+        $('#modalAdd').modal('show');
+    }
+
+    function edit(id) {
+        clearForm();
+        $('#mode').val('EDIT');
+        $('#btnAdd').text('Update Category');
+        $.ajax({
+            url: '@Url.Action("GetEbayItemCategoryByID/")' + id,
+                type: 'POST',
+                success: onSuccessEdit
+            });
+        }
+
+        function onSuccessEdit(result) {
+            clearForm();
+            $('#EbayCategoryName').val(result.EbayCategoryName)
+            $('#EbayCategoryID').val(result.EbayCategoryID)
+            $('#modalAdd').modal('show');
+        }
+
+        function clearForm() {
+            $('#CategoryName').val('')
+        }
+
+
+
+</script>
+

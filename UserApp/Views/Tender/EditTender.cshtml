@@ -1,0 +1,533 @@
+﻿@{
+    ViewBag.Title = "EditTender";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+@using AkraTechFramework.Helpers;
+@model Infrastructure.Core.Models.ModifyTender
+@using Infrastructure.Core.Models
+@using Infrastructure.Core.DataAccess
+
+
+
+@{
+    string pageName = "ModifyTender";
+    List<Tender> StatusName = new TenderRepository().GetTenderStatusName();
+}
+
+<div class="container-fluid">
+    @using (Html.BeginForm("UpdateTender", "Tender", FormMethod.Post))
+    {
+        <legend>@LanguageHelper.GetLabelCaption("ModifyTenderHeader", pageName)</legend>
+        @Html.HiddenFor(model => model.TenderID)
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="row-fluid">
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.CompanyName", pageName)</label>
+                        @Html.TextBoxFor(model => model.CompanyName, new { @class = "span12", @readonly = "readonly" })
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.TenderNo", pageName)</label>
+                        @Html.TextBoxFor(model => model.TenderNo, new { @class = "span12", @readonly = "readonly" })
+
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label for="right-label" class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.TendorName", pageName)</label>
+                        @Html.TextBoxFor(model => model.TenderName, new { @class = "span12" })
+                        @Html.ValidationMessageFor(model => model.TenderName)
+                    </div>
+
+                </div>
+                <div class="row-fluid">
+
+                    <div class="span4 control-group lightblue">
+                        <label for="right-label" class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.PurchaseDate", pageName) </label>
+                        @Html.TextBoxFor(model => model.PurchaseDate, new { @class = "span12", @readonly = "readonly" })
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.PurchaseValue", pageName)</label>
+                        @Html.TextBoxFor(model => model.PurchaseValue, new { @class = "span12" })
+                        @Html.ValidationMessageFor(model => model.PurchaseValue)
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label for="right-label" class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.ClosingDate", pageName)</label>
+                        @Html.TextBoxFor(model => model.ClosingDate, new { @class = "span12", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="row-fluid">
+
+                    <div class="span4 control-group lightblue">
+                        <label for="right-label" class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.DaysRequired", pageName)</label>
+                        @Html.TextBoxFor(model => model.DaysRequired, new { @class = "span12" })
+                        @Html.ValidationMessageFor(model => model.DaysRequired)
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label for="right-label" class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.ProjectValue", pageName) </label>
+                        @Html.TextBoxFor(model => model.ProjectValue, new { @class = "span12" })
+                        @Html.ValidationMessageFor(model => model.ProjectValue)
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label for="right-label" class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.BankValue", pageName)  </label>
+                        @Html.TextBoxFor(model => model.GuaranteeValue, new { @class = "span12" })
+                        @Html.ValidationMessageFor(model => model.GuaranteeValue)
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.BankProportion", pageName) </label>
+                        @Html.TextBoxFor(model => model.ProportionValue, new { @class = "span12", @placeholder = @LanguageHelper.GetLabelCaption("TenderModify.HolderEnterProportionValue", pageName) })
+                        @Html.ValidationMessageFor(model => model.ProportionValue)
+
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.GuaranteeStartDate", pageName) </label>
+                        @Html.TextBoxFor(model => model.GuaranteeStartDate, new { @class = "span12", @placeholder = @LanguageHelper.GetLabelCaption("TenderModify.HolderSelectStartDate", pageName) })
+
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.GuaranteeExp", pageName)</label>
+                        @Html.TextBoxFor(model => model.GuaranteeEndDate, new { @class = "span12", @placeholder = @LanguageHelper.GetLabelCaption("TenderModify.HolderSelectEndDate", pageName) })
+                        @Html.ValidationMessageFor(model => model.GuaranteeEndDate)
+
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span4 lightblue">
+                        <label for="right-label" class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.BankName", pageName)</label>
+                        @Html.TextBoxFor(model => model.BankName, new { @class = "span12", @readonly = "readonly" })
+
+                    </div>
+                    <div class="span4 lightblue">
+                        <label for="right-label" class="control-label">@LanguageHelper.GetLabelCaption("TenderModify.BankType", pageName)</label>
+                        @Html.TextBoxFor(model => model.BankTypeName, new { @class = "span12", @readonly = "readonly" })
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label ">@LanguageHelper.GetLabelCaption("TenderModify.TenderStatus", pageName)</label>
+                        <select class="span12" data-val="true" data-val-required=" " name="StatusID" id="StatusID" onchange="hideFields(this.value)">
+                            <option value="">-- @LanguageHelper.GetLabelCaption("TenderModify.SelectTenderStatus", pageName) -- </option>
+                            @foreach (var item in StatusName)
+                            {
+                                if (item.StatusID == Model.StatusID)
+                                {
+                                <option value="@item.StatusID" selected="selected" >@LanguageHelper.GetLabelCaption(item.StatusValue, pageName)</option>
+                              
+                                }
+                                else
+                                {
+                                <option value="@item.StatusID" >@LanguageHelper.GetLabelCaption(item.StatusValue, pageName)</option>
+                                }
+
+                            }
+                        </select>
+
+
+
+                        @Html.ValidationMessageFor(model => model.StatusID)
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        
+        
+        <div class="text-center widget-footer" style="background-color: #EEEEEC; border-top: 1px solid #DDD; height: 35px; padding: 1%">
+            <a href="@Url.Action("ModifyTender")" class="btn btn-default" >@LanguageHelper.GetLabelCaption("TenderModify.Back", pageName) </a>
+            <button type="submit" class="btn btn-success">@LanguageHelper.GetLabelCaption("TenderModify.Save", pageName) </button>
+        </div>
+        
+    }
+</div>
+
+<div class="alert alert-success" style="display: none" id="successAlert">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    <div id="successMessage"></div>
+</div>
+<div class="alert alert-danger" id="errorAlert" style="display: none">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    You have encountered an unexpected error.
+</div>
+<div class="container-fluid">
+    <legend>@LanguageHelper.GetLabelCaption("TenderModify.RivalDetails", pageName)</legend>
+    <div id="rivalDetailsjTable">
+    </div>
+</div>
+<div class="container-fluid"></div>
+<br />
+<a id="fileUploadAnchor"></a>
+<div class="alert alert-success" style="display: none" id="successAlertFile">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    <div id="successMessageFile"></div>
+</div>
+<div class="container-fluid">
+    <legend>@LanguageHelper.GetLabelCaption("TenderModify.DocumentDetails", pageName)</legend>
+
+    <div id="uploadJtable"></div>
+</div>
+
+<div id="DelDocUploadFile" title="@LanguageHelper.GetLabelCaption("TenderModify.Deletemsg", pageName)"></div>
+
+<a id="fileDeleteAnchor"></a>
+@Html.Partial("_addRivalDetails", new Settings() { TenderID = Model.TenderID })
+@Html.Partial("_editRivalDetails", new Settings())
+@Html.Partial("_docUpload", new Settings() { TenderID = Model.TenderID })
+@Html.Partial("_AddColor",new Color())
+
+
+<script type="text/javascript">
+
+    $(document).ready(pageLoad);
+
+    function hideFields(value) {
+        debugger
+        if (value != 4) {
+
+            $('#ProportionValue').attr("readonly", true).prop("disabled", true);
+
+            $('#GuaranteeStartDate').attr("readonly", true).datepicker("disable").prop("disabled", true);
+            $('#GuaranteeEndDate').attr("readonly", true).datepicker("disable").prop("disabled", true);
+        }
+        else {
+            $("#GuaranteeStartDate,#GuaranteeEndDate").datepicker($.datepicker.regional["ar"]);
+            $('#ProportionValue').attr("readonly", false).prop("disabled", false);
+            $('#GuaranteeStartDate').attr("readonly", false).datepicker("enable").prop("disabled", false);
+            $('#GuaranteeEndDate').attr("readonly", false).datepicker("enable").prop("disabled", false);
+
+        }
+    }
+
+
+    function pageLoad() {
+
+        rivalDetailssJTable();
+        debugger
+        fileUploadJTable();
+
+        displayFileUploadMessage()
+        hideFields(@Model.StatusID)
+    }
+
+
+    function displayFileUploadMessage() {
+        var fileMessage = '@ViewBag.FileUploadMessage'
+        if (fileMessage != '') {
+            $('#successMessageFile').text(fileMessage)
+            $('#successAlertFile').show();
+            location.hash = 'fileUploadAnchor';
+
+        }
+    }
+
+    function unCheck() {
+        var rows = $("#rivalDetailsjTable").find("tr").get();
+        if (rows.length > 0) {
+
+            $(rows).removeClass("jtable-row-selected");
+           
+
+        }
+    }
+
+    function rivalDetailssJTable() {
+        $('#rivalDetailsjTable').jtable({
+            title: ' @LanguageHelper.GetLabelCaption("TenderModify.RivalDetails", pageName)',
+            selecting: false, //Enable selecting
+            multiselect: false,
+            
+            actions: {
+                listAction: '@Url.Action("GetRivalDetails/")@Model.TenderID'
+            },
+            fields: {
+                RivalID: {
+                    key: true,
+                    list: false
+                },
+                TenderName: {
+                    
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.TendorName", pageName)',
+                    width: '15%',
+                   
+                },
+                RivalName: {
+                    title: '@LanguageHelper.GetLabelCaption("AddRivals.Name", pageName)',
+                    width: '15%'
+                },
+                ProjectValue: {
+
+                    title: '@LanguageHelper.GetLabelCaption("AddRivals.ProjectValue", pageName)',
+                    width: '10%'
+                },
+                IncrementValue: {
+                    title: '@LanguageHelper.GetLabelCaption("AddRivals.RateIncrease", pageName)',
+                    width: '13%'
+                },
+                Discount: {
+                    title: '@LanguageHelper.GetLabelCaption("AddRivals.DiscountRate", pageName)',
+                    width: '10%'
+                },
+
+                Note: {
+                    title: '@LanguageHelper.GetLabelCaption("AddRivals.Note", pageName)',
+                    width: '20%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"@LanguageHelper.GetLabelCaption("TenderAdd.Edit", pageName)\" onclick=\"editRivalDetailsByID(" + data.record.RivalID + ")\" />";
+                    },
+                    width: '4%'
+                },
+                Delete: {
+                    display: function (data) {
+                        return String.format("<a href='#' onclick=\"deleteRival({0})\" class=\"btn btn-success btn-small\" >@LanguageHelper.GetLabelCaption("TenderAdd.Delete", pageName) </a>", data.record.RivalID);
+                    },
+                    width: '4%'
+                },
+                Color: {
+                    display: function (data) {
+                        return String.format("<a  onclick=\"showColor({0})\" class=\"btn btn-success btn-small\" >@LanguageHelper.GetLabelCaption("AddRivals.AddColor", pageName) </a>", data.record.RivalID);
+                    },
+                    width: '10%'
+                },
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: '@LanguageHelper.GetLabelCaption("AddRivals.AddRivals", pageName)',
+                    click: ShowRivals
+                }
+                ]
+            },
+            recordsLoaded: function (event, data) {
+                
+                for (var i in data.records) {
+                    if (data.records[i].ColorCode != null) {
+                        $('#rivalDetailsjTable').find(".jtable tbody tr:eq(" + i + ")").css("cssText", "background-color:" + data.records[i].ColorCode + ";");
+                    }
+                }
+            }
+
+
+        });
+        $('#rivalDetailsjTable').jtable('load');
+    }
+
+    function showColor(id) {
+        $('#ColorID').val('');
+        $('#hdnRivalID').val(id);
+        $('#modalAddRivalColor').modal('show')
+       
+    }
+
+    function addColor() {
+       
+        var item = new Array();
+        item.push($('#hdnRivalID').val());
+       
+        if ($('#frmAddRivalColor').valid()) {
+            var colorCode = $('#ColorID').val();
+            $.ajax({
+                url: $('#frmAddRivalColor').attr('action'),
+                type: $('#frmAddRivalColor').attr('method'),
+                dataType: "json",
+                data: JSON.stringify({ 'rivalID': item, 'colorCode': colorCode }),
+                contentType: 'application/json; charset=utf-8',
+                success: onSuccessAddColor,
+                error: onErrorAddColor
+            });
+        }
+    }
+
+    function onSuccessAddColor(data) {
+        $('#modalAddRivalColor').modal('hide')
+        $('#successMessage').text('Color Added Successfully')
+        $('#successAlert').show();
+        $('#rivalDetailsjTable').jtable('reload', unCheck);
+    }
+
+    function onErrorAddColor()
+    {
+        $('#errorAlert').show();
+        $('#modalAddRivalColor').modal('hide')
+    }
+
+   
+
+    function fileUploadJTable() {
+        debugger
+        $('#uploadJtable').jtable({
+            title: '@LanguageHelper.GetLabelCaption("TenderModify.DocumentDetails", pageName)',
+            actions: {
+                listAction: '@Url.Action("GetUploadDoc/")@Model.TenderID'         
+            },
+            fields: {
+                FileID: {
+                    key: true,
+                    list: false
+                },
+                FileName: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.FileName", pageName)',
+                    width: '20%'
+                },
+
+                Edit: {
+
+                    display: function (data) {
+                        return String.format("<a href='@Url.Action("../Content/Upload/"){0}' class=\"btn btn-success btn-small\"  target=\"_blank\" >@LanguageHelper.GetLabelCaption("TenderModify.Download", pageName) </a>", data.record.FileName);
+                    },
+                    width: '1%'
+                },
+                Delete: {
+                    display:
+
+                        function (data) {
+
+                            return String.format("<a onclick=\"DelUploadDoc({0})\" class=\"btn btn-success btn-small\" >@LanguageHelper.GetLabelCaption("TenderAdd.Delete", pageName) </a>", data.record.FileID);
+                           
+                        },
+                    width: '4%'
+
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: '@LanguageHelper.GetLabelCaption("TenderModify.UploadFile", pageName)',
+                    click: showUploadModal
+                }]
+            }
+
+
+        });
+        $('#uploadJtable').jtable('load');
+
+
+    }
+
+    function ShowRivals() {
+        clearAddRivalForm();
+        $('#modalAddRivalDetails').modal('show');
+    }
+
+    function clearAddRivalForm() {
+        $('#modalAddRivalDetails').on('hidden', function () {
+            $('#RivalMasterID').val('')
+            $('#rProjectValue').val('')
+            $('#IncrementValue').val('')
+            $('#Discount').val('')
+            $('#Note').val('')
+        });
+
+    }
+
+    function deleteRival(id) {
+        
+
+        $.ajax({
+            url: '@Url.Action("DeleteRivals/")' + id,
+            type: 'POST',
+            success: onSuccessDeleteRivalDetails,
+            error: onErrorDeleteRivalDetails
+        });
+    }
+
+    function onSuccessDeleteRivalDetails(data) {
+        $('#successMessage').text('Rival Deleted Successfully')
+        $('#successAlert').show();
+        $('#rivalDetailsjTable').jtable('reload');
+    }
+
+    function editRivalDetailsByID(rivalID) {
+        $.ajax({
+            url: '@Url.Action("GetRivalDetailsByID/")' + rivalID,
+            type: 'POST',
+            success: onSuccessEditRivalDetails
+            
+        });
+    }
+
+    function onErrorDeleteRivalDetails() {
+        $('#errorAlert').show();
+        
+    }
+
+    function downloadFile(fileID) {
+        $.ajax({
+            url: '@Url.Action("Download")',
+            type: 'GET'
+        });
+    }
+
+    function onSuccessEditRivalDetails(result) {
+
+        $('#edtIncrementValue').prop("disabled", false);
+        $('#edtDiscount').prop("disabled", false);
+        $('#edtRivalDetailsID').val(result.RivalID)
+        $('#edtRivalTenderName').val(result.TenderName)
+        $('#edtrivalRivalName').val(result.RivalName)
+        $('#edtProjectValue').val(result.ProjectValue)
+        $('#edtIncrementValue').val(result.IncrementValue).keyup(function ()
+        {
+            $('#edtDiscount').val(0)
+        });
+        $('#edtDiscount').val(result.Discount).keyup(function () {
+            $('#edtIncrementValue').val(0)
+        });
+        $('#edtPurchaseValue').val(result.PurchaseValue)
+        $('#edtNote').val(result.Note)
+
+
+
+
+
+        clearForm();
+        $('#modalUpdateRivalDetails').modal('show');
+    }
+
+    function clearForm() {
+        $('#UserName').val('')
+
+    }
+
+    function showUploadModal() {
+        $('#modalDocUpload').modal('show');
+    }
+
+
+    function DelUploadDoc(id) {
+      
+         $("#DelDocUploadFile").dialog({
+
+            resizable: true,
+            height: 140,
+            modal: true,
+            buttons: {
+                "Yes": function () {
+                    $(location).attr('href', "/Tender/DeleteUploadDoc?fileID=" + id + "&tenderID=" + '@Model.TenderID');
+                },
+                "No": function () {
+                    $(this).dialog("close");
+
+                }
+
+            }
+
+
+        });
+        
+        return false;
+    }
+</script>
+
+
+
+
+
+<script>
+    $(document).ready(pageInit);
+
+    function pageInit() {
+        $(".DatePicker").datepicker($.datepicker.regional["ar"]);
+    }
+
+
+</script>

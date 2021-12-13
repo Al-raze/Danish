@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "TenderExpiring";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers
+@using Infrastructure.Core.Models
+
+@{
+    string pageName = "TenderStatus";
+    List<Tender> statusName = ViewBag.StatusName;
+}
+
+<div id="tenderExpiring"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(pageLoad);
+
+    function pageLoad() {
+        tenderexpiringTable();
+    }
+
+    function tenderexpiringTable() {
+
+        $('#tenderExpiring').jtable({
+            title: '@LanguageHelper.GetLabelCaption("TenderStatus.ExpiringTenders", pageName)',
+            useBootstrap: true,
+            sorting: true,
+            actions: {
+                listAction: '@Url.Action("GetTenderExpiring")'
+            },
+            fields: {
+                TenderID: {
+                    key: true,
+                    list: false
+                },
+                TenderNo: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderStatus.TenderNo", pageName)',
+                    width: '6%'
+                },
+                TenderName: {
+                    title: '  @LanguageHelper.GetLabelCaption("TenderStatus.TenderName", pageName)',
+                    width: '7%'
+                },
+                PurchaseDate: {
+                    title: '  @LanguageHelper.GetLabelCaption("TenderStatus.PurchaseDate", pageName)',
+                    width: '7%'
+                },
+                PurchaseValue: {
+                    title: '  @LanguageHelper.GetLabelCaption("TenderStatus.PurchaseValue", pageName)',
+                    width: '3%'
+                },
+
+                ClosingDate: {
+                    title: '  @LanguageHelper.GetLabelCaption("TenderStatus.ClosingDate", pageName)',
+                    width: '3%'
+                },
+                DaysRequired: {
+                    title: '  @LanguageHelper.GetLabelCaption("TenderStatus.DaysRequired", pageName)',
+                    width: '3%'
+                },
+                ProjectValue: {
+                    title: '  @LanguageHelper.GetLabelCaption("TenderStatus.ProjectValue", pageName)',
+                    width: '3%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-mini\" value=\"@LanguageHelper.GetLabelCaption("TenderAdd.Edit", "ModifyTender")\" onclick=\"editTender(" + data.record.TenderID + ")\" />";
+                    },
+                    width: '2%'
+                }
+            },
+
+          
+
+        });
+
+                $('#tenderExpiring').jtable('load', { StatusID: $('#StatusID').val() });
+            }
+
+
+            function editTender(tenderID) {
+                $(location).attr('href', '@Url.Action("EditTender/", "Tender")' + tenderID);
+    }
+
+</script>
+
+
+

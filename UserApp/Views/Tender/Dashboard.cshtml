@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Welcome - Inventory Management Dashboard";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+@using AkraTechFramework.Helpers;
+
+<div class="container">
+<div>
+
+    <hr/>
+    <h1>
+    @SettingHelper.GetSetting().CompanyName 
+    </h1>
+    <hr/>
+
+    <img src= "@Url.Content("../Content/Upload/" + SettingHelper.GetSetting().CompanyLogo)" alt="Image" />
+</div>
+</div> <!-- /container -->

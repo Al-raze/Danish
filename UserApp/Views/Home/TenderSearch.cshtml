@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "GetTenderSearch";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers;
+
+@{string pageName = "ModifyTender"; }
+
+
+<div id="searchJTableID"></div>
+
+<script type="text/javascript">
+    $(document).ready(pageLoad);
+
+    function pageLoad() {
+        searchLoadJTable();
+    }
+
+    function searchLoadJTable() {
+        $('#searchJTableID').jtable({
+            title: '@LanguageHelper.GetLabelCaption("ModifyTender.TenderSearchDetails", pageName)',
+            actions: {
+                listAction: '@Url.Action("GetTenderSearch")'
+            },
+            fields: {
+               
+                TenderNo: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.TenderNo", pageName)',
+                    width: '20%'
+                },
+                TenderName: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.TendorName", pageName)',
+                    width: '20%'
+                },
+                CompanyName: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.CompanyName", pageName)',
+                    width: '20%'
+                },
+                BankName: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.BankName", pageName)',
+                    width: '20%'
+                },
+                StatusValue: {
+                    title: '@LanguageHelper.GetLabelCaption("TenderModify.TenderStatus", pageName)',
+                    width: '20%'
+                }
+
+            },
+        });
+
+        $('#searchJTableID').jtable('load', { TenderNo: '@ViewBag.TenderNO' });
+    }
+
+</script>

@@ -1,0 +1,41 @@
+﻿@model List<Infrastrucutre.Core.Models.ItemMaster>
+
+@{      
+    int SupplierID = ViewBag.SupplierID;   
+ } 
+
+
+@using (Html.BeginForm ("UpdateItemQuantity", "Item", FormMethod.Post, new { @id = "frmAddItemQuantity" }))
+{
+    <div class="modal hide fade" id="modelStockRequest">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4>Update Item Stock</h4>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                @Html.Hidden("SupplierID",SupplierID)
+                <div class="control-group">
+                    
+                </div>  
+                <div class="control-group">
+                    @for (var i = 0; i < Model.Count; i++)
+                    { 
+                      <div>
+                          @Html.Hidden("ItemsRequested[" + (@i) + "].ItemMasterID",Model[i].ItemMasterID, new { @readonly = "readonly" })                          
+                      </div>
+                      <div>@Model[i].ItemName - (@Model[i].ItemCode)</div>
+                      <div>
+                           @Html.TextBox("ItemsRequested[" + (@i) + "].RequestedItemQuantity",@Model[i].StockIn) (InStock @Model[i].StockIn)
+                                  
+                      </div>
+                    }
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">Close</a>
+            <button class="btn btn-success" type="submit">Update</button>
+        </div>
+    </div>
+}

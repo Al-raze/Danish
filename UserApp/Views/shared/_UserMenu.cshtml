@@ -1,0 +1,60 @@
+﻿@using Infrastructure.Core.Models
+@using AkraTechFramework.Helpers
+
+@{
+    List<MenuItem> MenuItems = ViewBag.Menu;
+    string pageName = "Menu";
+}
+
+<ul class="nav nav-pills">
+    @foreach (var item in MenuItems.Where(m => m.ParentID == 0))
+    {
+        bool hasChildren = (MenuItems.Count(m => m.ParentID == item.MenuID) > 0);
+
+        if (hasChildren)
+        {
+        <li class="dropdown" id="@(item.MenuContolID)">
+            <a  id="@item.MenuContolID" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                @item.Name
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                @RenderChildren(item, MenuItems)
+            </ul>
+        </li> 
+        }
+        else
+        {
+        <li  id="@(item.MenuContolID)"><a href="@item.ActionUrl">@item.Name</a></li>                                
+        }
+    }
+    
+    <li id="ChangePass" class="pull-right"><a href="@Url.Action("ChangePassword","User")">Change Password</a></li> 
+    <li id="Logout" class="pull-right"><a href="/Home/Logout">Logout</a></li>
+</ul>
+
+
+
+@helper RenderChildren(MenuItem parent, List<MenuItem> Items)
+{
+    foreach (var childItem in Items.Where(m => m.ParentID == parent.MenuID))
+    {
+        bool hasChildren = (Items.Count(m => m.ParentID == childItem.MenuID) > 0);
+
+        if (hasChildren)
+        {
+    <li class="dropdown-submenu" id="@(childItem.MenuContolID)">
+        <a  id="@childItem.MenuContolID" href="#">
+            @childItem.Name
+        </a>
+        <ul class="dropdown-menu">
+            @RenderChildren(childItem, Items)
+        </ul>
+    </li> 
+        }
+        else
+        {
+    <li  id="@(childItem.MenuContolID)"><a href="@childItem.ActionUrl">@childItem.Name</a></li>                                
+        }
+    }       
+}

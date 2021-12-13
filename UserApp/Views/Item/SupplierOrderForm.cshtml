@@ -1,0 +1,49 @@
+﻿@model Infrastrucutre.Core.Models.ViewModels.OrderRequest
+@{
+    Layout = "~/Views/shared/_LayoutWord.cshtml";
+}
+<div id="page">
+    <div id="content">
+    <div>
+        To
+        <p>
+	    @Model.SupplierRef.SupplierName
+        @Model.SupplierRef.Address
+        </p>
+    </div>
+
+    <p>
+        <br />
+        @Model.OrderText 
+    </p>
+    <hr />
+    <table>
+        <tr>
+	        <td><strong>Item Name</strong></td>
+	        <td><strong>Description</strong></td>
+	        <td><strong>Item Code</strong></td>
+	        <td><strong>Quantity</strong></td>
+        </tr>
+        @foreach (var item in Model.ItemsRequested.Where(r=>r.RequestedItemQuantity>0))
+        {
+        <tr>
+	        <td>@item.ItemRef.ItemName</td>
+	        <td>@item.ItemRef.Description</td>
+	        <td>@item.ItemRef.ItemCode</td>
+	        <td>@item.RequestedItemQuantity</td>
+        </tr>
+        }
+   
+    </table>
+    <br />
+    <p>
+        Important: Please deliver the ordered items within 5 Business days to the following address:
+
+    </p>
+     <p>
+          <center><small>This communication is for the exclusive use of the addressee and may contain proprietary, confidential or privileged information. If you are not the intended recipient any use, copying, disclosure, dissemination or distribution is strictly prohibited.
+          <br /><br />         
+          </small></center>
+        </p>
+    </div>
+</div>

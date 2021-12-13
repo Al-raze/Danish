@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "Index - Items";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers
+
+
+
+<div id="tblItems"></div>
+
+<script>
+
+    $(document).ready(pageLoad);
+
+    function pageLoad() {
+        loadItems()
+    }
+
+    function loadItems() {
+        $('#tblItems').jtable({
+            title: 'Listing Requests',
+            useBootstrap: true,
+            sorting: true,
+            actions: {
+                listAction: '@Url.Action("GetListingRequests")'
+            },
+            fields: {
+                RequestID: {
+                    key: true,
+                    list: false
+                },
+                ListingRequestNo: {
+                    title: 'ListingRequestNo#',
+                    width: '6%'
+                },
+                ItemCode: {
+                    title: 'Item Code',
+                    display: function (data) {
+                        return data.record.Item.ItemCode;
+                    },
+                    width: '3%'
+                },
+                ItemName: {
+                    title: 'Item Name',
+                    display:function(data){
+                        return data.record.Item.ItemName;
+                    },
+                    width: '3%'
+                },
+
+                Dimension: {
+                    title: 'Dimension',
+                    display: function (data) {
+                        return data.record.Item.Dimension;
+                    },
+                    width: '3%'
+                },
+                ItemWeight: {
+                    title: 'Item Weight',
+                    display: function (data) {
+                        return data.record.Item.ItemWeight;
+                    },
+                    width: '3%'
+                },
+                ItemCost: {
+                    title: 'Item Cost',
+                    display: function (data) {
+                        return data.record.Item.TotalCost;
+                    },
+                    width: '3%'
+                },
+                EBayPrice: {
+                    title: 'EBay Price',
+                    width: '3%'
+                },
+                AmazonPrice: {
+                    title: 'Amazon Price',
+                    width: '3%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return String.format("<a class='btn btn-success btn-mini' href='Listing/GetListingRequestByID/{0}'>Edit</a>", data.record.RequestID);
+                    },
+                    width: '2%'
+                }
+            }, 
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add_icon.png',
+                    text: 'Add Listing',
+                    click: addItem
+                }]
+            }
+        });
+            $('#tblItems').jtable('load');
+        }
+
+        function addItem() {
+            $(location).attr("href","@Url.Action("ListingRequest")")
+        }
+
+</script>

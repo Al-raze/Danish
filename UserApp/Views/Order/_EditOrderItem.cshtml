@@ -1,0 +1,36 @@
+﻿@model Infrastrucutre.Core.Models.Order
+
+    <table class="table well">
+        <tbody>       
+        @foreach (var item in @Model.OrderItems)
+        {
+            <tr>
+                <td>
+                    @if (item.ChannelName.Equals("EBay"))
+                    {
+                        @Html.Raw(string.Format("<div><a href='http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&item={0}' title='{1}' target=\"_blank\"><img src='http://thumbs1.ebaystatic.com/pict/{0}.jpg' style='height: 45px;width:45px'/></a></div>", item.ItemID, item.ItemTitle))
+                    }
+                    else
+                    {
+                        @Html.Raw(string.Format("<div><a href='http://www.amazon.co.uk/exec/obidos/ASIN/{0}' title='{2}' target=\"_blank\"><img src='{1}' style='height: 45px;width:45px'/></a></div>", item.ItemID, item.ImageUrl, item.ItemTitle))
+                    }
+                </td>
+                <td>
+                    @item.Quantity Item
+                </td>
+                <td colspan="3">
+                    @item.ItemTitle
+                </td>
+                <td>
+                    @item.TransactionPrice
+                </td>
+                <td><label>SKU ID</label>
+                    <input type="text" class="lineitem" placeholder="SKU ID" value="@item.SKUItemID" disabled />
+                </td>
+                
+            </tr>
+        }
+      
+        </tbody>
+    </table>
+

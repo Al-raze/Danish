@@ -1,0 +1,110 @@
+﻿@model Infrastrucutre.Core.Models.ItemColor
+
+@{
+    ViewBag.Title = "Item Colors";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+<legend> Postal Carriers </legend>
+<div id="carriersTable"></div>
+
+@Html.Partial("_addPostalCarrier")
+
+
+<script type="text/javascript">
+
+    $(document).ready(UserTable);
+
+    function UserTable() {
+        $('#carriersTable').jtable({
+            title: 'Carriers',
+            actions: {
+                listAction: '@Url.Action("GetCarriers")'
+            },
+            fields: {
+                PostalCarrierID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                PostalCarrierName: {
+                    title: 'PostalCarrierName',
+                    width: '15%'
+                },
+                AccountNumber: {
+                    title: 'AccountNumber',
+                    width: '15%'
+                },
+                Code: {
+                    title: 'Code',
+                    width: '15%'
+                },
+                CarrierImage:{
+                    title: 'PostalCarrierImage',
+                    display: function (data) {                        
+                        return String.format("<div><img src='../Content/Upload/{0}' style='height: 70px;width:100px'/></div>", data.record.CarrierImage);
+                    }
+                },
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"Edit\" onclick=\"edit(" + data.record.PostalCarrierID + ")\" />";
+                    },
+                    width: '4%'
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: 'Add Carrier',
+                    click: add
+                }]
+            }
+
+
+        });
+        $('#carriersTable').jtable('load');
+        }
+
+    function add() {
+            clearForm();
+            $('#btnAdd').text('Add Carrier');
+            $('#mode').val('ADD');
+            $('#modalAdd').modal('show');
+            $("#lblCarrierImage").hide();
+            $("#fileToUpload").hide();
+
+        }
+
+    function edit(id) {
+            clearForm();
+            $('#mode').val('EDIT');
+            $('#btnAdd').text('Update Carrier');
+            $("#lblCarrierImage").show();
+            $("#fileToUpload").show();
+            $.ajax({
+                url: '@Url.Action("GetCarrierByID/")' + id,
+                type: 'POST',
+                success: onSuccessEdit
+            });
+        }
+
+    function onSuccessEdit(result) {
+            clearForm();
+            $('#PostalCarrierName').val(result.PostalCarrierName)
+            $('#PostalCarrierID').val(result.PostalCarrierID)
+            $('#CarrierID').val(result.PostalCarrierID)
+            $('#AccountNumber').val(result.AccountNumber)
+            $('#Code').val(result.Code)
+            $('#modalAdd').modal('show');
+        }
+
+        function clearForm() {
+            $('#PostalCarrierName').val('')
+            $('#AccountNumber').val('')
+            $('#Code').val('')
+        }
+
+
+
+</script>
+

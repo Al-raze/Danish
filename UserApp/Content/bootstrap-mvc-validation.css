@@ -1,0 +1,24 @@
+.validation-summary-errors ul
+{
+    
+    
+}
+
+.validation-summary-errors {
+    background-color: #f8ecec;
+    border:1px solid #ff0000;
+    border-radius:5px 5px;
+    width: 400px;
+     color: #ff0000;
+    }
+span.validation-summary-errors {
+    border-bottom-color: #D9FFB2;
+    display:block;
+    }
+ul.validation-summary-errors {
+    margin:0;
+    padding:0;
+    border-top:none;
+    list-style-type: circle;
+   
+    }

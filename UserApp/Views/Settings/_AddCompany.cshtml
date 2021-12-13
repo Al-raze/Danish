@@ -1,0 +1,60 @@
+﻿@using AkraTechFramework.Helpers;
+@model Infrastructure.Core.Models.Settings
+@{string pageName = "CompanyName";}
+
+@using (Html.BeginForm("AddCompany", "Settings", FormMethod.Post, new { @id = "frmAddCompany" }))
+{
+    <div class="modal hide fade" id="modalAddCompany">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>      @LanguageHelper.GetLabelCaption("CompanyName.AddCompany", pageName)   </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">
+                        @LanguageHelper.GetLabelCaption("CompanyName.CompanyName", pageName)   </label>
+                    @Html.TextBoxFor(model => model.CompanyName, new { @class = "input-large", @placeholder =   @LanguageHelper.GetLabelCaption("CompanyName.CompanyDetails", pageName)    })
+                    @Html.ValidationMessageFor(model => model.CompanyName)
+                </div>
+               
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">@LanguageHelper.GetLabelCaption("CompanyName.Close", pageName)   </a>
+            <button type="button" id="btnAddCompany" onclick="addCompanyDetails()" class="btn btn-success">  @LanguageHelper.GetLabelCaption("CompanyName.Add", pageName)   </button>
+        </div>
+    </div>
+}
+
+<script>
+
+    function addCompanyDetails() {
+        $('#btnAddCompany').prop('disabled', true);
+        var data = $('#frmAddCompany').serialize();
+
+        if ($('#frmAddCompany').valid()) {
+            $.ajax({
+                url: $('#frmAddCompany').attr('action'),
+                type: $('#frmAddCompany').attr('method'),
+                data: data,
+                success: onSuccessAddCompany,
+                error: onErrorAddCompany
+            });
+        }
+        $('#btnAddCompany').prop('disabled', false);
+    }
+
+    function onSuccessAddCompany() {
+        $('#successMessage').text('Company Added Successfully')
+        $('#successAlert').show();
+        $('#companyTable').jtable('reload');
+        $('#modalAddCompany').modal('hide');
+    }
+
+    function onErrorAddCompany() {
+        $('#errorAlert').show();
+        $('#modalAddCompany').modal('hide');
+    }
+
+</script>

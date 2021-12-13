@@ -1,0 +1,215 @@
+﻿@model Infrastrucutre.Core.Models.ItemMaster
+@{
+    
+    var insource = (List<Infrastrucutre.Core.Models.StockSource>)ViewBag.InSource;
+    var outsource = (List<Infrastrucutre.Core.Models.StockSource>)ViewBag.OutSource;
+}
+<form id="frmStockUpdate" name="frmStockUpdate">
+    <div class="modal hide fade" id="modalStockAdd" style="width: 700px;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>Manage Item Stock
+            </h3>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="span7">
+                    <div class="row">
+                        <div class="span7">
+                            <div class="row-fluid">
+                                <div class="span6">
+                                    <label>Item Name</label>
+                                    <textarea rows='3' cols='50' id="ItemNameText" class="span12 input-disabled"> </textarea>
+                                </div>
+                                <div class="span3">
+                                    <label>Item Code</label>
+                                    <input id="ItemCode" type="text" class="span12 input-disabled">
+                                </div>
+                                <div class="span3">
+                                    <label>Current Stock</label>
+                                    <input id="CurrentStock" type="text" class="span12 input-disabled">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span7">
+                            <div class="row-fluid">
+                                <div class="span3" style="padding-top: 10px">
+                                    <label class="radio">
+                                        <input type="radio" name="StockType" id="StockTypeIn" value="IN" checked>
+                                        Stock In (Purchase)
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="StockType" id="StockTypeOut" value="OUT">
+                                        Stock Out (Sale)
+                                    </label>
+                                </div>
+                                <div class="span6" id="In">
+                                    <label>StockIn Source</label>
+                                    <select class=" span12 combo-style combobox input-sm" data-val="true" data-val-required="Required" id="InSource" name="InSource">
+                                        @foreach (var item in insource)
+                                        {
+                                            <option value="@item.Id">@item.Value</option>
+                                                }
+                                    </select>
+                                </div>
+                                <div class="span6" style="display: none" id="Out">
+                                    <label>StockOut Source</label>
+                                    <select class=" span12 combo-style combobox input-sm" data-val="true" data-val-required="Required" id="OutSource" name="OutSource">
+                                        @foreach (var item in outsource)
+                                        {
+                                            <option value="@item.Id">@item.Value</option>
+                                                }
+                                    </select>
+                                </div>
+                                <div class="span3">
+                                    <label>In/Out Quanity</label>
+                                    <input type="text" id="quantity" name="quantity" class="span12" placeholder="Enter Quantity">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span4">
+                            <label>Inventory Location</label>
+                            <select class="combobox" style="width:150px" id="FBARootID" name="FBARootID">
+                                @foreach (var InvLocation in (ViewBag.InvLocation as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.FBALocations>)
+                                {
+                                    <option value="@InvLocation.FBARootID">@InvLocation.FBARoot</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="span5">
+                            <div class="row-fluid">
+                                <div>
+                                    <label>Notes</label>
+                                    <input type="text" id="notes" name="notes" class="span12" placeholder="Type something…">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <input type="hidden" id="ItemMasterId" name="ItemMasterId" />
+                        <input type="submit" id="btnAdd" class="btn btn-success" value="Update Stock" />
+                        <a href="#" data-dismiss="modal" class="btn">Close
+                        </a>
+                    </div>
+                </div>
+                <!--End of Tab Content -->
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="modal hide fade" id="modalStockHistory" style="width: 800px;">
+    <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h5 id="itemNameHistory"></h5>
+    </div>
+    <div class="modal-body">
+        <div style="width: 100%;height:100%">
+            <div id="itemHistoryTable"></div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $("input[type='radio']").click(function () {
+        var radioValue = $("input[name='StockType']:checked").val();
+        if (radioValue == 'OUT') {
+            $("#In").hide()
+            $("#Out").show()
+        } else {
+            $("#In").show()
+            $("#Out").hide()
+        }
+    });
+
+
+    $('#frmStockUpdate').validate({ // initialize the plugin
+        rules: {
+            notes: {
+                required: true,
+                minlength: 5
+            },
+            quantity: {
+                required: true,
+                number: true,
+                maxlength:4
+            }
+        },
+        submitHandler: function (form) { // for demo
+            var radioValue = $("input[name='StockType']:checked").val();
+            console.log(radioValue)
+         
+            if (radioValue == 'OUT') {
+                if ($("#OutSource").val() == null) {
+                    $('#Out').notify("Please Select Stock Out Source Sir");
+                    return false;
+                }
+            } else {
+                if ($("#InSource").val() == null) {
+                    $('#In').notify("Please Select Stock In Source Sir");
+                    return false;
+                }
+            }            
+
+            var posturl = '@Url.Action("UpdateStock", "Item")'
+            var data = $(form).serialize()
+            
+            $.ajax({
+                url: posturl,
+                type: 'post',
+                data: data,
+                success: function (data) {
+                    $.notify("Stock updated for " + $('#ItemNameText').val(), "success");
+                    $('#modalStockAdd').modal('hide');
+                    //$('#tblItems').jtable('load');
+                    $('#tblItems').jtable('updateRecord', {
+                        clientOnly :true,
+                        record: {
+                            ItemMasterID: data.View.ItemMasterID,
+                            StockIn: data.View.StockIn,
+                            StockOut: data.View.StockOut,
+                            CurrentStock: data.View.CurrentStock,
+                            FBARootID: data.View.FBARootID
+                        }
+                    });
+                },
+                error: function (data) {
+                    console.log(data)
+                }
+            });
+
+            return false;
+        }
+    });
+
+    $('.combobox').combobox();
+    $('.combobox-container input').css("width", "88%");
+    $('.input-disabled').on('keydown', function (event) {
+        if (event.key == 'Tab' || event.key == 'Enter')
+            return true
+        return false
+    })
+
+    function onSuccessAdd() {
+        var formMode = $("#mode").val();
+        if (formMode == 'ADD') {
+            $('#successMessage').text('Item Color Added Successfully')
+        }
+        else {
+            $('#successMessage').text('Item Color Updated Successfully')
+        }
+        $('#successAlert').show();
+        $('#colorsTable').jtable('reload');
+        $('#modalAdd').modal('hide');
+    }
+
+    function onErrorAdd() {
+        $('#errorAlert').show();
+        $('#modalAddBank').modal('hide');
+    }
+
+</script>

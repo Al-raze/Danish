@@ -1,0 +1,68 @@
+﻿@using AkraTechFramework.Helpers;
+@model Infrastructure.Core.Models.Settings
+
+@{string pageName = "BankMaster";}
+
+@using (Html.BeginForm("AddBankDetails", "Settings", FormMethod.Post, new { @id = "frmAddBank" }))
+{
+    <div class="modal hide fade" id="modalAddBank">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>
+                 @LanguageHelper.GetLabelCaption("BankMaster.AddBankDetails", pageName)
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">
+                         @LanguageHelper.GetLabelCaption("BankMaster.BankName", pageName)
+                        </label>
+                    @Html.TextBoxFor(model => model.BankName, new { @class = "input-large", @placeholder =     @LanguageHelper.GetLabelCaption("BankMaster.EnterBankName", pageName) })
+                    @Html.ValidationMessageFor(model => model.BankName)
+                </div>
+               
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">
+                 @LanguageHelper.GetLabelCaption("BankMaster.Close", pageName)
+            </a>
+            <button type="button" id="btnAddBank" onclick="addBankDetails()" class="btn btn-success">
+                 @LanguageHelper.GetLabelCaption("BankMaster.Add", pageName)
+            </button>
+        </div>
+    </div>
+}
+
+<script>
+
+    function addBankDetails() {
+        $('#btnAddBank').prop('disabled', true);
+        var data = $('#frmAddBank').serialize();
+
+        if ($('#frmAddBank').valid()) {
+            $.ajax({
+                url: $('#frmAddBank').attr('action'),
+                type: $('#frmAddBank').attr('method'),
+                data: data,
+                success: onSuccessAddBank,
+                error: onErrorAddBank
+            });
+        }
+        $('#btnAddBank').prop('disabled', false);
+    }
+
+    function onSuccessAddBank() {
+        $('#successMessage').text('Company Added Successfully')
+        $('#successAlert').show();
+        $('#bankTable').jtable('reload');
+        $('#modalAddBank').modal('hide');
+    }
+
+    function onErrorAddBank() {
+        $('#errorAlert').show();
+        $('#modalAddBank').modal('hide');
+    }
+
+</script>

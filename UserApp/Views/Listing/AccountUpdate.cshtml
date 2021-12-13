@@ -1,0 +1,51 @@
+﻿@using AkraTechFramework.Helpers;
+@using Infrastructure.Core.Models;
+@model Infrastrucutre.Core.Models.SellerAccount
+
+@using (Html.BeginForm("UpdateAccount", "Listing", FormMethod.Post, new { @id = "frmAccount" }))
+{
+    <div>
+        @if (ViewBag.IsUpdated == null)
+        {
+            <div class="modal-header">
+                <h3>Update Account</h3>
+            </div>
+            <div class="modal-body">
+                <fieldset>
+                    <div class="control-group">
+                        <label class="control-label">SellerID</label>
+                        @Html.TextBoxFor(model => model.SellerID, new { @class = "input-large", @readonly = "readonly", @placeholder = "SellerID" })
+                        @Html.ValidationMessageFor(model => model.SellerID)
+                        @Html.HiddenFor(model => model.SellerIndex)
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Auth-Token</label>
+                        @Html.TextAreaFor(model => model.AuthenticationToken, new { @class = "input-large", @placeholder = "Auth Token" })
+                        @Html.ValidationMessageFor(model => model.AuthenticationToken)
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">AccessKey</label>
+                        @Html.TextBoxFor(model => model.AccessKey, new { @class = "input-large", @placeholder = "AccessKey" })
+                        @Html.ValidationMessageFor(model => model.AccessKey)
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">MarketPlaceId</label>
+                        @Html.TextBoxFor(model => model.MarketPlaceId, new { @class = "input-large", @placeholder = "MarketPlaceId" })
+                        @Html.ValidationMessageFor(model => model.MarketPlaceId)
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">SellerIdKey</label>
+                        @Html.TextBoxFor(model => model.SellerIdKey, new { @class = "input-large", @placeholder = "SellerIdKey" })
+                        @Html.ValidationMessageFor(model => model.SellerIdKey)
+                    </div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                @Html.ActionLink("Back", "Accounts", null, new { @class = "btn" })
+                <button id="btnAddUser" type="submit" class="btn btn-success">Update</button>
+            </div>
+            
+        }
+
+    </div>
+}

@@ -1,0 +1,190 @@
+﻿@model Infrastrucutre.Core.Models.ItemMaster
+
+@{
+    ViewBag.Title = "AddItems";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@{
+    ViewBag.Title = "Stock";
+}
+<div id="ValidationMessage" title="Please select a Supplier"></div>
+
+<div class="filtering">
+    <div class="row-fluid">
+        <div class="span4 control-group">
+                <select class="span12" id="SupplierID" name="SupplierID">
+                <option value="">Select a Supplier</option>
+                @foreach (var item in (ViewBag.SupplierID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.Supplier>)
+                {
+                    if (ViewBag.SupplierID.SelectedValue == item.SupplierID)
+                    {
+                        <option value="@item.SupplierID" selected="selected">@item.SupplierName</option>
+                    }
+                    else
+                    {
+                        <option value="@item.SupplierID">@item.SupplierName</option>
+                    }
+                }
+                </select>                
+            </div>
+        <div class="span1 control-group pull-left">
+            <button type="submit" id="LoadRecordsButton" class="btn success" onclick="FilterBySupplier()">Find</button>
+        </div>
+    </div>
+</div>
+
+<div id="tblItems"></div>
+<div id="divorder"></div>
+
+<script>
+
+    $(document).ready(pageLoad);
+
+    function pageLoad() {
+        loadItems()
+    }
+
+    function FilterBySupplier() {
+        var filterVal = $('#SupplierID').val();
+        $('#tblItems').jtable('load', { id: filterVal });
+    }
+
+   
+
+    function loadItems() {
+        var filterVal = $('#SupplierID').val();
+        $('#tblItems').jtable({
+            title: 'Item Stock',
+            useBootstrap: true,               
+            sorting: true,
+            actions: {
+                listAction: '@Url.Action("GetItemsBySupplier/")'  
+            },
+            fields: {                
+                ItemMasterID: {
+                    key: true,
+                    list: false
+                },
+                ItemName: {
+                    title: 'Item Name',
+                    width: '6%'
+                },
+                ItemCode: {
+                    title: 'Item Code',
+                    width: '7%'
+                },
+                SupplierName: {
+                    title: 'Supplier Name',
+                    width: '7%'
+
+                },
+                Brand: {
+                    title: 'Brand',
+                    width: '3%'
+                },
+
+                Dimension: {
+                    title: 'Dimension',
+                    width: '3%'
+                },
+                ItemWeight: {
+                    title: 'Item Weight',
+                    width: '3%'
+                },
+                StockUnits: {
+                    title: 'In Stock',
+                    width: '3%'
+                },
+                ReOrderLevel: {
+                    title: 'ReOrder-Level',
+                    width: '3%'
+                },
+                BarCode: {
+                    title: 'BarCode',
+                    width: '3%'
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add_icon.png',
+                    text: 'Order Request',
+                    click: orderItem
+                },
+                {
+                    icon: '../../Content/images/add_icon.png',
+                    text: 'Re-Stock',
+                    click: updateItemStock
+                }
+
+                ]
+            }
+        });
+
+        $('#tblItems').jtable('load', { id: filterVal });
+    }
+
+
+    function orderItem() {
+        var filterVal = $('#SupplierID').val();
+
+        if(filterVal == '')
+            showValidationMessage()
+
+        $.ajax({
+            url: '@Url.Action("GetOrderRequestForm/")' + filterVal,
+            type:'post',
+            dataType: 'html',
+            success:function (result) {
+                $('#divorder').html(result)
+                $('#modelSupplierRequest').modal('show')
+            }
+        });
+    }
+
+
+    function showValidationMessage() {
+
+        $("#ValidationMessage").dialog({
+
+            resizable: true,
+            height: 140,
+            modal: true,
+            Message:'Please select a Supplier',
+            buttons: {
+
+                "Ok": function () {
+                    $(this).dialog("close");
+
+                }
+
+            }
+
+
+        })
+    }
+
+    function addItem() {
+        $(location).attr("href", "@Url.Action("AddItems")")
+    }
+
+    function updateItemStock() {
+
+        var filterVal = $('#SupplierID').val();
+
+        if (filterVal == '')
+            showValidationMessage()
+
+        $.ajax({
+            url: '@Url.Action("GetItemQuantityRequestForm/")' + filterVal,
+            type: 'post',
+            dataType: 'html',
+            success: function (result) {
+                $('#divorder').html(result)
+                $('#modelStockRequest').modal('show')
+            }
+        });
+
+    }
+
+</script>

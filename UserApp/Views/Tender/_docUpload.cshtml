@@ -1,0 +1,141 @@
+﻿@using AkraTechFramework.Helpers;
+@using Infrastructure.Core.Models;
+
+@model Infrastructure.Core.Models.Settings
+
+@{
+    string pageName = "CompletedDocuments";
+    List<Rival> tender = new Infrastructure.Core.DataAccess.TenderRepository().GetTenderName();
+}
+
+@using ( Html.BeginForm("Upload", "Tender", FormMethod.Post, new  { enctype = "multipart/form-data" ,   @id = "frmDocUpload" }))
+{
+    <div class="modal hide fade" id="modalDocUpload">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>
+                   @LanguageHelper.GetLabelCaption("CompletedDocuments.DocumentUpload", pageName)
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                 @Html.HiddenFor(model => model.TenderID)                
+                <div class="control-group">
+                    <label class="control-label">                       
+                           @LanguageHelper.GetLabelCaption("CompletedDocuments.DocumentUpload", pageName)
+                    </label>
+                     <input type="file" class="span3" name="file" id="fileToUpload">
+                     <span class="field-validation-error" id="spanfile"></span>
+                </div>
+               
+            </fieldset>
+          @*  <div class="row fileupload-buttonbar">
+    <div class="span5">
+        <div class="well">
+            <i class="icon-plus"></i><span>&nbsp;&nbsp;Add files...</span>
+            <input type="file" id="fileupload" name="fileupload" accept="image/*" multiple="multiple">
+          
+            <div class="clearfix">
+            </div>
+            <div class="progress">
+                <div class="bar" id="overallbar" style="width: 0%">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="span7">
+        <div class="well hide" id="filelistholder">
+        </div>
+    </div>
+    <div class="span7">
+    </div>
+</div>*@
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">
+                 @LanguageHelper.GetLabelCaption("CompletedDocuments.Close", pageName)
+            </a>
+              <button id="btnUploadAll" class="btn btn-success" type="submit">
+            
+                   @LanguageHelper.GetLabelCaption("CompletedDocuments.Upload", pageName)
+              </button>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+
+    function onUpload() {
+        debugger
+        $('#btnUpload').prop('disabled', true);
+        var data = $('#frmDocUpload').serialize();
+
+        if ($('#frmDocUpload').valid()) {
+            $.ajax({
+                url: $('#frmDocUpload').attr('action'),
+                type: $('#frmDocUpload').attr('method'),
+                data: data,
+                success: onSuccessUpload,
+                error: onErrorUpload
+            });
+        }
+        $('#btnUpload').prop('disabled', false);
+    }
+
+    function onSuccessUpload() {
+        $('#successMessage').text('Document Uploaded Successfully')
+        $('#successAlert').show();
+        $('#uploadJtable').jtable('reload');
+        $('#modalDocUpload').modal('hide');
+    }
+
+    function onErrorUpload() {
+        $('#errorAlert').show();
+        $('#modalDocUpload').modal('hide');
+    }
+
+
+
+
+    $("#btnSubmit").live("click", function () {
+        if ($('#fileToUpload').val() == "") {
+            $("#spanfile").html("Please upload file");
+            return false;
+        }
+        else {
+            return checkfile();
+        }
+    });
+    function checkfile() {
+        var file = getNameFromPath($("#fileToUpload").val());
+        if (file != null) {
+            var extension = file.substr((file.lastIndexOf('.') + 1));
+            // alert(extension);
+            switch (extension) {
+                case 'jpg':
+                case 'png':
+                case 'gif':
+                case 'pdf':
+                    flag = true;
+                    break;
+                default:
+                    flag = false;
+            }
+        }
+        if (flag == false) {
+            $("#spanfile").text("You can upload only jpg,png,gif,pdf extension file");
+            return false;
+        }
+        else {
+            var size = GetFileSize('fileToUpload');
+            if (size > 3) {
+                $("#spanfile").text("You can upload file up to 3 MB");
+                return false;
+            }
+            else {
+                $("#spanfile").text("");
+            }
+        }
+    }
+
+</script>

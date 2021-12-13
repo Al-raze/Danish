@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AF76FFD5-F819-464C-8E35-760D87DC7621}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Inventory.Synchronizer</RootNamespace>
+    <AssemblyName>Inventory.Synchronizer</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Core">
+      <HintPath>..\ThirdParty\Core.dll</HintPath>
+    </Reference>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.2.13.5.0\lib\net40-client\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="MWSClientCsRuntime-1.0">
+      <HintPath>..\ThirdParty\MWSClientCsRuntime-1.0.dll</HintPath>
+    </Reference>
+    <Reference Include="MWSOrders_2013-09-01_v2013-09-01">
+      <HintPath>..\ThirdParty\MWSOrders_2013-09-01_v2013-09-01.dll</HintPath>
+    </Reference>
+    <Reference Include="MWSProducts_2011-10-01_v2014-09-30">
+      <HintPath>..\ThirdParty\MWSProducts_2011-10-01_v2014-09-30.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AmazonSync.cs" />
+    <Compile Include="Foo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Uitl.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure.Core.Provider\Infrastructure.Core.Provider.csproj">
+      <Project>{6e251976-efb2-43f7-9552-cd62ff0986b8}</Project>
+      <Name>Infrastructure.Core.Provider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastrucutre.ConfigurationProvider\Infrastructure.ConfigurationProvider.csproj">
+      <Project>{812babc4-7a2f-4eae-8faa-5ef023578c32}</Project>
+      <Name>Infrastructure.ConfigurationProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastrucutre.Constants\Infrastructure.Constants.csproj">
+      <Project>{d267e4ee-ae28-4951-9405-947b6447de03}</Project>
+      <Name>Infrastructure.Constants</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastrucutre.Core.DataAccess\Infrastructure.Core.DataAccess.csproj">
+      <Project>{cc76ce65-770a-486f-bdec-14547b062255}</Project>
+      <Name>Infrastructure.Core.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastrucutre.Core.Models\Infrastructure.Core.Models.csproj">
+      <Project>{6237a994-b63e-450a-b678-c81a18d5cee4}</Project>
+      <Name>Infrastructure.Core.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MarketplaceWebService\MarketplaceWebService.csproj">
+      <Project>{0d01b3c0-ff22-4442-906e-7f2fa81b3db3}</Project>
+      <Name>MarketplaceWebService</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,385 @@
+﻿@using Infrastructure.Core.Models
+@model Infrastrucutre.Core.Models.ListingRequest
+
+@{
+    ViewBag.Title = ViewBag.HeaderText;
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+
+
+
+
+<ul class="nav nav-tabs" id="listingTab">
+    <li><a href="#home" data-toggle="tab">Listing Details</a></li>
+    @if (ViewBag.Mode == "Update")
+    {
+        <li><a href="#profile" data-toggle="tab">Images</a></li>
+    }
+</ul>
+
+
+
+<div class="tab-content">
+    <div class="tab-pane active" id="home">
+        @using (Html.BeginForm("AddListing", "Listing", FormMethod.Post))
+        {
+            if (ViewBag.Mode == "Create")
+            {
+            @Html.Hidden("RequestID", "0")
+            }
+            else
+            {
+            @Html.HiddenFor(m => m.RequestID)    
+            }
+            <div class="row-fluid">
+
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.ListingRequestNo, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.ListingRequestNo, new { @class = "span12", @readonly = "readonly" })
+                </div>
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.ItemMasterID, new { @class = "control-label" })
+                    <select class="combo-style combobox input-sm" data-val="true" required="required" data-val-required="Item is required" id="ItemMasterID" name="ItemMasterID" onchange="javascript:OnItemSelected(this.value)">
+                        <option value="">Choose Item</option>
+                        @foreach (var item in (ViewBag.ItemMasterID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.ItemMaster>)
+                        {
+                            if (ViewBag.ItemMasterID.SelectedValue == item.ItemMasterID)
+                            {
+                            <option value="@item.ItemMasterID" selected="selected">@item.ItemName</option>
+                            }
+                            else
+                            {
+                            <option value="@item.ItemMasterID">@item.ItemName</option>
+                            }
+                        }
+                    </select>
+
+
+                    @*@Html.DropDownListFor(model => model.ItemMasterID, null, "Choose Item", new {  @class = "span12"})
+                @Html.ValidationMessageFor(model => model.ItemMasterID)*@
+
+                </div>
+                <div class="span4 control-group">
+                    @Html.Label("lblCategoryName", "CategoryName", new { @class = "control-label" })
+                    @Html.TextBox("txtCategoryName", "", new { @class = "span12", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4 control-group">
+                    @Html.Label("lblDimension", "Dimension", new { @class = "control-label" })
+                    @Html.TextBox("txtDimension", "", new { @class = "span12", @readonly = "readonly" })
+                </div>
+                <div class="span4 control-group">
+                    @Html.Label("lblManufacturer", "Manufacturer", new { @class = "control-label" })
+                    @Html.TextBox("txtManufacturer", "", new { @class = "span12", @readonly = "readonly" })
+                </div>
+                <div class="span4 control-group">
+                    @Html.Label("lblBrandName", "Brand Name", new { @class = "control-label" })
+                    @Html.TextBox("txtBrandName", "", new { @class = "span12", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.EbayCategoryID, new { @class = "control-label" })
+
+                    <select class="combo-style combobox input-sm" data-val="true" required="required" data-val-required="Ebay Category is required" id="EbayCategoryID" name="EbayCategoryID">
+                        <option value="">Choose EBay Category</option>
+                        @foreach (var item in (ViewBag.EbayCategoryID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.EbayCategory>)
+                        {
+                            if (ViewBag.EBayCategoryID.SelectedValue == item.EbayCategoryID)
+                            {
+                            <option value="@item.EbayCategoryID" selected="selected">@item.EbayCategoryName</option>
+                            }
+                            else
+                            {
+                            <option value="@item.EbayCategoryID">@item.EbayCategoryName </option>
+                            }
+                        }
+                    </select>
+
+                    @*@Html.DropDownListFor(model => model.EBayCategoryID, null, "Choose Ebay Category", new {  @class = "span12"})
+                @Html.ValidationMessageFor(model => model.EBayCategoryID)*@
+                </div>
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.EBayRecommendedTitle1, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.EBayRecommendedTitle1, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.EBayRecommendedTitle1)
+                </div>
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.EBayRecommendedTitle2, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.EBayRecommendedTitle2, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.EBayRecommendedTitle2)
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.EBayListingReference1, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.EBayListingReference1, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.EBayListingReference1)
+                </div>
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.EBayListingReference2, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.EBayListingReference2, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.EBayListingReference2)
+                </div>
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.EBayPrice, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.EBayPrice, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.EBayPrice)
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.AmazonCategoryID, new { @class = "control-label" })
+
+                    <select class="combo-style combobox input-sm" data-val="true" required="required" data-val-required="Amazon Category is required" id="AmazonCategoryID" name="AmazonCategoryID">
+                        <option value="">Choose Amazon Category</option>
+                        @foreach (var item in (ViewBag.AmazonCategoryID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.AmazonCategory>)
+                        {
+                            if (ViewBag.EBayCategoryID.SelectedValue == item.AmazonCategoryID)
+                            {
+                            <option value="@item.AmazonCategoryID" selected="selected">@item.AmazonCategoryName</option>
+                            }
+                            else
+                            {
+                            <option value="@item.AmazonCategoryID">@item.AmazonCategoryName </option>
+                            }
+                        }
+                    </select>
+
+                    @*@Html.DropDownListFor(model => model.AmazonCategoryID, null, "Choose Ebay Category", new {  @class = "span12"})
+                @Html.ValidationMessageFor(model => model.AmazonCategoryID)*@
+                </div>
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.AmazonRecommendedTitle1, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.AmazonRecommendedTitle1, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.AmazonRecommendedTitle1)
+                </div>
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.AmazonRecommendedTitle2, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.AmazonRecommendedTitle2, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.AmazonRecommendedTitle2)
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.AmazonListingReference1, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.AmazonListingReference1, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.AmazonListingReference1)
+                </div>
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.AmazonListingReference2, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.AmazonListingReference2, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.AmazonListingReference2)
+                </div>
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.AmazonPrice, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.AmazonPrice, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.AmazonPrice)
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12 control-group">
+                    @Html.LabelFor(model => model.ListingDescription, new { @class = "control-label" })
+                    @Html.TextAreaFor(model => model.ListingDescription, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.ListingDescription)
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12 control-group">
+                    @Html.LabelFor(model => model.SpecialInstructions, new { @class = "control-label" })
+                    @Html.TextAreaFor(model => model.SpecialInstructions, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.SpecialInstructions)
+                </div>
+            </div>
+
+            <div class="text-center widget-footer">
+                @Html.ActionLink("Back to List", "Index", null, new { @class = "btn" })
+                @if (ViewBag.Mode == "Create")
+                {
+                    <button type="submit" class="btn btn-success" name="command" value="Save">Save</button>   
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-success" name="command" value="Update">Update</button>     
+                }
+
+            </div>
+        }
+    </div>
+
+    <div class="tab-pane" id="profile">
+         <div id="uploadJtable"></div>
+    </div>
+
+</div>
+
+
+@if (ViewBag.Mode == "Update")
+{
+    @Html.Partial("_docUpload", (int)Model.RequestID) 
+}
+
+
+<script>
+    $('.combobox').combobox();
+    $('.combobox-container input').css("width", "88%");
+
+    $(document).ready(function () {
+
+        $('#listingTab a:first').tab('show');
+
+        var requestID = $('#RequestID').val();
+
+        if (requestID > 0) {
+            var itemMasterID = $('#ItemMasterID').val();
+            OnItemSelected(itemMasterID);
+            fileUploadJTable();
+        }
+    });
+
+
+    //{"ItemMasterID":6,"ItemName":"nono","ItemCode":"as","Description":"asdf","Brand":"asd","Dimension":"ads","ItemWeight":"asd","VAT":2,"ItemCost":324,"TotalCost":330.48,"BarCode":"234","SupplierID":4,"SupplierName":null,"ItemCategoryID":2,"ItemManufacturerID":2,"ItemColorID":2,"LocationID":1}
+    function OnItemSelected(selectedItemID) {
+
+        if (selectedItemID == '') {
+            clearItems();
+            return;
+        }
+
+        $.ajax({
+            url: '@Url.Action("GetItemByID/")' + selectedItemID,
+            type: 'POST',
+            success: onSuccessEditItem
+        });
+    }
+
+    function fileUploadJTable() {
+        
+        $('#uploadJtable').jtable({
+            title: 'Listing Images',
+            actions: {
+                listAction: '@Url.Action("GetRequestImages/")@Model.RequestID'
+            },
+            fields: {
+                FileID: {
+                    key: true,
+                    list: false
+                },
+                Image: {
+                    display: function (data) {
+                        return String.format("<img src='@Url.Action("../Content/Upload/"){0}' style=\"width: 160px; height: 120px;\">", data.record.FileName);
+                    },
+                    width: '5%'
+                },
+
+                FileName: {
+                    title: 'FileName',
+                    width: '5%'
+                },
+
+                Edit: {
+
+                    display: function (data) {
+                        return String.format("<a href='@Url.Action("../Content/Upload/"){0}' class=\"btn btn-success btn-small\"  target=\"_blank\">View</a>", data.record.FileName);
+                    },
+                    width: '1%'
+                },
+                Delete: {
+                    display:
+
+                        function (data) {
+                            return String.format("<a onclick=\"DelUploadDoc({0})\" class=\"btn btn-success btn-small\" >Delete</a>", data.record.FileID);
+                        },
+                    width: '4%'
+
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: 'Upload Image',
+                    click: showUploadModal
+                }]
+            }
+
+
+        });
+        $('#uploadJtable').jtable('load');
+
+
+    }
+    
+    function clearItems() {
+        $('#txtDimension').val('')
+        $('#txtBrandName').val('')
+        $('#txtCategoryName').val('')
+        $('#txtManufacturer').val('')
+    }
+
+    function onSuccessEditItem(result) {
+        $('#txtDimension').val(result.Dimension)
+        $('#txtBrandName').val(result.Brand)
+        $('#txtCategoryName').val(result.CategoryName)
+        $('#txtManufacturer').val(result.ManufacturerName)
+    }
+
+
+    function showUploadModal() {
+        $('#modalDocUpload').modal('show');
+    }
+
+
+
+    @*    function fileUploadJTable() {
+        debugger
+        $('#uploadJtable').jtable({
+            title: 'Item Images',
+            actions: {
+                listAction: '@Url.Action("GetItemImages/")@Model.RequestID'
+            },
+            fields: {
+                FileID: {
+                    key: true,
+                    list: false
+                },
+                FileName: {
+                    title: 'FileName',
+                    width: '20%'
+                },
+
+                Edit: {
+
+                    display: function (data) {
+                        return String.format("<a href='@Url.Action("../Content/Upload/"){0}' class=\"btn btn-success btn-small\"  target=\"_blank\" >Download</a>", data.record.FileName);
+                    },
+                    width: '1%'
+                },
+                Delete: {
+                    display:
+
+                        function (data) {
+
+                            return String.format("<a onclick=\"DelUploadDoc({0})\" class=\"btn btn-success btn-small\" >Delete</a>", data.record.FileID);
+
+                        },
+                    width: '4%'
+
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: 'Upload File',
+                    click: showUploadModal
+                }]
+            }
+
+
+        });
+        $('#uploadJtable').jtable('load');
+
+
+    }*@
+</script>

@@ -1,0 +1,195 @@
+﻿@model Infrastrucutre.Core.Models.FbaRequest
+@{
+    ViewBag.Title = "FBA Processing Form";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers
+
+<h2>FBA Processing</h2>
+
+<div class="row-fluid">
+
+    <div class="span4 control-group">
+        <label class="control-label">Seller List</label>
+
+        @if (ViewBag.SellerID != null)
+        {
+            //@Html.DropDownListFor(model => model.SellerIndex, ViewBag.SellerID as SelectList, "--Select Seller--", new { @class = "control-label chosen" })
+            <select class="control-label chosen" Style="width:350px" data-val="true" required="required" data-val-required="Item is required" id="SellerIndex" name="SellerIndex">
+
+                @foreach (var item in (ViewBag.SellerID as System.Web.Mvc.SelectList).Items as List
+                <Infrastrucutre.Core.Models.SellerAccount>
+                    )
+                {
+                    <option value="@item.SellerIndex ">@item.SellerID</option>
+                }
+            </select>
+        }
+    </div>
+
+    <div class="span4 control-group">
+        <label class="control-label">FBA Root</label>
+
+        @if (ViewBag.FBARoot != null)
+        {
+            //@Html.DropDownListFor(model => model.SellerIndex, ViewBag.SellerID as SelectList, "--Select Seller--", new { @class = "control-label chosen" })
+            <select class="control-label chosen" data-val="true" required="required" data-val-required="Item is required" id="FBARootID" name="FBARootID">
+
+                @foreach (var item in (ViewBag.FBARoot as System.Web.Mvc.SelectList).Items as List
+                <Infrastrucutre.Core.Models.FBALocations>)
+                {
+                    <option value="@item.FBARootID">@item.FBARoot</option>
+                }
+            </select>
+        }
+    </div>
+    </div>
+<div class="row-fluid">
+    <div class="span8 control-group">
+        
+        <label class="control-label">.</label>
+        <button type="submit" id="LoadRecordsButton" class="btn" style="margin-bottom: 10px;margin-left: 5px;" onclick="FindOrders()">Load Request</button>
+
+    </div>
+
+</div>
+
+    <div id="tblItems" style="width:auto"></div>
+
+    <script>
+
+    $(document).ready(pageLoad);
+
+    function pageLoad() {
+        loadItems();
+        FindOrders();
+        }
+
+        function FindOrders() {
+
+            $('#tblItems').jtable('load', {  SellerIndex: $('#SellerIndex').val(), FBARootID: $('#FBARootID').val() });
+
+
+        }
+
+    function loadItems() {
+        $('#tblItems').jtable({
+            title: 'FBA Process',
+            useBootstrap: true,
+            paging: true,
+            sorting: true,
+            actions: {
+                listAction:'@Url.Action("GetFbaPendingRequest")'// + '?SellerIndex=' + $('#SellerIndex').val() + '&FBARootID=' + $('#FBARootID').val(),  //Get FBA Pending Request Report Procedure
+
+            },
+            fields: {
+                FBARequestID: {
+                    key: true,
+                    list: false
+                },
+                ItemName: {
+                    title: 'Item Name',
+                    width: '3%'
+                },
+                ItemCode: {
+                    title: 'Item Code',
+                    width: '3%'
+                },
+                FNSKU: {
+                    title: 'FNSKU',
+                    width: '3%'
+
+                },
+                CartonQty: {
+                    title: 'BoxWeight',
+                    width: '3%'
+                },
+                Dimension1: {
+                    title: 'Dimension',
+                    width: '3%'
+                },
+                MasterCartonQty: {
+                    title: 'Qty/Box',
+                    width: '3%'
+                },
+                UKSold30Days: {
+                    title: '30D/Sold',
+                    width: '2%'
+                },
+                UKSold7Days: {
+                    title: '7D/Sold',
+                    width: '2%'
+                },
+                UKFbaStock: {
+                    title: 'FBA/Stock',
+                    width: '3%'
+                },
+                UKWarehouse: {
+                    title: 'WH/Stock',
+                    width: '3%'
+                },
+                FBARoot: {
+                    title: 'Root',
+                    width: '2%'
+                },
+                FBARecedQty: {
+                    title: 'FBA RecdQty',
+                    width: '3%'
+                },
+                RequestQty: {
+                    title: 'Req Qty',
+                    width: '3%'
+                },
+                Status: {
+                    title: 'Status',
+                    width: '3%'
+                },
+                UserName: {
+                    title: 'Sender',
+                    width: '3%'
+                },
+                LableStatus: {
+                    title: 'Lable Status',
+                    width: '3%'
+                },
+                LableLink: {
+                    title: 'Link',
+                    display: function (data) {
+                        return String.format("<a class='btn btn-link btn-mini' href='{0}' target=\"_blank\">Link</a>", data.record.LableLink);
+                    },
+                    width: '2%'
+                },
+                RDate: {
+                    title: 'Rq/Date',
+                    width: '3%'
+                },
+                Comments: {
+                    title: 'Comments',
+                    width: '3%'
+                },
+                ACCEPT: {
+                    display: function (data) {
+                        return String.format("<a class='btn btn-success btn-mini' onclick=\"UpdateProcesing({0})\">ACCEPT</a>", data.record.FBARequestID);
+                    },
+                    width: '2%'
+                }
+            }
+        });
+            $('#tblItems').jtable('load');
+        }
+
+
+        function UpdateProcesing(FBARequestID) {
+            //debugger
+            $.ajax({
+                url: '@Url.Action("UpdateProcesingByID/")' + FBARequestID,
+                type: 'POST',
+                success: function (result) {
+                    $('#tblItems').jtable('load', { SellerIndex: $('#SellerIndex').val(), FBARootID: $('#FBARootID').val() });
+                }
+            });
+            
+        }
+        
+    </script>

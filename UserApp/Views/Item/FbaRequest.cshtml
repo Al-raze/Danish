@@ -1,0 +1,404 @@
+﻿@using Infrastructure.Core.Models
+@model Infrastrucutre.Core.Models.FbaRequest
+
+@{
+    ViewBag.Title = "Fba Request";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using (Html.BeginForm("AddFBARequest", "Item", FormMethod.Post))
+{
+    if (ViewBag.Mode == "Create")
+    {
+        @Html.Hidden("FBARequestID", "0")
+    }
+    else
+    {
+        @Html.HiddenFor(m => m.FBARequestID)
+    }
+
+    <fieldset style="margin-left:2%">
+
+
+        <div class="row-fluid">
+            <div class="span4 control-group">
+                <legend>@ViewBag.HeaderText</legend>
+            </div>
+            <div class="span4 control-group Style=" width:50px"">
+                <label class="control-group" for="Date" id="Date" name="Date">Date</label>
+                @Html.TextBox("txtStartDate", DateTime.Now.Subtract(new TimeSpan(4, 0, 0, 0, 0)).ToShortDateString(), new
+                      {
+                          @class = "span3 datepicker",
+                          @readonly = "readonly",
+                          @style = "cursor:pointer; background-color:white",
+                          @placeholder = "Date"
+                      })
+
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4 control-group">
+
+                <label class="control-label"> Users List</label>
+                <select class="control-label chosen" Style="width:350px" data-val="true" id="UserID" name="UserID">
+
+                    @foreach (var item in (ViewBag.UserID as System.Web.Mvc.SelectList).Items as List
+                    <Infrastrucutre.Core.Models.UserInformation>
+                        )
+                    {
+                        <option value="@item.UserID ">@item.UserName</option>
+                    }
+                </select>
+                @*@Html.DropDownListFor(model => model.UserID, ViewBag.UserID as SelectList, "", new { @class = "control-label chosen", @Style = "width:350px" })*@
+
+            </div>
+
+
+
+            <div class="span4 control-group">
+                <label class="control-label">Item List</label>
+
+                @if (ViewBag.ItemMasterID != null)
+                {
+                    //@Html.DropDownListFor(model => model.SellerIndex, ViewBag.SellerID as SelectList, "--Select Seller--", new { @class = "control-label chosen" })
+                    <select class="control-label chosen" Style="width:350px" data-val="true" required="required" data-val-required="Item is required" id="ItemMasterID" name="ItemMasterID" onchange="javascript:OnItemSelected(this.value)">
+
+                        @foreach (var item in (ViewBag.ItemMasterID as System.Web.Mvc.SelectList).Items as List
+                        <Infrastrucutre.Core.Models.ItemMaster>
+                            )
+                        {
+                            <option value="@item.ItemMasterID ">@item.ItemName</option>
+                        }
+                    </select>
+                }
+            </div>
+            <div class="span4 control-group">
+                <label class="control-label">SKU List</label>
+
+                @if (ViewBag.StockId != null)
+                {
+                    //@Html.DropDownListFor(model => model.SellerIndex, ViewBag.SellerID as SelectList, "--Select Seller--", new { @class = "control-label chosen" })
+                    <select class="control-label chosen" Style="width:350px" data-val="true" required="required" data-val-required="Item is required" id="SKU" name="SKU">
+
+                        @foreach (var item in (ViewBag.StockId as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.ItemDetails>)
+                        {
+                            <option value="@item.ItemMasterID">@item.SKU</option>
+                        }
+                    </select>
+                }
+            </div>
+
+
+        </div>
+        <div class="row-fluid">
+
+            <div class="span4 control-group">
+                <label class="control-label">Seller List</label>
+
+                @if (ViewBag.SellerID != null)
+                {
+                    //@Html.DropDownListFor(model => model.SellerIndex, ViewBag.SellerID as SelectList, "--Select Seller--", new { @class = "control-label chosen" })
+                    <select class="control-label chosen" Style="width:350px" data-val="true" required="required" data-val-required="Item is required" id="SellerIndex" name="SellerIndex">
+
+                        @foreach (var item in (ViewBag.SellerID as System.Web.Mvc.SelectList).Items as List
+                        <Infrastrucutre.Core.Models.SellerAccount>
+                            )
+                        {
+                            <option value="@item.SellerIndex ">@item.SellerID</option>
+                        }
+                    </select>
+                }
+            </div>
+
+
+            <div class="span4 control-group">
+                <label class="control-label">Asin No</label>
+
+                @if (ViewBag.StockId != null)
+                {
+                    //@Html.DropDownListFor(model => model.SellerIndex, ViewBag.SellerID as SelectList, "--Select Seller--", new { @class = "control-label chosen" })
+                    <select class="control-label chosen" Style="width:350px" data-val="true" required="required" data-val-required="Item is required" id="ListinItemNo" name="ListinItemNo">
+
+                        @foreach (var item in (ViewBag.StockId as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.ItemDetails>)
+                        {
+                            <option value="@item.ItemMasterID">@item.ListingItemNo</option>
+                        }
+                    </select>
+                }
+            </div>
+
+
+            <div class="span4 control-group">
+                <label class="control-label">FNSKU</label>
+
+                @if (ViewBag.FNSKU != null)
+                {
+                    //@Html.DropDownListFor(model => model.SellerIndex, ViewBag.SellerID as SelectList, "--Select Seller--", new { @class = "control-label chosen" })
+                    <select class="control-label chosen" Style="width:350px" data-val="true" id="ItemFNSKU" name="FNSKU">
+
+                        @foreach (var item in (ViewBag.FNSKU as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.ItemMaster>)
+                        {
+                            <option value="@item.ItemMasterID">@item.FNSKU</option>
+                        }
+                    </select>
+                }
+            </div>
+
+        </div>
+
+        <div class="row-fluid">
+            <div class="span2 control-group">
+                @Html.Label("lblUKLast7Days", "UK Sold Last 7Days ", new { @class = "control-label" })
+                @Html.TextBox("UKSold7Days", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblEULast7Days", "EU Sold Last 7Days", new { @class = "control-label" })
+                @Html.TextBox("EUSold7Days", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblUSALast7Days", "USA Sold Last 7Days", new { @class = "control-label" })
+                @Html.TextBox("USASold7Days", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+
+            <div class="span2 control-group">
+                @Html.Label("lblDimension", "Dimension", new { @class = "control-label" })
+                @Html.TextBox("txtDimension", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblBoxWeight", "BoxWeight", new { @class = "control-label" })
+                @Html.TextBox("txtBoxWeight", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblMasterCartonQty", "Qty / Box", new { @class = "control-label" })
+                @Html.TextBox("txtMasterCartonQty", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+
+        </div>
+
+        <div class=" row-fluid">
+
+            <div class="span2 control-group">
+                @Html.Label("lblUKLast30Days", "UK Sold Last 30Days ", new { @class = "control-label" })
+                @Html.TextBox("UKSold30Days", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblEULast30Days", "EU Sold Last 30Days", new { @class = "control-label" })
+                @Html.TextBox("EUSold30Days", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblUSALast30Days", "USA Sold Last 30Days", new { @class = "control-label" })
+                @Html.TextBox("USASold30Days", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+
+            <div class="span2 control-group">
+                <Lable value="">FBA Root</Lable>
+                <select class="control-label chosen" data-val="true" required="required" data-val-required="Item is required" id="FBARootID" name="FBARootID">
+                    @foreach (var item in (ViewBag.FBARoot as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.FBALocations>)
+                    {
+                        if (ViewBag.FBARoot.SelectedValue == item.FBARootID)
+                        {
+                            <option value="@item.FBARootID" selected="selected">@item.FBARoot</option>
+                        }
+                        else
+                        {
+                            <option value="@item.FBARootID">@item.FBARoot</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblFBARecdQty", "FBA Recd.QTY", new { @class = "control-label" })
+                @Html.TextBox("FBARecedQty", "", new { @class = "span12" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblRequestQty", "Request Qty", new { @class = "control-label" })
+                @Html.TextBox("RequestQty", "", new { @class = "span12" })
+            </div>
+        </div>
+
+        <div class=" row-fluid">
+            <div class="span2 control-group">
+                @Html.Label("lblStockInFbaUK", "Stock In Fba-UK", new { @class = "control -label" })
+                @Html.TextBox("UKFbaStock", "", new { @class = "span12" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblStockInFbaEU", "Stock In Fba-EU", new { @class = "control-label" })
+                @Html.TextBox("EUFbaStock", "", new { @class = "span12" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblStockInFbaUSA", "Stock In Fba-USA", new { @class = "control-label" })
+                @Html.TextBox("USAFbaStock", "", new { @class = "span12" })
+            </div>
+            <div class="span2 input-append">
+                @Html.Label("lblLabelStatus", "Label Status", new { @class = "control -label" })
+                @*@Html.TextBox("LableStatus", "", new { @class = "span12" })*@
+
+                <select id="LableStatus" name="LableStatus">
+                    <option value="PRINTED">PRINTED</option>
+                    <option value="NOTPRINTED">NOT PRINTED</option>
+
+                </select>
+
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblLabellink", "Label link", new { @class = "control-label" })
+                @Html.TextBox("LableLink", "", new { @class = "span12" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblPrioritySatus", "Priority Satus", new { @class = "control-label" })
+                @Html.TextBox("PriorityStatus", "", new { @class = "span12" })
+            </div>
+        </div>
+        <div class="row-fluid">
+
+            <div class="span2 control-group">
+                @Html.Label("lblUKWarehouse", "UK Warehouse Stock ", new { @class = "control-label" })
+                @Html.TextBox("txtUKWarehouse", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblEULast30Days", "EU Warehouse Stock", new { @class = "control-label" })
+                @Html.TextBox("txtEUWarehouse", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+            <div class="span2 control-group">
+                @Html.Label("lblUSALast30Days", "USA Warehouse Stock", new { @class = "control-label" })
+                @Html.TextBox("txtUSAWarehouse", "", new { @class = "span12", @readonly = "readonly" })
+            </div>
+
+            <div class="span4 control-group">
+                @Html.Label("lblComments", "Comments", new { @class = "control-label" })
+                @Html.TextBox("Comments", "", new { @class = "span12" })
+            </div>
+        </div>
+
+
+        <div class="text-center widget-footer">
+            @Html.ActionLink("Back to List", "FbaRequestForm", null, new { @class = "btn" })
+            @if (ViewBag.Mode == "Create")
+            {
+                <button type="submit" class="btn btn-success" name="command" value="Save">Add Request</button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-success" name="command" value="Update">Update</button>
+            }
+        </div>
+    </fieldset>
+}
+
+<div>
+</div>
+
+<script>
+
+
+    $(document).ready(function () {
+
+        $('#listingTab a:first').tab('show');
+
+        var FbarequestID = $('#FBARequestID').val();
+
+        if (FbarequestID > 0) {
+            var itemMasterID = $('#ItemMasterID').val();
+            OnItemSelected(itemMasterID);
+            
+        }
+    });
+
+    function OnItemSelected(selectedItemID) {
+
+        if (selectedItemID == '') {
+            clearItems();
+            return;
+        }
+
+        $.ajax({
+            url: '@Url.Action("GetsItemsByID/")' + selectedItemID,
+            type: 'POST',
+            success: onSuccessEditItem
+        });
+    }
+
+    function clearItems() {
+        $('#txtDimension').val('')
+        $('#txtBoxWeight').val('')
+        $('#txtMasterCartonQty').val('')
+        $('#txtManufacturer').val('')
+    }
+
+    function onSuccessEditItem(result) {
+        $('#txtDimension').val(result.Dimension)
+        $('#txtBoxWeight').val(result.CartonQty)
+        $('#txtMasterCartonQty').val(result.MasterCartonQty)
+        $('#UKSold7Days').val(result.UKSold7Days)
+        $('#EUSold7Days').val(result.EUSold7Days)
+        $('#USASold7Days').val(result.USASold7Days)
+        $('#UKSold30Days').val(result.UKSold30Days)
+        $('#EUSold30Days').val(result.EUSold30Days)
+        $('#USASold30Days').val(result.USASold30Days)
+        $('#txtUKWarehouse').val(result.UKWarehouse)
+        $('#txtEUWarehouse').val(result.EUWarehouse)
+        $('#txtUSAWarehouse').val(result.USAWarehouse)
+
+    }
+
+
+    //Get Asin by ID
+    $('#ListinItemNo').empty();
+    $("#ItemMasterID").change(function () {
+        //alert($(this).val());
+        $.get("/Item/GetASINListById", { ItemMasterID: $("#ItemMasterID").val() }, function (data) {
+            $("#ListinItemNo").empty();
+            $.each(data, function (index, row) {
+                $("#ListinItemNo").append("<option value='" + row.ListingItemNo + "'>" + row.ListingItemNo + "</option>").trigger("chosen:updated");
+            });
+
+        })
+    });
+
+    //Get SKU By Asin No
+    $("#ListinItemNo").change(function () {
+        $("#SKU").empty();
+        //alert($(this).val());
+        $.get("/Item/GetSKUListById", { ListingItemNo: $("#ListinItemNo").val() }, function (data) {
+            $("#SKU").empty();
+            $.each(data, function (index, row) {
+                $("#SKU").append("<option value='" + row.SKU + "'>" + row.SKU + "</option>").trigger("chosen:updated");
+            });
+
+        })
+    });
+
+    //Get Item List By User
+    $(document).ready(function () {
+        $("#ItemMasterID").empty();
+        $("#UserID").change(function () {
+            //alert($(this).val());
+            $.get("/Item/GetUserItemListById", { UserID: $("#UserID").val() }, function (data) {
+                $("#ItemMasterID").empty();
+                $.each(data, function (index, row) {
+                    $("#ItemMasterID").append("<option value='" + row.ItemMasterID + "'>" + row.ItemName + "</option>").trigger("chosen:updated");
+                });
+
+            })
+        });
+
+    });
+
+    //Get FNSKU List By Item
+    $(document).ready(function () {
+        $("#FNSKU").empty();
+        $("#SKU").change(function () {
+            //alert($(this).val());
+            $.get("/Item/GetFNSKUListById", { SKU: $("#SKU").val() }, function (data) {
+                $("#FNSKU").empty();
+                $.each(data, function (index, row) {
+                    $("#FNSKU").append("<option value='" + row.SKU + "'>" + row.FNSKU + "</option>");
+                });
+
+            })
+        });
+
+    });
+
+</script>
+

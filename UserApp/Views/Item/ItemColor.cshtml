@@ -1,0 +1,86 @@
+﻿@model Infrastrucutre.Core.Models.ItemColor
+
+@{
+    ViewBag.Title = "Item Colors";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+<legend> Item Colors </legend>
+<div id="colorsTable"></div>
+
+@Html.Partial("_addColor")
+
+
+<script type="text/javascript">
+
+    $(document).ready(UserTable);
+
+    function UserTable() {
+        $('#colorsTable').jtable({
+            title: 'Item Colors',
+            actions: {
+                listAction: '@Url.Action("GetItemColors")'
+            },
+            fields: {
+                ItemColorID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                Color: {
+                    title: 'Color',
+                    width: '15%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"Edit\" onclick=\"edit(" + data.record.ItemColorID + ")\" />";
+                    },
+                    width: '4%'
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: 'Add Item Color',
+                    click: add
+                }]
+            }
+
+
+        });
+        $('#colorsTable').jtable('load');
+        }
+
+    function add() {
+            clearForm();
+            $('#btnAdd').text('Add Color');
+            $('#mode').val('ADD');
+            $('#modalAdd').modal('show');
+        }
+
+    function edit(id) {
+            clearForm();
+            $('#mode').val('EDIT');
+            $('#btnAdd').text('Update Color');
+            $.ajax({
+                url: '@Url.Action("GetItemColorByID/")' + id,
+                type: 'POST',
+                success: onSuccessEdit
+            });
+        }
+
+    function onSuccessEdit(result) {
+            clearForm();
+            $('#Color').val(result.Color)
+            $('#ItemColorID').val(result.ItemColorID)
+            $('#modalAdd').modal('show');
+        }
+
+        function clearForm() {
+            $('#Color').val('')
+        }
+
+
+
+</script>
+

@@ -1,0 +1,140 @@
+﻿@using AkraTechFramework.Helpers
+@{
+    ViewBag.Title = "ManageUsers";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+    string pageName = "ManageUser";
+}
+
+<div class="alert alert-success" style="display: none" id="successAlert">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    <div id="successMessage"></div>
+</div>
+<div class="alert alert-danger" id="errorAlert" style="display: none">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    You have encountered an unexpected error.
+</div>
+<div id="userTable"></div>
+<div id="dialog-confirm" title="Are you sure want to delete?" ></div>
+@Html.Partial("_AddUser");
+
+@Html.Partial("_UpdateUser") 
+
+<script type="text/javascript">
+
+    $(document).ready(UserTable);
+
+    function UserTable()
+    {
+        $('#userTable').jtable({
+            title: 'User Information',
+            actions: {
+                listAction: '@Url.Action("GetUserDetails")'
+            },
+            fields: {
+                UserID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                UserName: {
+                    title: 'UserName',
+                    width: '15%'
+                },
+                Email: {
+                    title: 'Email'
+                },
+                Phone: {
+                    title: 'Phone',
+                    width: '12%'
+                },
+                Edit: {
+                    display: function (data)
+                    {
+                        if(data.record.UserName != 'admin')
+                            return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"Edit\" onclick=\"editUser(" + data.record.UserID + ")\" />";
+                    },
+                    width: '4%'
+                },
+                Delete: {
+                    display: function (data)
+                    {
+                        if (data.record.UserName != 'admin')
+                            return String.format("<a href='#'  onclick=\"delUser({0})\" class=\"btn btn-success btn-small\" >Delete</a>", data.record.UserID);
+                    },
+                    width: '4%'
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: 'Add',
+                    click: addUser
+                }]
+            }
+
+
+        });
+            $('#userTable').jtable('load');
+        }
+
+        function addUser()
+        {
+            clearForm();
+            $('#modalAddUser').modal('show');
+        }
+
+        function editUser(userID)
+        {
+            $.ajax({
+                url: '@Url.Action("GetUserByID/")' + userID,
+                type: 'POST',
+                success: onSuccessEditUser
+            });
+        }
+
+        function onSuccessEditUser(result)
+        {
+            clearForm();
+            $('#edtUserID').val(result.UserID)
+            $('#edtUserName').val(result.UserName)
+            $('#edtPhone').val(result.Phone)
+            $('#edtEmail').val(result.Email)
+            $('#edtPassword').val(result.Password)
+
+            for (var i = 0; i < result.AccessList.length; i++) {                
+                $('#edit_MenuItem' + result.AccessList[i]).attr("checked", "checked");
+            }
+            
+            $('#modalUpdateUser').modal('show');
+        }
+
+        function clearForm()
+        {
+            $('#UserName').val('')
+            $('#Password').val('')
+            $('#ConfirmPassword').val('')
+            $('#Phone').val('')
+            $('#Email').val('')
+            $(':checkbox').attr("checked", false);
+        }
+
+        function delUser(id) {
+            debugger
+
+            $("#dialog-confirm").dialog({
+                resizable: false,
+                height: 140,
+                modal: true,
+                buttons: {
+                    "Yes": function () {
+                        $(location).attr('href', "/Settings/DeleteUser/" + id);
+                    },
+                    "No": function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+
+</script>

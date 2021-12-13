@@ -1,0 +1,148 @@
+﻿@{
+    ViewBag.Title = "Index - Reports";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+
+<div>
+    <div class="row-fluid">
+        <div class="span2 control-group">
+            <label class="control-label" for="ItemName">From Date</label>
+            @Html.TextBox("txtStartDate", DateTime.Now.Subtract(new TimeSpan(4, 0, 0, 0, 0)).ToShortDateString(), new
+                   {
+                       @class = "span12 datepicker",
+                       @readonly = "readonly",
+                       @style = "cursor:pointer; background-color:white",
+                       @placeholder = "From Date"
+                   })
+
+        </div>
+        <div class="span2 control-group">
+            <label class="control-label" for="ItemName">To Date</label>
+            @Html.TextBox("txtEndDate", DateTime.Now.ToShortDateString(), new
+                   {
+                       @class = "span12 datepicker",
+                       @readonly = "readonly",
+                       @style = "cursor:pointer; background-color:white",
+                       @placeholder = "To Date"
+                   })
+
+        </div>
+        <div class="span4 control-group">
+            <label class="control-label" for="ItemName">Custom Filter</label>
+            <input style="width:100%" type="text" name="filter" id="filter" value=" " />
+        </div>
+
+        <div class="span4 control-group">
+            <label class="control-label" for="ItemName">Report Type</label>
+            <div>
+            <select class="combobox" id="ReportType" name="ReportType">
+                @foreach (var item in (ViewBag.ReportID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.Report>)
+                {
+                        <option value="@item.ReportID">@item.ReportName</option>
+                }
+            </select>
+            <button type="submit" id="btnGenerate" class="btn" style="margin-bottom:10px;margin-left:10px" onclick="generateReport()">Find</button>
+            </div>
+        </div>
+
+        
+
+    </div>
+</div>
+
+
+
+<div id="dvTable"></div>
+
+<script type="text/javascript">
+
+    $(".datepicker").datepicker();
+    $(".datepicker").datepicker("option", "dateFormat", "d M, y");
+
+    function getReportData() {
+
+      
+    }
+
+    function generateReport() {
+
+        $.ajax({
+            url: '@Url.Action("GetReport")',
+             beforeSend: function( xhr ) {
+                 $("#dvTable").html("<div>Loading Report please wait...</div>");
+            },
+             data: { startDate: $('#txtStartDate').val(), endDate: $('#txtEndDate').val(), reportId: $('#ReportType').val(),filter:$("#filter").val() },
+             type: "POST",
+             success: function (result) {                
+
+                 if (result.Result === 'ERROR') {
+                     $("#dvTable").html("<div>" + result.Message + "</div>");
+                     return;
+                 }
+                 else
+                 {
+                     var report = result.Result
+                     if (report.length >0) {
+
+                         var customers = new Array()
+
+                         var columns = new Array()
+
+                         for (var i = 0; i < report[0].length; i++) {
+                             columns.push(report[0][i].Key);
+                         }
+
+                         customers.push(columns)
+
+                         for (var row = 0; row < report.length; row++) {
+                             var customerRow = new Array()
+                             for (var col = 0; col < report[0].length; col++) {
+                                 customerRow.push(report[row][col].Value);
+                             }
+
+                             customers.push(customerRow)
+                         }
+
+                         console.log(customers)
+
+                         //Create a HTML Table element.
+                         var table = $("<table class=\"table table-bordered table-hover\" />");
+                         table[0].border = "1";
+
+                         //Get the count of columns.
+                         var columnCount = customers[0].length;
+
+                         //Add the header row.
+                         var row = $(table[0].insertRow(-1));
+                         for (var i = 0; i < columnCount; i++) {
+                             var headerCell = $("<th />");
+                             headerCell.html(customers[0][i]);
+                             row.append(headerCell);
+                         }
+
+                         //Add the data rows.
+                         for (var i = 1; i < customers.length; i++) {
+                             row = $(table[0].insertRow(-1));
+                             for (var j = 0; j < columnCount; j++) {
+                                 var cell = $("<td />");
+                                 cell.html(customers[i][j]);
+                                 row.append(cell);
+                             }
+                         }
+
+                         var dvTable = $("#dvTable");
+                         dvTable.html("");
+                         dvTable.append(table);
+                     } else {
+                         $("#dvTable").html("<div> No Report Data Found </div>");
+                     }
+                 }
+
+             }
+         });
+
+        //Build an array containing Customer records.
+        
+    }
+</script>

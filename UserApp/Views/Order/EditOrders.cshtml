@@ -1,0 +1,189 @@
+﻿@{
+    ViewBag.Title = "EditOrders";
+}
+
+@model List<Infrastrucutre.Core.Models.Order>
+
+
+<div class="container">
+    <button id="update" class="btn" name="update">Update</button>
+    @*<button id="updateOrders" class="btn" name="updateOrders">Update Info</button>
+        <button id="updateCarrier" class="btn" name="updateCarrier">Update Carrier</button>*@
+    <button id="cancelButton" class="btn" name="cancelButton">Back</button>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>SalesOrderNumber</th>
+                <th>OrderDate</th>
+                <th>BuyerId</th>
+                <th>Street</th>
+                <th>City/Code</th>
+                <th>Country</th>
+                <th>AmountPaid</th>
+                <th>Seller</th>
+                <th>Carrier</th>
+                <th>CarrierRef</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+
+                var carrierTextBoxVal = !string.IsNullOrEmpty(item.CarrierRef) ? item.CarrierRef : item.OrderItems[0].SKUItemID;
+                <tr class="well">
+                    <td>@item.SalesOrderNumber</td>
+                    <td>@item.OrderDateString</td>
+                    <td>@item.BuyerUserID</td>
+                    <td>@item.Street1</td>
+                    <td>@item.CityName ,<br /> @item.PostalCode.ToUpper()</td>
+                    <td>@item.Country</td>
+                    <td>@item.AmountPaid</td>
+                    <td>@item.SellerID</td>
+                    <td>
+                        <select class="combo-style combobox input-sm postalcarrier" data-val="true" required="required" data-val-required="Item is required" id="PostalCarrierID" name="PostalCarrierID" data-id="@item.OrderID">
+                            <option value="">Choose a Postal Carrier</option>
+                            @foreach (var carrier in (ViewBag.PostalCarrierID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.PostalCarrier>)
+                            {
+                                if (carrier.PostalCarrierID == item.PostalCarrierID)
+                                {
+                                    <option value="@carrier.PostalCarrierID" selected="selected">@carrier.PostalCarrierName</option>
+                                }
+                                else
+                                {
+                                    <option value="@carrier.PostalCarrierID">@carrier.PostalCarrierName</option>
+                                }
+
+                            }
+                        </select>
+                    </td>
+                    <td style="">
+                        <label>Carrier Reference</label>
+                        <input type="text" class="lineitem" id="txtCarrierRef"@*data-id="@item.OrderLineItemID"*@ placeholder="Enter Carrier Ref" value="@carrierTextBoxVal" />@*item.AdditionalInfo*@ 
+                    </td>
+                </tr>
+                <tr class="jtable-child-row" style="display: table-row;">
+                    <td colspan="8" class="noscroll">
+                        @Html.Partial("_EditOrderItem", item)
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+
+
+
+    $('#update').click(function () {
+
+        //var orderItemsLineItem = $('.lineitem');
+        //var itemsLineitem = new Array();
+
+        //orderItemsLineItem.each(function () {
+        //    var item = new Object();
+        //    var record = $(this).attr('data-id');
+        //    item.OrderLineItemID = record;
+        //    item.AdditionalInfo = $(this).val()
+        //    //item.CarrierRef = $(this).val()
+        //    itemsLineitem.push(item);
+        //});
+
+        var orderItemsPostalcarrier = $('.postalcarrier');
+        var itemsPostalcarrier = new Array();
+
+        orderItemsPostalcarrier.each(function () {
+            var item = new Object();
+            var record = $(this).attr('data-id');
+            item.OrderID = record;
+            item.PostalCarrierID = $(this).val()
+            item.CarrierRef = $("#txtCarrierRef").val()
+            itemsPostalcarrier.push(item);
+        });
+
+        $.ajax({
+            url: '@Url.Action("UpdateOrdersCommon")',
+            type: 'POST',
+            success: function () {
+                location.href = '/Order';
+            },
+            data: JSON.stringify({/* orderLineItem: itemsLineitem,*/ orderPostalcarrier: itemsPostalcarrier }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            error: function (xhr, status, error) {
+
+            }
+
+        });
+    }
+    );
+
+    $('#updateOrders').click(function () {
+
+        var orderItems = $('.lineitem');
+        var items = new Array();
+
+        orderItems.each(function () {
+            var item = new Object();
+            var record = $(this).attr('data-id');
+            item.OrderLineItemID = record;
+            item.AdditionalInfo = $(this).val()
+            items.push(item);
+        });
+
+        $.ajax({
+            url: '@Url.Action("UpdateOrders")',
+            type: 'POST',
+            success: function () {
+                location.href = '/Order';
+            },
+            data: JSON.stringify({ orderItems: items }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            error: function (xhr, status, error) {
+
+            }
+
+        });
+    }
+    );
+
+    $('#cancelButton').click(function () {
+        location.href = '/Order';
+    });
+
+
+    $('#updateCarrier').click(function () {
+
+        var orderItems = $('.postalcarrier');
+        var items = new Array();
+
+        orderItems.each(function () {
+            var item = new Object();
+            var record = $(this).attr('data-id');
+            item.OrderID = record;
+            item.PostalCarrierID = $(this).val()
+            items.push(item);
+        });
+
+        $.ajax({
+            url: '@Url.Action("UpdateOrderCarriers")',
+            type: 'POST',
+            success: function () {
+                location.href = '/Order';
+            },
+            data: JSON.stringify({ orders: items }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            error: function (xhr, status, error) {
+
+            }
+
+        });
+    }
+    );
+
+</script>
+

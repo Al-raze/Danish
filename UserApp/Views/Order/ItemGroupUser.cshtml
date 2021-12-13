@@ -1,0 +1,441 @@
+﻿@{
+    ViewBag.Title = "Group Controll";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+<h2> Items Assigned To Users</h2>
+
+@using AkraTechFramework.Helpers
+@{
+    
+    string searchString = ViewBag.ItemSearchString;
+}
+
+
+<style>
+    #divLoading {
+        background: url(content/images/299.gif) no-repeat center center;
+        height: 100px;
+        width: 220px;
+        position: fixed;
+        z-index: 1000;
+        left: 50%;
+        top: 40%;
+        margin: -25px 0 0 -25px;
+    }
+</style>
+
+<form name="editOrders" id="editOrdersForm" method="POST" action="@Url.Action("EditOrders")">
+    <input type="hidden" name="selectedorders" id="selectedorders" />
+</form>
+
+<div>
+    <div class="row-fluid">
+        <div class="filtering">
+            <form>
+                <div class="input-append">
+                    <select id="filter">
+                        <option value="ItemName">ItemName</option>
+                        <option value="Supplier">Supplier</option>
+                    </select>
+                    <input class="span8" id="filterText" type="text">
+                    <button class="btn" id="LoadRecordsButton" type="button">Search</button>
+                    <button class="btn" id="Refresh" type="button">Clear Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+</div>
+
+<div id="tblItems" style="width: fit-content;"></div>
+<div id="divLoading" style="display: none"></div>
+
+
+
+
+
+
+<form id="frmOrderFormat" name="frmOrderFormat">
+    <div class="modal hide fade" id="modalOrderFormat">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>
+                Select Order Format
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    @Html.DropDownList("ddlOrderDownloadFormat", ViewBag.OrderDownloadFormat as SelectList, "Choose Order Download Format", new { @class = "combo-style combobox input-sm" })
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">
+                Close
+            </a>
+            <button type="button" id="btnDownlaodOrderInExcel" onclick="DownloadOrderList()" class="btn btn-success">
+                Download Order List
+            </button>
+        </div>
+    </div>
+</form>
+<!-- User Name  -->
+<form id="frmAddUpdate" name="frmAddUpdate">
+    <div class="modal hide fade" id="modalAdd">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>
+                Select User
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    <select class="combo-style combobox input-sm" data-val="true" required="required" data-val-required="Item is required" id="PostalCarrierID" name="PostalCarrierID">
+                        <option value="">Assigned A User For Items</option>
+                        @foreach (var item in (ViewBag.UserID as System.Web.Mvc.SelectList).Items as List
+                        <Infrastrucutre.Core.Models.UserInformation>)
+                        {
+                            <option value="@item.UserID ">@item.UserName</option>
+                        }
+                    </select>
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">
+                Close
+            </a>
+            <button type="button" id="btnAdd" onclick="updatePostalCarrier()" class="btn btn-success">
+                Update
+            </button>
+        </div>
+    </div>
+</form>
+<!---->
+
+
+
+
+<script>
+
+
+    
+
+    $(document).ready(pageLoad);
+    $("#btnClearOrderNumber").on("click", function () {
+        $("#orderNumber").val("");
+    });
+    
+
+    
+    //$(window).on('load', function () {
+    //    var localData = localStorage.getItem('startDate');
+    //    if (localData == null) {
+    //        localStorage.setItem('startDate', systemStartDate)
+    //    }
+    //    else {
+    //        $("#txtStartDate").val(localData);
+    //    }
+    //});
+
+    function pageLoad() {
+
+        loadItems();
+        
+    }
+
+
+    function loadItems() {
+        $('#tblItems').jtable({
+            title: 'Checked Items For Asssigned User',
+            useBootstrap: true,
+            paging: true,
+            sorting: true,
+            selecting: true,
+            multiselect: true,
+            selectingCheckboxes: true,
+            actions: {
+                listAction: '@Url.Action("GetItems/")@searchString',
+                //deleteAction: '@Url.Action("DeleteItem/")'
+            },
+            recordsLoaded: function(event, data) {
+
+            },
+            fields: {
+                ItemMasterID: {
+                    key: true,
+                    list: false
+                },
+
+                ItemName: {
+                    title: 'Item Name',
+                    width: '10%',
+                    edit: true,
+                    input: function (data) {
+                        if (data.record.ItemName) {
+                            return String.format("<textarea  rows='3' cols='50' readonly class='jtable-input-readonly' name='ItemName'>{0}</textarea>", data.record.ItemName);
+                        } else {
+                            //nothing to worry about here for your situation, data.value is undefined so the else is for the create/add new record user interaction, create is false for your usage so this else is not needed but shown just so you know when it would be entered
+                        }
+                    },
+                },
+                ItemCode: {
+                    title: 'Item Code',
+                    width: '5%',
+                    input: function (data) {
+                        if (data.record.ItemCode) {
+                            return String.format("<input type='text' readonly class='jtable-input-readonly' name='ItemCode' value={0}></input>", data.record.ItemCode);
+                        } else {
+                            //nothing to worry about here for your situation, data.value is undefined so the else is for the create/add new record user interaction, create is false for your usage so this else is not needed but shown just so you know when it would be entered
+                        }
+                    },
+                },
+                SupplierName: {
+                    title: 'Supplier Name',
+                    edit: false,
+                    width: '8%'
+
+                }
+            },
+            toolbar: {
+                items: [
+                    {
+                        
+                    },
+
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'Add Group',
+                        click: AddGroup
+                    }
+
+                ]
+            }
+        });
+        $('#tblItems').jtable('load');
+        
+    }
+
+    //------------------------------------------------------------//
+
+
+function AddGroup() {
+
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+
+    if ($selectedRows.length > 0) {
+        $('#modalAdd').modal('show');
+    }
+
+}
+
+
+function editOrders() {
+
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+    var selectedItems = new Array();
+
+    if ($selectedRows.length > 0) {
+
+        $('#selectedorders').val('');
+
+        $selectedRows.each(function () {
+            var record = $(this).data('record');
+
+            $('#selectedorders').val($('#selectedorders').val() + ',' + record.OrderID)
+
+            selectedItems.push(record.ItemMasterID)
+        });
+
+        editOrdersForm.submit();
+    }
+}
+
+
+function editDeletedOrders() {
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+    if ($selectedRows.length > 0 && $("#DispatchStatus").val() == "Delete") {
+            $('#modalReactiveDeletedOrders').modal('show');
+        }
+}
+
+
+
+function updatePostalCarrier() {
+
+    var groupItem = $('#PostalCarrierID').val();
+
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+    var selectedItems = new Array();
+
+    if ($selectedRows.length > 0) {
+
+        $('#selectedvalues').val('');
+
+        $selectedRows.each(function () {
+            var record = $(this).data('record');
+            selectedItems.push(record.ItemMasterID)
+        });
+    }
+
+
+
+    $.ajax({
+        url: '@Url.Action("AddGroup")',
+            type: 'POST',
+            success: function () {
+                $('#divLoading').hide();
+                $('#modalAdd').modal('hide');
+                $('#tblItems').jtable('load');
+                alert('Group Created Successfully');
+            },
+            traditional: true,
+            data: {
+                'GID': $('#PostalCarrierID').val(),
+                'OrderIDs': selectedItems  // <-- the $ sign in the parameter name seems unusual, I would avoid it
+            },
+            error: function (xhr, status, error) {
+                $("#divLoading").hide()
+                $('#modalAdd').modal('hide');
+                alert('Unexpected error - Please contact administrator');
+            }
+
+        });
+
+    }
+
+    function addItem() {
+        $('#tblItems').jtable('load');
+    }
+
+    //--------------------Searching Item Code----------------------//
+
+    $('#LoadRecordsButton').click(function (e) {
+        e.preventDefault();
+        $('#tblItems').jtable('load', {
+            filter: $('#filter').val(),
+            filterText: $('#filterText').val()
+        });
+    });
+
+    $('#Refresh').click(function (e) {
+        e.preventDefault();
+        $('#tblItems').jtable('load')
+        $('#filterText').val('')
+    });
+
+    function isDisabledAuto() {
+        var source = $("#filter").val()
+
+        return !(source == 'ItemName' || source == 'Supplier')
+    }
+
+    $("#filter").change(function () {
+        $("#filterText").autocomplete({
+            disabled: isDisabledAuto()
+        })
+    });
+
+    $("#filterText").autocomplete({
+        disabled: false,
+        source: function (request, response) {
+            var source = $("#filter").val()
+            var url = ''
+
+            if (source == 'ItemName') {
+                url = '@Url.Action("LookupItem")'
+            }
+            else if (source == 'Supplier') {
+                url = '@Url.Action("LookupSupplier")'
+            }
+            $.get(url, {
+                searchText: request.term,
+                onlyItemName: true
+            }, function (data) {
+                response(data);
+            });
+        },
+        minLength: 1,
+        change: function (event, ui) {
+
+        },
+        select: function (event, ui) {
+
+        }
+    });
+
+    //------------------------------------------------------------//
+
+    function ShowMdlOrderList() {
+
+        var $selectedRows = $('#tblItems').jtable('selectedRows');
+
+        if ($selectedRows.length > 0) {
+            $('#modalOrderFormat').modal('show');
+        }
+
+    }
+
+    function DownloadOrderList() {
+        var $selectedRows = $('#tblItems').jtable('selectedRows');
+        var selectedItems = new Array();
+
+        if ($("#ddlOrderDownloadFormat").val() == "") {
+            alert("Please Select Download Format First.");
+            return;
+        }
+
+        if ($selectedRows.length > 0) {
+            $('#selectedvalues').val('');
+            $selectedRows.each(function () {
+                var record = $(this).data('record');
+                selectedItems.push(record.OrderID)
+            });
+
+
+            if ($("#divLoading").is(":visible")) {
+                alert('Another Process is running,Please wait.');
+                return;
+            }
+
+        $('#divLoading').show();
+        $.ajax({
+            url: '@Url.Action("DownloadOrderList")',
+            type: 'POST',
+            success: function (response) {
+                $('#divLoading').hide();
+                var setial = 1;
+                window.location = '/Order/Download?fileGuid=' + response.FileGuid + '&filename=' + response.FileName;
+                //$.each(response, function (i, memorylist) {
+                //    $.each(memorylist, function (i, memoryInfo) {
+                //        console.log(setial);
+                //        //setTimeout(function () {
+                //            window.open('/Order/Download?fileGuid=' + memoryInfo.FileGuid + '&filename=' + memoryInfo.FileName,"_blank");
+                //        //}, 1000);
+                //    });
+                //});
+
+                $('#modalOrderFormat').modal('hide');
+                $('.jtable-row-selected').removeClass('jtable-row-selected');
+                $("#tblItems").find(".jtable-column-header-container > input").prop("checked", false);
+                $("#tblItems").find(".jtable-selecting-column > input").prop("checked", false);
+
+                },
+                traditional: true,
+            data: {
+                'downloadFormatID': $("#ddlOrderDownloadFormat").val(),
+                'downloadFormatName': $("#ddlOrderDownloadFormat option:selected").text(),
+                    'orderIds': selectedItems  // <-- the $ sign in the parameter name seems unusual, I would avoid it
+                },
+            error: function (xhr, status, error) {
+                $('#modalOrderFormat').modal('hide');
+                    $("#divLoading").hide()
+                    alert('Unexpected error - Please contact administrator');
+                }
+            });
+        }
+    }
+</script>

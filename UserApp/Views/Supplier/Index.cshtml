@@ -1,0 +1,88 @@
+﻿@model Infrastrucutre.Core.Models.Supplier
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+<div id="tblSuppliers"></div>
+
+<script>
+
+    $(document).ready(pageLoad);
+
+    function pageLoad() {
+        loadSuppliers()
+    }
+
+    // SupplierName, Address, Email, PhoneNumber, SalesRepName, WebAddress, BankDetails 
+
+    function loadSuppliers() {
+
+
+        $('#tblSuppliers').jtable({
+            title: 'Supplier Master',
+            useBootstrap: true,
+            sorting: true,
+            actions: {
+                listAction: '@Url.Action("GetSuppliers")'
+            },
+            fields: {
+                SupplierID: {
+                    key: true,
+                    list: false
+                },
+                SupplierName: {
+                    title: 'Supplier Name', 
+                    width: '6%'
+                },
+                Address: {
+                    title: 'Address',
+                    width: '7%'
+                },
+                Email: {
+                    title: 'Email',
+                    width: '7%'
+                },
+                PhoneNumber: {
+                    title: 'Phone Number',
+                    width: '7%'
+                },
+                SalesRepName: {
+                    title: 'SalesRepName',
+                    width: '3%'
+                },
+
+                WebAddress: {
+                    title: 'WebAddress',
+                    width: '3%'
+                },
+                BankDetails: {
+                    title: 'Bank Details',
+                    width: '3%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return String.format("<a class='btn btn-success btn-mini' href='Supplier/GetSupplierByID/{0}'>Edit</a>", data.record.SupplierID);
+                    },
+                    width: '2%'
+                }
+
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add_icon.png',
+                    text: 'Add Supplier',
+                    click: addItem
+                }]
+            }
+        });
+        $('#tblSuppliers').jtable('load');
+        }
+
+        function addItem() {
+            $(location).attr("href","@Url.Action("AddSupplier")")
+        }
+
+</script>
+

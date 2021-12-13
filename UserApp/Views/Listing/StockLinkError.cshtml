@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "StockLinkError";
+}
+
+@Html.Partial("_UpdateItemLink")
+
+<div id="tblItems"></div>
+
+<script>
+
+    $(document).ready(pageLoad);
+
+    function pageLoad() {
+        loadItems()
+    }
+
+    function loadItems() {
+        $('#tblItems').jtable({
+            title: 'Stock Sync Errors',
+            useBootstrap: true,            
+            actions: {
+                listAction: '@Url.Action("GetStockErrors")',
+            },
+            formCreated: function (event, data) {
+                $(data.form).addClass("custom_horizontal_form_field");
+            },
+            fields: {                
+                SellerIndex: {                   
+                    list: false
+                },
+                ItemName: {
+                    title: 'Item Name',
+                    width: '6%',
+                    edit: true,
+                    input: function (data) {
+                        if (data.record.ItemName) {
+                            return '<input type="text" readonly class="jtable-input-readonly" name="ItemName" value="' + data.record.ItemName + '"/>';
+                        } else {
+                            //nothing to worry about here for your situation, data.value is undefined so the else is for the create/add new record user interaction, create is false for your usage so this else is not needed but shown just so you know when it would be entered
+                        }
+                    }
+                },
+                SellerID: {
+                    title: 'Seller Name',
+                    width: '6%',
+                    edit: true,
+                    input: function (data) {
+                        if (data.record.SellerID) {
+                            return '<input type="text" readonly class="jtable-input-readonly" name="SellerID" value="' + data.record.SellerID + '"/>';
+                        } else {
+                            //nothing to worry about here for your situation, data.value is undefined so the else is for the create/add new record user interaction, create is false for your usage so this else is not needed but shown just so you know when it would be entered
+                        }
+                    }
+                },
+                SKU: {
+                    key: true,
+                    title: 'SKU',
+                    width: '6%',
+                    edit: true,
+                },
+                ListingItemNo: {
+                    title: 'ASIN/ItemNo',
+                    width: '6%',
+                    edit: true,
+                },
+                Edit: {
+                    display: function (data) {
+                        var data = String.format("<a class='btn btn-success btn-mini' onclick='edit(\"{0}\",\"{1}\",\"{2}\",\"{3}\",{4})'>Fix Error</a>",
+                              escape(data.record.ItemName),
+                              escape(data.record.ListingItemNo),
+                              escape(data.record.SKU),
+                              escape(data.record.SellerID),
+                              data.record.SellerIndex
+                            );
+
+                        return data
+                    },
+                    edit: false,
+                    width: '2%'
+                },
+            }
+        });
+
+        $('#tblItems').jtable('load')
+    }
+
+    function clearForm(){
+        $('#SellerIndex').val('')
+        $('#SellerItemName').val('')
+        $('#ListingItemNo').val('')
+        $('#SellerSKU').val('')
+        $('#SellerName').val('')
+        $('#LinkUrl').val('')
+        $('#ItemCode').val('')
+        $('.itemname').val('')
+        $('#ItemMasterId').val('')
+    }
+
+    function edit(selleritemname,listingitemno,sku,sellername,sellerindex) {
+        
+        clearForm()
+        $('#SellerIndex').val(sellerindex)
+        $('#SellerItemName').val(unescape(selleritemname))
+        $('#ListingItemNo').val(unescape(listingitemno))
+        $('#SellerSKU').val(unescape(sku))
+        $('#SellerName').val(unescape(sellername))
+        var newseller = unescape(sellername)
+        if (newseller === 'arsuk') {
+            $('#LinkUrl').val(String.format('http://www.amazon.co.uk/exec/obidos/ASIN/{0}', unescape(listingitemno)))
+        }
+        else {
+            $('#LinkUrl').val(String.format('http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&item={0}', unescape(listingitemno)))
+        }
+        
+        $('#modalFixError').modal('show');
+    }
+
+    
+</script>

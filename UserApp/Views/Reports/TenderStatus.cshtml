@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "TenderStatus";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+@using AkraTechFramework.Helpers
+@using Infrastructure.Core.Models
+
+
+@{
+    string pageName = "TenderStatus";
+    List<Tender> statusName = ViewBag.StatusName;
+   
+   
+}
+<style>
+    .accordion-group {
+        margin-bottom: 2px;
+        border: 1px solid rgba(163, 163, 163, 0.29);
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+    }
+
+    .accordion-heading {
+        background-color: #F9F9F9;
+        border: .5px solid rgba(163, 163, 163, 0.29);
+    }
+    .accordion-heading:hover {
+        background-color: #e1dfdf;
+        border: .5px solid rgba(163, 163, 163, 0.29);
+        color:white;
+        
+    }
+</style>
+<legend>@LanguageHelper.GetLabelCaption("TenderStatus.StatusInformation", pageName)</legend>
+
+<select onchange="loadStatusTable(this.value)" name="StatusID" id="StatusID">
+    <option value="0">--  @LanguageHelper.GetLabelCaption("TenderStatus.SelectStatus", pageName) -- </option>
+    @foreach (var item in statusName)
+    {
+        <option value="@item.StatusID">@LanguageHelper.GetLabelCaption(item.StatusValue, "ModifyTender")</option>
+    }
+</select>
+
+<div id="partialData"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(pageLoad);
+
+    function pageLoad()
+    {
+        var statusID = $('#StatusID').val()
+
+        $.ajax({
+            url: '@Url.Action("GetTenderStatus/")' + statusID,
+            type: 'POST',
+            dataType: "html",
+            success: onSuccess,
+            error: onFailure
+        });
+    }
+
+    function onSuccess(data)
+    {
+        $("#partialData").html(data);
+    }
+
+    function onFailure() { alert("UnExpected Error"); }
+
+    function loadStatusTable(id)
+    {
+        $.ajax({
+            url: '@Url.Action("GetTenderStatus/")' + id,
+            type: 'POST',
+            dataType: "html",
+            success: onSuccess,
+            error: onFailure
+        });
+    }
+
+</script>
+
+
+

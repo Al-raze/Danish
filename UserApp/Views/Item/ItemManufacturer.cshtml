@@ -1,0 +1,86 @@
+﻿@model Infrastrucutre.Core.Models.ItemManufacturer
+
+@{
+    ViewBag.Title = "Item Manufacturers";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+<legend> Item Manufacturers </legend>
+<div id="manufacturerTable"></div>
+
+@Html.Partial("_addManufacturer")
+
+
+<script type="text/javascript">
+
+    $(document).ready(UserTable);
+
+    function UserTable() {
+        $('#manufacturerTable').jtable({
+            title: 'Item Manufacturers',
+            actions: {
+                listAction: '@Url.Action("GetItemManufacturers")'
+            },
+            fields: {
+                ItemManufacturerID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                ManufacturerName: {
+                    title: 'Manufacturer Name',
+                    width: '15%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"Edit\" onclick=\"edit(" + data.record.ItemManufacturerID + ")\" />";
+                    },
+                    width: '4%'
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: 'Add Item Manufacturer',
+                    click: add
+                }]
+            }
+
+
+        });
+        $('#manufacturerTable').jtable('load');
+        }
+
+    function add() {
+            clearForm();
+            $('#btnAdd').text('Add Manufacturer');
+            $('#mode').val('ADD');
+            $('#modalAdd').modal('show');
+    }
+    
+    function edit(id) {
+            clearForm();
+            $('#mode').val('EDIT');
+            $('#btnAdd').text('Update Manufacturer');
+            $.ajax({
+                url: '@Url.Action("GetItemManufacturerByID/")' + id,
+                type: 'POST',
+                success: onSuccessEdit
+            });
+        }
+
+    function onSuccessEdit(result) {
+            clearForm();
+            $('#ItemManufacturerID').val(result.ItemManufacturerID)
+            $('#ManufacturerName').val(result.ManufacturerName)
+            $('#modalAdd').modal('show');
+        }
+
+        function clearForm() {
+            $('#ManufacturerName').val('')
+        }
+
+
+
+</script>
+

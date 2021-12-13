@@ -1,0 +1,43 @@
+﻿@model Infrastrucutre.Core.Models.ViewModels.OrderRequest
+@{
+    Layout = "~/Views/Shared/LayoutWord.cshtml";
+}
+
+<paragraph style="font-family:Helvetica;font-style:italic;">
+    <paragraph><chunk >To</chunk></paragraph>
+	<paragraph><chunk>@Model.SupplierRef.SupplierName</chunk></paragraph>
+    <paragraph><chunk>@Model.SupplierRef.Address</chunk></paragraph>
+</paragraph>
+
+<paragraph>
+    <newline />
+    <chunk>@Model.OrderText</chunk>   
+</paragraph>
+<table width="100%" cellpadding="1.0" cellspacing="1.0"  widths="3;8;4;4">
+    <row>
+	    <cell borderwidth="0.5" left="false" right="false" top="false" bottom="true">Item Name</cell>
+	    <cell borderwidth="0.5" left="false" right="false" top="false" bottom="true">Description</cell>
+	    <cell borderwidth="0.5" left="false" right="false" top="false" bottom="true">Item Code</cell>
+	    <cell borderwidth="0.5" left="false" right="false" top="false" bottom="true" horizontalalign="right">Quantity</cell>
+    </row>
+    @foreach (var item in Model.ItemsRequested.Where(r=>r.RequestedItemQuantity>0))
+    {
+    <row>
+	    <cell>@item.ItemRef.ItemName</cell>
+	    <cell>@item.ItemRef.Description</cell>
+	    <cell>@item.ItemRef.ItemCode</cell>
+	    <cell horizontalalign="right">@item.RequestedItemQuantity</cell>
+    </row>
+    }
+   
+</table>
+<newline />
+<paragraph leading="14.0" font="unknown" align="Default">
+    Important: Please deliver the ordered items within 5 Business days to the following address:
+
+</paragraph>
+
+
+
+<newline />
+

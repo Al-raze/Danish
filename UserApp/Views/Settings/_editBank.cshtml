@@ -1,0 +1,62 @@
+﻿@using AkraTechFramework.Helpers;
+@model Infrastructure.Core.Models.Settings
+
+@{string pageName = "BankMaster";}
+
+@using (Html.BeginForm("UpdateBank", "Settings", FormMethod.Post, new { @id = "frmUpdateBank" }))
+{
+    <div class="modal hide fade" id="modalUpdateBank">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3> @LanguageHelper.GetLabelCaption("BankMaster.UpdateBankDetails", pageName)</h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                 @Html.HiddenFor(model => model.BankID, new { @id="edtBankID"})
+                <div class="control-group">
+                    <label class="control-label">
+                         @LanguageHelper.GetLabelCaption("BankMaster.BankName", pageName)</label>
+                    @Html.TextBoxFor(model => model.BankName, new { @class = "input-large",@id="edtBankName" })
+                    @Html.ValidationMessageFor(model => model.BankName)
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn"> @LanguageHelper.GetLabelCaption("BankMaster.Close", pageName)</a>
+            <button type="button" href="#" id="btnUpdateBank" onclick="updateBank()" class="btn btn-success">  @LanguageHelper.GetLabelCaption("BankMaster.Update", pageName)</button>
+        </div>
+    </div>
+}
+
+<script>
+
+    function updateBank() {
+        debugger
+        $('#btnUpdateBank').prop('disabled', true);
+        var data = $('#frmUpdateBank').serialize();
+
+        if ($('#frmUpdateBank').valid()) {
+            $.ajax({
+                url: '@Url.Action("UpdateBank")',
+                type: 'POST',
+                data: data,
+                success: onSuccessUpdateBank,
+                error: onErrorUpdateBank
+            });
+        }
+        $('#btnUpdateBank').prop('disabled', false);
+    }
+
+    function onSuccessUpdateBank() {
+        $('#successMessage').text('Bank Updated Successfully')
+        $('#successAlert').show();
+        $('#bankTable').jtable('reload');
+        $('#modalUpdateBank').modal('hide');
+    }
+
+    function onErrorUpdateBank() {
+        $('#errorAlert').show();
+        $('#modalUpdateBank').modal('hide');
+    }
+
+</script>

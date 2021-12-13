@@ -1,0 +1,86 @@
+﻿@model Infrastrucutre.Core.Models.ItemColor
+
+@{
+    ViewBag.Title = "Item Locations";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+<legend> Item Locations </legend>
+<div id="locationTable"></div>
+
+@Html.Partial("_addLocation")
+
+
+<script type="text/javascript">
+
+    $(document).ready(UserTable);
+
+    function UserTable() {
+        $('#locationTable').jtable({
+            title: 'Item Locations',
+            actions: {
+                listAction: '@Url.Action("GetItemLocations")'
+            },
+            fields: {
+                LocationID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                LocationName: {
+                    title: 'Location Name',
+                    width: '15%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"Edit\" onclick=\"edit(" + data.record.LocationID + ")\" />";
+                    },
+                    width: '4%'
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: 'Add Item Location',
+                    click: add
+                }]
+            }
+
+
+        });
+        $('#locationTable').jtable('load');
+        }
+
+    function add() {
+            clearForm();
+            $('#btnAdd').text('Add Location');
+            $('#mode').val('ADD');
+            $('#modalAdd').modal('show');
+        }
+
+    function edit(id) {
+            clearForm();
+            $('#mode').val('EDIT');
+            $('#btnAdd').text('Update Location');
+            $.ajax({
+                url: '@Url.Action("GetItemLocationByID/")' + id,
+                type: 'POST',
+                success: onSuccessEdit
+            });
+        }
+
+    function onSuccessEdit(result) {
+            clearForm();
+            $('#LocationID').val(result.LocationID)
+            $('#LocationName').val(result.LocationName)
+            $('#modalAdd').modal('show');
+        }
+
+        function clearForm() {
+            $('#LocationName').val('')
+        }
+
+
+
+</script>
+

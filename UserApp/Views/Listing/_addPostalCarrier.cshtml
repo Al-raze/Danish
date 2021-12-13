@@ -1,0 +1,122 @@
+﻿@model Infrastrucutre.Core.Models.PostalCarrier
+
+<form id="frmAddUpdate" name="frmAddUpdate">
+    <div class="modal hide fade" id="modalAdd">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>Add Postal Carrier
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">
+                        Carrier Name
+                    </label>
+                    @Html.TextBoxFor(model => model.PostalCarrierName, new { @class = "input-large", @placeholder = "Enter Carrier" })
+                    @Html.ValidationMessageFor(model => model.PostalCarrierName)
+                    @Html.Hidden("PostalCarrierID", "0")
+                    @Html.Hidden("mode")
+                </div>
+                <div class="control-group">
+                    <label class="control-label">
+                        Account Number
+                    </label>
+                    @Html.TextBoxFor(model => model.Weight, new { @class = "input-large", @placeholder = "Enter Weight" })
+                    @Html.ValidationMessageFor(model => model.Weight)
+                  
+                </div>
+                <div class="control-group">
+                    <label class="control-label">
+                        Code
+                    </label>
+                    @Html.TextBoxFor(model => model.Price, new { @class = "input-large", @placeholder = "Enter Price" })
+                    @Html.ValidationMessageFor(model => model.Price)
+                    
+                </div>
+            </fieldset>
+        </div>
+</form>
+<form action="@Url.Action("UpdateCarrierImage", "Item")" class="form-inline well" enctype="multipart/form-data" method="post" name="frmDocUpload">
+    <div class="control-group">
+        <label class="control-label" id="lblCarrierImage">
+            Carrier Image
+        </label>
+        @Html.Hidden("CarrierID", "0")
+        <input type="file" class="span3" name="file" id="fileToUpload" />
+    </div>
+</form>
+<div class="modal-footer">
+    <a href="#" data-dismiss="modal" class="btn">Close
+    </a>
+    <button type="button" id="btnAdd" onclick="addColorDetails()" class="btn btn-success">
+        Add Carrier
+    </button>
+</div>
+</div>
+
+
+
+
+<script>
+
+
+
+    $(':file').change(function () {
+        var file = this.files[0];
+        var name = file.name;
+        frmDocUpload.submit();
+        //Your validation
+    });
+
+    function addColorDetails() {
+
+        $('#btnAdd').prop('disabled', true);
+        var data = $('#frmAddUpdate').serialize();
+        //debugger
+        //var data = new FormData($('form')[0]);
+        var posturl = '';
+        var formMode = $("#mode").val();
+
+
+
+        if (formMode == 'ADD') {
+            posturl = '@Url.Action("AddCarrier", "Item")'
+        }
+        else {
+            posturl = '@Url.Action("UpdateCarrier", "Item")'
+        }
+
+
+        if ($('#frmAddUpdate').valid()) {
+            $.ajax({
+                url: posturl,
+                type: 'post',
+                data: data,
+                success: onSuccessAdd,
+                error: onErrorAdd
+            });
+        }
+
+        $('#btnAdd').prop('disabled', false);
+    }
+
+    function onSuccessAdd() {
+        var formMode = $("#mode").val();
+        if (formMode == 'ADD') {
+            $('#successMessage').text('Postal Carrier Added Successfully')
+        }
+        else {
+            $('#successMessage').text('Postal Carrier Updated Successfully')
+        }
+        $('#successAlert').show();
+        $('#carriersTable').jtable('reload');
+        $('#modalAdd').modal('hide');
+    }
+
+    function onErrorAdd() {
+        $('#errorAlert').show();
+        $('#modalAdd').modal('hide');
+    }
+
+</script>

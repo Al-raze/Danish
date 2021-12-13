@@ -1,0 +1,251 @@
+﻿@{
+    ViewBag.Title = "Create Listings";    
+}
+
+@model List<Infrastrucutre.Core.Models.SupplierOrder>
+<style>
+    input.span2 {
+        width: 100px;
+    }
+    .order-head label {
+        display:inline
+    }
+</style>
+
+<div style="padding-left:10px;">
+<div class="row">    
+    @using (Html.BeginForm("AddOrderItem", "Item", FormMethod.Post, new { @id = "frmCreateListings" }))
+    {
+        <div class="order-head">
+            <input type="submit" name="name" value="Download Order" class="btn btn-success" onclick="submitForm()" />
+            <a class="btn btn-success" href="@Url.Action("StockManager", "Item")">Go Back</a>
+            <label style="padding-left: 30px">Order Number</label>
+             @if (ViewBag.orderNumber == null)
+             {
+                 <input id="orderNumber" name="orderNumber" />       
+             }
+             else
+             {
+                 <input id="orderNumber" value="@ViewBag.orderNumber" name="orderNumber" />  
+             }
+            
+            <label>Order Date</label>
+            @if (ViewBag.orderDate == null)
+            {
+                <input id="orderDate" style="cursor: pointer; background-color: white" readonly="readonly" class="datepicker" name="orderDate" />
+            }
+            else
+            {
+                <input id="orderDate" value="@ViewBag.orderDate" style="cursor: pointer; background-color: white" readonly="readonly" class="datepicker" name="orderDate" />
+            }
+
+            <input type="submit" name="name" value="+ Add Item" class="btn btn-success pull-right" onclick='addItem()' />    
+        </div>
+        <div style="overflow: auto;">
+        <table class="table table-bordered pull-left">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Item Name</th>
+                    <th>Item Code</th>
+                    <th>Item Cost</th>
+                    <th>Supplier</th>
+                    <th>Warehouse Stock</th>
+                    <th>Unit/Carton</th>
+                    <th>CBM</th>
+                    <th>Carton QTY</th>
+                    <th>Total Order Unit</th>
+                    <th>Total CBM</th>
+                    <th>FOB Price/Item</th>
+                    <th>Total FOB Price</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr id="row-@i.ToString()">                        
+                        <td class="jtable-command-column">
+                            @{
+                    if (i > 0)
+                    {
+                                <button title="Delete" class="jtable-command-button jtable-delete-command-button" onclick="removeItem('#row-@i.ToString()')"><span>Delete</span></button>
+                    }
+                            }
+                        </td>
+                            
+                        <td>
+                            <input type="hidden" name="ItemsInserted[@i].ItemMasterID" id="ItemsInserted[@i].ItemMasterID" value="@Model[i].ItemMasterID" />
+                            <input style="width:350px" autocomplete="off" type="text" id="ItemsInserted[@i].ItemName" name="ItemsInserted[@i].ItemName" class="span2 itemname" value="@Model[i].ItemName" />
+                        </td>
+                        <td>
+                            <input type="text" id="ItemsInserted[@i].ItemCode" name="ItemsInserted[@i].ItemCode"   class="span2 input-disabled" value="@Model[i].ItemCode" />
+                        </td>
+                        <td>
+                            <input type="text" id="ItemsInserted[@i].ItemCost" name="ItemsInserted[@i].ItemCost"  class="span2 input-disabled" value="@Model[i].ItemCost" />
+                        </td>
+                        <td>
+                            <input type="hidden" id="ItemsInserted[@i].SupplierID" name="ItemsInserted[@i].SupplierID" value="@Model[i].SupplierID" />
+                            <input type="text" class="span4 suppliername" autocomplete="off"  id="ItemsInserted[@i].SupplierName" name="ItemsInserted[@i].SupplierName" value="@Model[i].SupplierName" />
+                        </td>
+                         <td>
+                            <input type="text" id="ItemsInserted[@i].CurrentStock" name="ItemsInserted[@i].CurrentStock"  readonly="readonly" class="span2" value="@Model[i].CurrentStock" />
+                        </td>
+                        <td>
+                            <input type="text" id="ItemsInserted[@i].MasterCartonQty" name="ItemsInserted[@i].MasterCartonQty"  readonly="readonly" class="span2" value="@Model[i].MasterCartonQty" />                            
+                        </td>
+                        <td>
+                            <input type="text" id="ItemsInserted[@i].CBM" name="ItemsInserted[@i].CBM"  readonly="readonly" class="span2" value="@Model[i].CBM" />
+                        </td>
+                        <td>
+                            <input type="text" id="ItemsInserted[@i].CartonQty" name="ItemsInserted[@i].CartonQty"  onblur="changeQty('ItemsInserted[@i]')" class="span2" value="@Model[i].CartonQty" />
+                        </td>
+                        <td>
+                            <input type="text" id="ItemsInserted[@i].TotalOrderUnit" name="ItemsInserted[@i].TotalOrderUnit"  readonly="readonly" class="span2" value="@Model[i].TotalOrderUnit" />
+                        </td>
+                        <td>
+                            <input type="text" id="ItemsInserted[@i].TotalCBM" name="ItemsInserted[@i].TotalCBM"  readonly="readonly" class="span2" value="@Model[i].TotalCBM" />
+                        </td>
+                        <td>
+                            <input type="text" id="ItemsInserted[@i].FOBPricePerItem" name="ItemsInserted[@i].FOBPricePerItem" onblur="changeFOB('ItemsInserted[@i]')"  class="span2" value="@Model[i].FOBPricePerItem" />
+                        </td>
+                        <td>
+                            <input type="text" id="ItemsInserted[@i].TotalFOBPrice" name="ItemsInserted[@i].TotalFOBPrice" readonly="readonly"  class="span2" value="@Model[i].TotalFOBPrice" />
+                        </td>
+                        <td>
+                            <input type="text" id="ItemsInserted[@i].Notes" name="ItemsInserted[@i].Notes" class="span6" value="@Model[i].Notes" />
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+        </div>
+        <input type="hidden" name="mode" id="mode" value="" />
+    }
+</div>
+
+<div class="row" style="padding-left:20px">
+   
+</div>
+</div>
+<script>
+
+    var getId = function (currentItemId) {
+        return function get(field) {
+            var id = CSS.escape(currentItemId + '.' + field)
+            return '#' + id
+        }
+    }
+
+    function removeItem(rowId) {
+        $(rowId).remove();
+        return false
+    }
+    function submitForm() {
+        $('#mode').val('submit')
+        frmCreateListings.submit()
+    }
+    function addItem() {
+        $('#mode').val('add')
+        frmCreateListings.submit()
+    }
+
+    function changeFOB(currentItemId) {        
+        var ref = getId(currentItemId)
+        var totalunits = $(ref('TotalOrderUnit')).val()
+        var price = $(ref('FOBPricePerItem')).val()
+
+        $(ref('TotalFOBPrice')).val(totalunits * price)
+    }
+    function changeQty(currentItemId) {        
+        var ref = getId(currentItemId)
+
+        var qty = $(ref('CartonQty')).val()
+        var unitpercarton = $(ref('MasterCartonQty')).val()
+        var cbm = $(ref('CBM')).val()
+
+        $(ref('TotalOrderUnit')).val(qty * unitpercarton)
+        $(ref('TotalCBM')).val(cbm * qty)
+    }
+
+    $('.input-disabled').on('keydown', function (event) {
+        if (event.key == 'Tab' || event.key == 'Enter')
+            return true
+        return false
+    })
+
+    $(".suppliername").autocomplete({
+        source: function (request, response) {
+            $.get('@Url.Action("LookupSupplier")', {
+                searchText: request.term
+            }, function (data) {
+                response(data);
+            });
+        },
+        minLength: 1,
+        change: function (event, ui) {
+            var currentItemId = event.target.id.split('.')[0]            
+            var ref = getId(currentItemId)
+            if (!ui.item) {                
+                $(event.target).val('')                
+                $(ref('SupplierID')).val(0)
+            }
+        },
+        select: function (event, ui) {
+            var currentItemId = event.target.id.split('.')[0]
+            var ref = getId(currentItemId)
+            $(ref('SupplierID')).val(ui.item.id)
+        }
+    });
+
+    $(".itemname").autocomplete({
+        source: function (request, response) {
+            $.get('@Url.Action("LookupItem")', {
+                searchText: request.term
+            }, function (data) {
+                response(data);
+            });
+        },
+        minLength: 1,
+        change: function (event, ui) {
+            var currentItemId = event.target.id.split('.')[0]
+            var ref = getId(currentItemId)
+
+            if (!ui.item) {
+                $(event.target).val('')
+                $(ref('ItemMasterID')).val(0)
+                $(ref('ItemCost')).val(0)
+                $(ref('ItemCode')).val('')
+                $(ref('CBM')).val(0)
+                $(ref('MasterCartonQty')).val(0)
+                $(ref('SupplierName')).val('')
+                $(ref('SupplierID')).val(0)
+                $(ref('CurrentStock')).val(0)
+            }
+        },
+        select: function (event, ui) {            
+            var currentItemId = event.target.id.split('.')[0]
+            var ref = getId(currentItemId)
+
+            $.ajax({
+                url: '@Url.Action("GetItemByIDJson/")' + ui.item.id,
+                type: 'GET',
+                success: function(result) {                    
+                    $(ref('ItemMasterID')).val(result.ItemMasterID)
+                    $(ref('ItemCost')).val(result.TotalCost)
+                    $(ref('ItemCode')).val(result.ItemCode)
+                    $(ref('CBM')).val(result.CBM3)
+                    $(ref('MasterCartonQty')).val(result.MasterCartonQty)
+                    $(ref('SupplierName')).val(result.SupplierName)
+                    $(ref('SupplierID')).val(result.SupplierID)
+                    $(ref('CurrentStock')).val(result.CurrentStock)
+                }
+            });        
+        }
+    });
+
+    $(".datepicker").datepicker();
+    $(".datepicker").datepicker("option", "dateFormat", "d M, yy");
+
+</script>

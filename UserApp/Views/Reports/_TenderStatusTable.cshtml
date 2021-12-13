@@ -1,0 +1,80 @@
+﻿@model Infrastructure.Core.Models.Tender
+@using AkraTechFramework.Helpers
+@using Infrastructure.Core.Models
+@{
+    List<Tender> tenderList = ViewBag.Tenders;
+    int i = 0;
+    string pageName = "TenderStatus";
+}
+
+<div class="row-fluid acc-wizard">
+
+    <div class="span9">
+        <div class="accordion">
+            @foreach (var item in tenderList)
+            {
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" href="#tender@(i)">
+                            @item.TenderName
+                        </a>
+                    </div>
+                    <div id="tender@(i)" class="accordion-body collapse">
+                        <div class="accordion-inner">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr class="info">
+                                        <td align="right">@LanguageHelper.GetLabelCaption("TenderStatus.CompanyName", pageName)</td>
+                                        <td align="right">@LanguageHelper.GetLabelCaption("TenderStatus.TenderNo", pageName)</td>
+                                        <td align="right">@LanguageHelper.GetLabelCaption("TenderStatus.ProjectValue", pageName)</td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">@item.CompanyName</td>
+                                        <td align="right">@item.TenderNo</td>
+                                        <td align="right">@item.ProjectValue</td>
+                                    </tr>
+                                    <tr class="info">
+                                        <td align="right">@LanguageHelper.GetLabelCaption("TenderStatus.PurchaseValue", pageName)</td>
+                                        <td align="right">
+                                            @LanguageHelper.GetLabelCaption("TenderStatus.DaysRequired", pageName)</td>
+                                        <td align="right">@LanguageHelper.GetLabelCaption("TenderStatus.ClosingDate", pageName)</td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right" class="vrt">@item.PurchaseValue</td>
+                                        <td align="right" class="vrt">@item.DaysRequired</td>
+                                        <td align="right" class="vrt">@item.ClosingDate</td>
+                                    </tr>
+                                    <tr class="info">
+                                        <td align="right">@LanguageHelper.GetLabelCaption("TenderStatus.GuaranteeValue", pageName)</td>
+                                        <td align="right">@LanguageHelper.GetLabelCaption("TenderStatus.GuaranteeStartDate", pageName)</td>
+                                        <td align="right">@LanguageHelper.GetLabelCaption("TenderStatus.GuaranteeEndDate", pageName)</td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right" class="vrt">@item.GuaranteeValue</td>
+                                        <td align="right" class="vrt">@item.GuaranteeStartDate</td>
+                                        <td align="right" class="vrt">@item.GuaranteeEndDate</td>
+                                    </tr>
+                                    <tr class="info">
+                                        <td align="right">@LanguageHelper.GetLabelCaption("TenderStatus.PurchaseDate", pageName)</td>
+                                        <td align="right">@LanguageHelper.GetLabelCaption("TenderStatus.ProportionValue", pageName)</td>
+                                        <td align="right">@LanguageHelper.GetLabelCaption("TenderStatus.BankName", pageName)</td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right" class="vrt">@item.PurchaseDate</td>
+                                        <td align="right" class="vrt">@item.ProportionValue</td>
+                                        <td align="right" class="vrt">@item.BankName</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--/.accordion-inner -->
+                    </div>
+                    <!-- /#prerequisites -->
+                </div> <!-- /.accordion-group -->
+                i++;
+            }
+
+        </div>
+
+    </div>
+</div>

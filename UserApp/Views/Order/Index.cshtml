@@ -1,0 +1,1143 @@
+﻿@{
+    ViewBag.Title = "Index - Items";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers
+
+<style>
+    #divLoading {
+        background: url(content/images/299.gif) no-repeat center center;
+        height: 100px;
+        width: 220px;
+        position: fixed;
+        z-index: 1000;
+        left: 50%;
+        top: 40%;
+        margin: -25px 0 0 -25px;
+    }
+</style>
+
+<form name="editOrders" id="editOrdersForm" method="POST" action="@Url.Action("EditOrders")">
+    <input type="hidden" name="selectedorders" id="selectedorders" />
+</form>
+
+<div>
+    <div class="row-fluid">
+        <div class="span2 control-group">
+            <label class="control-label" for="ItemName">From Date</label>
+            @Html.TextBox("txtStartDate", DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0, 0)).ToShortDateString(), new
+            {
+            @class = "span12 datepicker",
+            @readonly = "readonly",
+            @style = "cursor:pointer; background-color:white",
+            @placeholder = "From Date"
+            })
+
+        </div>
+        <div class="span2 control-group">
+            <label class="control-label" for="ItemName">To Date</label>
+            @Html.TextBox("txtEndDate", DateTime.Now.ToShortDateString(), new
+            {
+            @class = "span12 datepicker",
+            @readonly = "readonly",
+            @style = "cursor:pointer; background-color:white",
+            @placeholder = "To Date"
+            })
+
+        </div>
+        <div class="span2 control-group">
+            <label class="control-label" for="SellerAccount">Seller Account</label>
+            <select class="combobox" style="width: 150px" id="SellerAccount" name="SellerAccount">
+                <option value="">All</option>
+                @foreach (var seller in (ViewBag.SellerID as System.Web.Mvc.SelectList).Items as List
+                <Infrastrucutre.Core.Models.SellerAccount>
+                    )
+                {
+                    <option value="@seller.SellerIndex">@seller.SellerID</option>
+
+                }
+            </select>
+        </div>
+        <div class="span2 control-group">
+            <label class="control-label" for="ItemName">Dispatch Status</label>
+            <select class="combobox" style="width: 120px" id="DispatchStatus" name="DispatchStatus">
+                <option value="">All</option>
+                <option value="Pending" selected="selected">Pending</option>
+                <option value="Completed">Completed</option>
+                <option value="Delete">Delete</option>
+            </select>
+        </div>
+
+        <div class="span2">
+            <div class="col-sm-12">
+                <div class="col-sm-3">
+                    <label style="float:left" class="control-label" for="ItemName">Order Number</label>
+                </div>
+                <div class="col-sm-1">
+                    @*<button id="btnClearOrderNumber" type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>*@
+
+                    <button id="btnClearOrderNumber" type="button" class="btn btn-small" aria-label="Close">
+                        Clear
+                    </button>
+                </div>
+            </div>
+            @Html.TextBox("orderNumber", "", new { style = "width:150px" })
+        </div>
+
+        <div class="span2 control-group">
+            <label>PaidPostage?</label>
+            @Html.CheckBox("specialDelivery")
+            <button type="submit" id="LoadRecordsButton" class="btn" style="margin-left: 90px;" onclick="FindOrders()">Find</button>
+        </div>
+
+    </div>
+</div>
+
+<div id="tblItems" style="width: fit-content;"></div>
+<div id="divLoading" style="display: none"></div>
+
+
+
+
+<form name="bulkInsert" id="bulkInsertForm" method="POST" action="@Url.Action(" PrintInvoice")">
+    <input type="hidden" name="selectedvalues" id="selectedvalues" />
+</form>
+
+<form id="frmOrderFormat" name="frmOrderFormat">
+    <div class="modal hide fade" id="modalOrderFormat">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>
+                Select Order Format
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    @Html.DropDownList("ddlOrderDownloadFormat", ViewBag.OrderDownloadFormat as SelectList, "Choose Order Download Format", new { @class = "combo-style combobox input-sm" })
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">
+                Close
+            </a>
+            <button type="button" id="btnDownlaodOrderInExcel" onclick="DownloadOrderList()" class="btn btn-success">
+                Download Order List
+            </button>
+        </div>
+    </div>
+</form>
+<form id="frmAddUpdate" name="frmAddUpdate">
+    <div class="modal hide fade" id="modalAdd">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>
+                Select Carrier
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    <select class="combo-style combobox input-sm" data-val="true" required="required" data-val-required="Item is required" id="PostalCarrierID" name="PostalCarrierID">
+                        <option value="">Choose a Postal Carrier</option>
+                        @foreach (var item in (ViewBag.PostalCarrierID as System.Web.Mvc.SelectList).Items as List
+                        <Infrastrucutre.Core.Models.PostalCarrier>
+                            )
+                        {
+                            <option value="@item.PostalCarrierID ">@item.PostalCarrierName</option>
+                        }
+                    </select>
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">
+                Close
+            </a>
+            <button type="button" id="btnAdd" onclick="updatePostalCarrier()" class="btn btn-success">
+                Update
+            </button>
+        </div>
+    </div>
+</form>
+
+<form id="frmReactiveDeletedOrders" name="frmReactiveDeletedOrders">
+    <div class="modal hide fade" id="modalReactiveDeletedOrders">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4>
+                Active Deleted Orders
+            </h4>
+        </div>
+        <div class="modal-body">
+            <h5>Are you sure you want to active those deleted Orders?</h5>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">
+                Close
+            </a>
+            <button type="button" id="btnAdd" onclick="updateReactiveDeletedOrders()" class="btn btn-success">
+                Update
+            </button>
+        </div>
+    </div>
+</form>
+
+<form id="frmAddCareerRef" name="frmAddCareerRef">
+    <div class="modal hide fade" id="modalAddCareerRef">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>
+                Add Carrier Reference
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group col-sm-12">
+                    <input id="txtCarrierRef" type="text" placeholder="Add Career Reference" class="form-control" style="width: 375px;" />
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">
+                Close
+            </a>
+            <button type="button" id="btnAdd" onclick="updateCareerRef()" class="btn btn-success">
+                Update
+            </button>
+        </div>
+    </div>
+</form>
+
+<form id="frmAditionalNotes" name="frmAditionalNotes">
+    <div class="modal hide fade" id="modalAditionalNotes">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>
+                Add Additional Notes
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group col-sm-12">
+                    <input id="txtAdditionalNotes" type="text" placeholder="Add Additional Reference" class="form-control" style="width: 375px;" />
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">
+                Close
+            </a>
+            <button type="button" id="btnAdd" onclick="updateAdditionalNotes()" class="btn btn-success">
+                Update
+            </button>
+        </div>
+    </div>
+</form>
+<script src="~/Scripts/jquery.cookie.js"></script>
+<script>
+
+
+    var systemStartDate = "@DateTime.Now.Subtract(new TimeSpan(4, 0, 0, 0, 0)).ToShortDateString().ToString()";
+    var startDate = SetStartDateAndStorageData();
+
+    $(document).ready(pageLoad);
+    $("#btnClearOrderNumber").on("click", function () {
+        $("#orderNumber").val("");
+    });
+    function SetStartDateAndStorageData() {
+        var cookieData = $.cookie("startDate");
+        if (cookieData == null) {
+            $.cookie("startDate", systemStartDate);
+        }
+        else {
+            $("#txtStartDate").val(cookieData);
+        }
+    }
+
+    $(document).ready(function () {
+        $("#txtStartDate").on("change", function () {
+            var startDate = $("#txtStartDate").val();
+            $.cookie("startDate", startDate);
+        });
+    });
+    //$(window).on('load', function () {
+    //    var localData = localStorage.getItem('startDate');
+    //    if (localData == null) {
+    //        localStorage.setItem('startDate', systemStartDate)
+    //    }
+    //    else {
+    //        $("#txtStartDate").val(localData);
+    //    }
+    //});
+
+    function pageLoad() {
+
+        $(".datepicker").datepicker();
+        $(".datepicker").datepicker("option", "dateFormat", "d M, y");
+
+
+        // Adding Old Value in the txtStartDateTextBox
+        var cookieData = $.cookie("startDate");
+        if (cookieData == null) {
+            $.cookie("startDate", systemStartDate);
+        }
+        else {
+            $("#txtStartDate").val(cookieData);
+        }
+        //end set value in startDate text box
+
+
+
+        loadItems();
+        FindOrders();
+    }
+
+    function FindOrders() {
+
+        $('#tblItems').jtable('load', { startDate: $('#txtStartDate').val(), endDate: $('#txtEndDate').val(), sellerId: $('#SellerAccount').val(), dispatchStatus: $('#DispatchStatus').val(), orderNumber: $('#orderNumber').val(), specialDelivery: $('#specialDelivery').is(':checked') });
+        //$('#tblItems').jtable('load', { startDate: $('#txtStartDate').val(),endDate:$('#txtEndDate').val() });
+
+    }
+
+    function loadItems() {
+        $('#tblItems').jtable({
+            title: 'Order Requests',
+            useBootstrap: true,
+            sorting: true,
+            selecting: true,
+            multiselect: true,
+            selectingCheckboxes: true,
+
+            actions: {
+                listAction: '@Url.Action("GetOrders")' + '?startDate=' + $('#txtStartDate').val() + '&endDate=' + $('#txtEndDate').val(),
+                deleteAction: '@Url.Action("DeleteOrder/")'
+            },
+            fields: {
+                Custom: {
+                    title: 'Select',
+                    display: function (data) {
+                        var $img = $('<img src="/Content/images/list_metro.png" style="cursor:pointer" title="Edit phone numbers" />');
+                        $img.click(function () {
+                            debugger
+                            if ($('#tblItems').jtable('isChildRowOpen', $img.closest('tr'))) {
+                                $('#tblItems').jtable('closeChildRow', $img.closest('tr'));
+                            }
+                            else {
+                                var $childRow = $('#tblItems').jtable('openChildRow', $img.closest('tr'));
+                                $childRow.find('td').addClass('noscroll').html(createTable(data.record,data.record.OrderItems));
+                            }
+                        });
+                        return $img;
+                    }
+                },
+                SalesOrderNumber: {
+                    //title: 'SalesNumber',
+                    title: 'OrderNo',
+                    width: '1%'
+                },
+                OrderDate: {
+                    title: 'OrderDate',
+                    display: function (data) {
+                        return data.record.OrderDateString
+                    },
+                },
+                Images: {
+                    title: 'Images',
+                    width: '3%',
+                    display: function (data) {
+                        var recordItems = data.record.OrderItems;
+                        var content = '';
+                        for (i = 0; i < recordItems.length; i++) {
+                            if (recordItems[i].ChannelName == 'EBay') {
+                                content += String.format("<div><a href='http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&item={0}' title='{1}' target=\"_blank\"><img src='http://thumbs1.ebaystatic.com/pict/{0}.jpg' style='height: 45px;width:45px'/></a><center><b>({2})</b></center></div>", recordItems[i].ItemID, recordItems[i].ItemTitle, recordItems[i].Quantity);
+                            } else {
+                                content += String.format("<div><a href='http://www.amazon.co.uk/exec/obidos/ASIN/{0}' title='{2}' target=\"_blank\"><img src='{1}' style='height: 45px;width:45px'/></a><center><b>({3})</b></center></div>", recordItems[i].ItemID, recordItems[i].ImageUrl, recordItems[i].ItemTitle, recordItems[i].Quantity);
+                            }
+                        }
+
+                        return content;
+                    }
+                },
+                SKU: {
+                    title: 'SKU',
+                    width: '3%',
+                    display: function (data) {
+                        var recordItems = data.record.OrderItems;
+                        var content = '';
+                        for (i = 0; i < recordItems.length; i++) {
+                            if (recordItems[i].ChannelName == 'EBay') {
+                                content += String.format("<div><center><b>{0}</b></center></div>", recordItems[i].SKUItemID);
+                            } else {
+                                content += String.format("<div><center><b>{0}</b></center></div>", recordItems[i].SKUItemID);
+                            }
+
+                        }
+
+                        return content;
+                    }
+                },
+                OrderID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                Name: {
+                    title: 'Buyer Name',
+                    display: function (data) {
+                        return data.record.Name;
+                    },
+                    width: '3%'
+                },
+                Name: {
+                    title: 'Customer_Full_Name',
+                    width: '20%'
+                },
+                Street1: {
+                    title: 'Full_Address',
+                    display: function (data) {
+                        if (data.record.Name == "Nancy Sands")
+                        {
+                            debugger;
+                        }
+                        var street1 = data.record.Street1 != null ? data.record.Street1+", " : "";
+                        var CityName = data.record.CityName != null ? data.record.CityName + ", " : " ";
+                        var StateOrProvince = data.record.StateOrProvince != null ? data.record.StateOrProvince : "" ;
+                        var totalData = street1 + " " + CityName + " " + StateOrProvince;
+                        return totalData;
+                    },
+                    width: '3%'
+                },
+                //Street1: {
+                //    title: 'Street1',
+                //    display: function (data) {
+                //        return data.record.Street1;
+                //    },
+                //    width: '3%'
+                //},
+
+                PostalCode: {
+                    title: 'PostCode',
+                    display: function (data) {
+                        return data.record.PostalCode;
+                    },
+                    width: '3%'
+                },
+                //CityName: {
+                //    title: 'CityName',
+                //    display: function (data) {
+                //        return data.record.CityName;
+                //    },
+                //    width: '3%'
+                //},
+                //StateOrProvince: {
+                //    title: 'State',
+                //    display: function (data) {
+                //        return data.record.StateOrProvince;
+                //    },
+                //    width: '3%'
+                //},
+                Country: {
+                    title: 'Country',
+                    width: '2%'
+                },
+                //Phone: {
+                //    title: 'Phone',
+                //    width: '8%'
+                //},
+                AmountPaid: {
+                    title: 'AmountPaid',
+                    width: '3%'
+                },
+                IsDispatched: {
+                    title: 'Dispatched_Status',
+                    width: '10%'
+                },
+                //OrderStatus: {
+                //    title: 'Payment',
+                //    width: '3%'
+                //},
+                PostalCarrierName: {
+                    title: 'PostalCarrier',
+                    width: '3%'
+                },
+                CarrierRef: {
+                    title: 'CarrierRef',
+                    width: '5%',
+                        display: function (data) {
+                            var recordItems = data.record.OrderItems;
+                            var record = data.record;
+                            var content = '';
+
+                            try {
+                                if (record.CarrierRef != "" && record.CarrierRef != null) {
+                                    content = String.format("<div><center><b>{0}</b></center></div>", record.CarrierRef);
+                                }
+                                else {
+                                    for (i = 0; i < recordItems.length; i++) {
+                                        if (recordItems[i].ChannelName == 'EBay') {
+                                            content += String.format("<div><center><b>{0}</b></center></div>", recordItems[i].SKUItemID);
+                                        } else {
+                                            content += String.format("<div><center><b>{0}</b></center></div>", recordItems[i].SKUItemID);
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                console.log(data.record)
+                            }
+
+
+
+                            return content;
+                        }
+                },
+                InStock: {
+                    title: 'InStock',
+                    width: '6%',
+                    display: function (data) {
+                        var recordItems = data.record.OrderItems;
+
+                        return recordItems[0].StockUnits;
+                    }
+                },
+                ProceedDate: {
+                    title: 'ProceedDate',
+                    width: '15%',
+                    display: function (data) {
+                        return data.record.ProceedDateString
+                    },
+                },
+                SellerID: {
+                    title: 'Seller',
+                    width: '3%'
+                },
+                AddiotionalNotes: {
+                    title: 'AddiotionalNotes',
+                    width: '6%',
+                    display: function (data) {
+                        var addiotionalNotes = data.record.AddiotionalNotes;
+
+                        return addiotionalNotes;
+                    }
+                },
+                //Action: {
+                //    title: 'Action',
+                //    width: '3%',
+                //    display: function (data) {
+                //        var recordItems = data.record.OrderID;
+                //        var content = '';
+                //         content = "<input type='button' class='btn btn-sm'>"
+
+                //        return content;
+                //    }
+                //},
+            },
+            recordsLoaded: function (event, data) {
+                //data.records.length
+                //startDate=' + $('#txtStartDate').val() + '&endDate=' + $('#txtEndDate').val()
+                var recordsFound = String.format(" {0} Orders found for Order Requests from {1} to {2}", data.records.length, $('#txtStartDate').val(), $('#txtEndDate').val())
+                $('#tblItems').find('.jtable-title-text').html(recordsFound);
+            },
+            toolbar: {
+                items: [
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'Download Order',
+                        click: ShowMdlOrderList
+                    },
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'Notes',
+                        click: editOrders
+                    },
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'Aditional Notes',
+                        click: editAditionalNotes
+                    },
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'ReactiveDeletedOrders',
+                        click: editDeletedOrders,
+                        class: "clsDeleteOrder"
+                    },
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'CareerRef',
+                        click: editCareerRef
+                    },
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'Synchronize',
+                        click: Synchronize
+                    Synchronize
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'Generate Invoice',
+                        click: GenerateInvoice
+                    },
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'Special Delivery',
+                        click: GenerateSpecialDelivery
+                    },
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'Yodel Delivery',
+                        click: GenerateYodelDelivery
+                    },
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'Update Carrier',
+                        click: PostalCarrier
+                    },
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'SynchronizeImages',
+                        click: SynchronizeImages
+                    }
+
+                ]
+            }
+        });
+
+}
+
+function PostalCarrier() {
+
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+
+    if ($selectedRows.length > 0) {
+        $('#modalAdd').modal('show');
+    }
+
+}
+
+function addNotes() {
+    alert('Add Notes');
+}
+
+function GenerateYodelDelivery() {
+
+    var selectedItems = new Array();
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+
+    if ($selectedRows.length > 0) {
+
+        $('#selectedvalues').val('');
+
+        $selectedRows.each(function () {
+            var record = $(this).data('record');
+            $('#selectedvalues').val($('#selectedvalues').val() + ',' + record.OrderID)
+            selectedItems.push(record.OrderID)
+        });
+
+        location.href = '@Url.Action("GenereateYodelDelivery")' + "?selectedvalues=" + $('#selectedvalues').val()
+    }
+
+
+}
+
+function GenerateSpecialDelivery() {
+
+    var selectedItems = new Array();
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+
+    if ($selectedRows.length > 0) {
+
+        $('#selectedvalues').val('');
+
+        $selectedRows.each(function () {
+            var record = $(this).data('record');
+            $('#selectedvalues').val($('#selectedvalues').val() + ',' + record.OrderID)
+            selectedItems.push(record.OrderID)
+        });
+
+        location.href = '@Url.Action("GenereateSpecialDelivery")' + "?selectedvalues=" + $('#selectedvalues').val()
+    }
+
+
+}
+
+function editOrders() {
+
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+    var selectedItems = new Array();
+
+    if ($selectedRows.length > 0) {
+
+        $('#selectedorders').val('');
+
+        $selectedRows.each(function () {
+            var record = $(this).data('record');
+
+            $('#selectedorders').val($('#selectedorders').val() + ',' + record.OrderID)
+
+            selectedItems.push(record.ItemMasterID)
+        });
+
+        editOrdersForm.submit();
+    }
+}
+
+    function editAditionalNotes() {
+
+        var $selectedRows = $('#tblItems').jtable('selectedRows');
+        //var $selectedRowst = $('#tblItems').jtable('selectedRows').getValueAt(0, 1).toString();
+        var $selectedRowst = $('#tblItems').jtable('selectedRows').children(12).text();
+        var selectedFirstRow = $selectedRows[0];
+
+        if ($selectedRows.length > 0) {
+            var selectedFirstRow = $selectedRows[0];
+            var selectedFirstRowOrderItems = $selectedRows[0].OrderItems;
+            $selectedRows.each(function () {
+                var record = $(this).data('record');
+                var data = record.AddiotionalNotes;
+                $("#txtAdditionalNotes").val(data);
+            });
+        }
+
+        if ($selectedRows.length > 0) {
+            $('#modalAditionalNotes').modal('show');
+        }
+}
+
+
+function editCareerRef() {
+
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+    //var $selectedRowst = $('#tblItems').jtable('selectedRows').getValueAt(0, 1).toString();
+    var $selectedRowst = $('#tblItems').jtable('selectedRows').children(12).text();
+    var selectedFirstRow = $selectedRows[0];
+
+    if ($selectedRows.length > 0) {
+    var selectedFirstRow = $selectedRows[0];
+    var selectedFirstRowOrderItems = $selectedRows[0].OrderItems;
+        $selectedRows.each(function () {
+            var record = $(this).data('record');
+            //console.log("record : " + record.OrderID);
+            //debugger;
+            //console.log("CarrierRef : " + record.OrderItems[0].CarrierRef);
+            var data = record.OrderItems[0].CarrierRef != null ||  record.OrderItems[0].CarrierRef == "" ? record.OrderItems[0].CarrierRef:record.OrderItems[0].SKUItemID;
+            //$("#txtCarrierRef").val(record.OrderItems[0].CarrierRef);
+            $("#txtCarrierRef").val(data);
+        });
+    }
+
+        if ($selectedRows.length > 0) {
+            $('#modalAddCareerRef').modal('show');
+        }
+}
+
+function updateCareerRef() {
+
+        var carrierRef = $('#txtCarrierRef').val();
+
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+    var selectedItems = new Array();
+
+    if ($selectedRows.length > 0) {
+
+        $('#selectedvalues').val('');
+
+        $selectedRows.each(function () {
+            var record = $(this).data('record');
+            selectedItems.push(record.OrderID)
+        });
+    }
+
+
+
+    $.ajax({
+        url: '@Url.Action("UpdateCarrierRef")',
+            type: 'POST',
+            success: function () {
+                $('#divLoading').hide();
+                $('#txtCarrierRef').val("");
+                $('#modalAddCareerRef').modal('hide');
+                FindOrders()
+            },
+            traditional: true,
+            data: {
+                'carrierRef': $('#txtCarrierRef').val(),
+                'OrderIDs': selectedItems  // <-- the $ sign in the parameter name seems unusual, I would avoid it
+            },
+            error: function (xhr, status, error) {
+                $("#divLoading").hide()
+                $('#modalAddCareerRef').modal('hide');
+                alert('Unexpected error - Please contact administrator');
+            }
+
+        });
+
+    }
+
+    function updateAdditionalNotes() {
+
+        var additionalNotes = $('#txtAdditionalNotes').val();
+
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+    var selectedItems = new Array();
+
+    if ($selectedRows.length > 0) {
+
+        $('#selectedvalues').val('');
+
+        $selectedRows.each(function () {
+            var record = $(this).data('record');
+            selectedItems.push(record.OrderID)
+        });
+    }
+
+
+
+    $.ajax({
+        url: '@Url.Action("UpdateAdditionalNotes")',
+            type: 'POST',
+            success: function () {
+                $('#divLoading').hide();
+                $('#txtAdditionalNotes').val("");
+                $('#modalAditionalNotes').modal('hide');
+
+
+                $('.jtable-row-selected').removeClass('jtable-row-selected');
+                $("#tblItems").find(".jtable-column-header-container > input").prop("checked", false);
+                $("#tblItems").find(".jtable-selecting-column > input").prop("checked", false);
+
+                FindOrders()
+            },
+            traditional: true,
+            data: {
+                'AditionalNotes': $('#txtAdditionalNotes').val(),
+                'OrderIDs': selectedItems  // <-- the $ sign in the parameter name seems unusual, I would avoid it
+            },
+            error: function (xhr, status, error) {
+                $("#divLoading").hide()
+                $('#modalAditionalNotes').modal('hide');
+                alert('Unexpected error - Please contact administrator');
+            }
+
+        });
+
+    }
+
+function editDeletedOrders() {
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+    if ($selectedRows.length > 0 && $("#DispatchStatus").val() == "Delete") {
+            $('#modalReactiveDeletedOrders').modal('show');
+        }
+}
+
+    function updateReactiveDeletedOrders() {
+
+
+        var $selectedRows = $('#tblItems').jtable('selectedRows');
+        var selectedItems = new Array();
+
+        if ($selectedRows.length > 0) {
+
+            $('#selectedvalues').val('');
+
+            $selectedRows.each(function () {
+                var record = $(this).data('record');
+                selectedItems.push(record.OrderID)
+            });
+        }
+
+
+
+    $.ajax({
+        url: '@Url.Action("updateReactiveDeletedOrders")',
+            type: 'POST',
+            success: function () {
+                $('#divLoading').hide();
+                $('#modalReactiveDeletedOrders').modal('hide');
+                FindOrders()
+            },
+            traditional: true,
+            data: {
+                'OrderIDs': selectedItems  // <-- the $ sign in the parameter name seems unusual, I would avoid it
+            },
+            error: function (xhr, status, error) {
+                $("#divLoading").hide()
+                $('#modalReactiveDeletedOrders').modal('hide');
+                alert('Unexpected error - Please contact administrator');
+            }
+
+        });
+
+    }
+
+
+function updatePostalCarrier() {
+
+    var postalCarrier = $('#PostalCarrierID').val();
+
+    var $selectedRows = $('#tblItems').jtable('selectedRows');
+    var selectedItems = new Array();
+
+    if ($selectedRows.length > 0) {
+
+        $('#selectedvalues').val('');
+
+        $selectedRows.each(function () {
+            var record = $(this).data('record');
+            selectedItems.push(record.OrderID)
+        });
+    }
+
+
+
+    $.ajax({
+        url: '@Url.Action("UpdateCarrier")',
+            type: 'POST',
+            success: function () {
+                $('#divLoading').hide();
+                $('#modalAdd').modal('hide');
+                FindOrders()
+            },
+            traditional: true,
+            data: {
+                'PostalCarrierID': $('#PostalCarrierID').val(),
+                'OrderIDs': selectedItems  // <-- the $ sign in the parameter name seems unusual, I would avoid it
+            },
+            error: function (xhr, status, error) {
+                $("#divLoading").hide()
+                $('#modalAdd').modal('hide');
+                alert('Unexpected error - Please contact administrator');
+            }
+
+        });
+
+    }
+
+    function GenerateInvoice() {
+
+        var $selectedRows = $('#tblItems').jtable('selectedRows');
+        var selectedItems = new Array();
+
+        if ($selectedRows.length > 0) {
+
+            $('#selectedvalues').val('');
+
+            $selectedRows.each(function () {
+                var record = $(this).data('record');
+
+                $('#selectedvalues').val($('#selectedvalues').val() + ',' + record.OrderID)
+
+                selectedItems.push(record.ItemMasterID)
+            });
+
+            //    bulkInsertForm.submit();
+
+            location.href = '@Url.Action("InvoiceMaster")' + "?selectedvalues=" + $('#selectedvalues').val()
+
+        }
+    }
+
+    function SynchronizeImages() {
+
+        if ($('#SellerAccount').val() == '') {
+            alert('Please select a seller to Synchronize');
+            return;
+        }
+
+
+        if ($("#divLoading").is(":visible")) {
+            alert('Synchronization already in progess,Please wait');
+        }
+        //$('#txtStartDate').val() + '&endDate=' + $('#txtEndDate').val()
+
+        $('#divLoading').show();
+        $.ajax({
+            url: '@Url.Action("SynchronizeImages")',
+            type: 'POST',
+            success: function () {
+                $('#divLoading').hide();
+                FindOrders()
+            },
+            data: {
+                'sellerId': $('#SellerAccount').val()
+            },
+            error: function (xhr, status, error) {
+                $("#divLoading").hide()
+                alert('Unexpected error - Please contact administrator');
+            }
+
+        });
+
+    }
+
+    function Synchronize() {
+
+        if ($('#SellerAccount').val() == '') {
+            alert('Please select a seller to Synchronize');
+            return;
+        }
+
+
+        if ($("#divLoading").is(":visible")) {
+            alert('Synchronization already in progess,Please wait');
+        }
+        //$('#txtStartDate').val() + '&endDate=' + $('#txtEndDate').val()
+
+        $('#divLoading').show();
+        $.ajax({
+            url: '@Url.Action("SynchronizeOrders")',
+            type: 'POST',
+            success: function () {
+                $('#divLoading').hide();
+                FindOrders()
+            },
+            data: {
+                'startDate': $('#txtStartDate').val(),
+                'endDate': $('#txtEndDate').val(), // <-- the $ sign in the parameter name seems unusual, I would avoid it
+                'sellerId': $('#SellerAccount').val()
+            },
+            error: function (xhr, status, error) {
+                $("#divLoading").hide()
+                alert('Unexpected error - Please contact administrator');
+            }
+
+        });
+
+    }
+
+    function addItem() {
+        $('#tblItems').jtable('load');
+    }
+
+    function createTable(order,data) {
+        //debugger
+        //<tr class="jtable-data-row jtable-row-even"><td>testuser_akratechtesting</td><td>Test User</td><td>address</td><td></td><td>city</td><td>WA</td><td><img src="/Content/images/add.png" title="Edit phone numbers"></td><td>1 800 111 1111</td></tr>
+        var content = "<table  class=\"table table-hover\">"/*<td width=\"15%\">In Stock</td>*/
+        content += '<td width=\"15%\">RequestNo</td><td width=\"15%\">ItemName</td><td width=\"15%\">ItemCode</td><td width=\"10%\">Image</td><td width=\"5%\">Quantity</td><td width=\"30%\">Item Title</td><td width=\"20%\">ItemID</td><td width=\"20%\">In Stock</td><td width=\"10%\">Shipping Cost</td><td width=\"15%\">Transaction Price</td><td width=\"15%\">Phone</td>'
+        for (i = 0; i < data.length; i++) {
+            content += '<tr>'
+            //http://thumbs1.ebaystatic.com/pict/221552595907.jpg
+
+
+
+            if (data[i].ListingRequestNo == 'N/A') {
+                content += '<td>' + data[i].ListingRequestNo + '</td>';
+            }
+            else {
+                content += String.format("<td><a href='{0}' target=\"_blank\">{1}</a></td>", '@Url.Action("GetListingRequestByID", "Listing")' + "/" + data[i].RequestID, data[i].ListingRequestNo);
+            }
+
+            content += '<td>' + data[i].ItemName + '</td>';
+            content += '<td>' + data[i].ItemCode + '</td>';
+            //content += '<td>' + data[i].StockUnits + '</td>';
+
+            //<img src="/Content/Upload/14535_imperial-logo.jpg" alt="Image" style="height: 45px;width:45px">
+
+            if (data[i].ChannelName == 'EBay') {
+                content += String.format("<td><img src='http://thumbs1.ebaystatic.com/pict/{0}.jpg' style='height: 45px;width:45px'/> </td>", data[i].ItemID);
+            } else {
+                content += String.format("<td><img src='{0}' style='height: 45px;width:45px'/> </td>", data[i].ImageUrl);
+            }
+
+
+            content += '<td>' + data[i].Quantity + '</td>';
+
+            if (data[i].ListingRequestNo == 'N/A') {
+                if (data[i].ChannelName == 'EBay') {
+                    content += String.format("<td><a href='http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&item={0}' target=\"_blank\">{1}</a></td>", data[i].ItemID, data[i].ItemTitle + ' ' + data[i].AdditionalInfo);
+                }
+                else {
+                    content += String.format("<td><a href='http://www.amazon.co.uk/exec/obidos/ASIN/{0}' target=\"_blank\">{1}</a></td>", data[i].ItemID, data[i].ItemTitle + ' ' + data[i].AdditionalInfo);
+                }
+            }
+            else {
+                content += String.format("<td><a href='{0}' target=\"_blank\">{1}</a></td>", data[i].ListingLink, data[i].ItemTitle);
+            }
+
+
+            content += '<td>' + data[i].ItemID + '</td>';
+            content += '<td>' + data[i].StockUnits + '</td>';
+            content += '<td>' + data[i].ShippingCost + '</td>';
+            content += '<td>' + data[i].TransactionPrice + '</td>';
+            content += '<td>' + order.Phone + '</td>';
+            content += '</tr>'
+        }
+        content += "</table>"
+        return content;
+    }
+
+
+    function ShowMdlOrderList() {
+
+        var $selectedRows = $('#tblItems').jtable('selectedRows');
+
+        if ($selectedRows.length > 0) {
+            $('#modalOrderFormat').modal('show');
+        }
+
+    }
+
+    function DownloadOrderList() {
+        var $selectedRows = $('#tblItems').jtable('selectedRows');
+        var selectedItems = new Array();
+
+        if ($("#ddlOrderDownloadFormat").val() == "") {
+            alert("Please Select Download Format First.");
+            return;
+        }
+
+        if ($selectedRows.length > 0) {
+            $('#selectedvalues').val('');
+            $selectedRows.each(function () {
+                var record = $(this).data('record');
+                selectedItems.push(record.OrderID)
+            });
+
+
+            if ($("#divLoading").is(":visible")) {
+                alert('Another Process is running,Please wait.');
+                return;
+            }
+
+        $('#divLoading').show();
+        $.ajax({
+            url: '@Url.Action("DownloadOrderList")',
+            type: 'POST',
+            success: function (response) {
+                $('#divLoading').hide();
+                var setial = 1;
+                window.location = '/Order/Download?fileGuid=' + response.FileGuid + '&filename=' + response.FileName;
+
+                //$.each(response, function (i, memorylist) {
+                //    $.each(memorylist, function (i, memoryInfo) {
+                //        console.log(setial);
+                //        //setTimeout(function () {
+                //            window.open('/Order/Download?fileGuid=' + memoryInfo.FileGuid + '&filename=' + memoryInfo.FileName,"_blank");
+                //        //}, 1000);
+                //    });
+                //});
+
+                $('#modalOrderFormat').modal('hide');
+                $('.jtable-row-selected').removeClass('jtable-row-selected');
+                $("#tblItems").find(".jtable-column-header-container > input").prop("checked", false);
+                $("#tblItems").find(".jtable-selecting-column > input").prop("checked", false);
+
+                },
+                traditional: true,
+            data: {
+                'downloadFormatID': $("#ddlOrderDownloadFormat").val(),
+                'downloadFormatName': $("#ddlOrderDownloadFormat option:selected").text(),
+                    'orderIds': selectedItems  // <-- the $ sign in the parameter name seems unusual, I would avoid it
+                },
+            error: function (xhr, status, error) {
+                $('#modalOrderFormat').modal('hide');
+                    $("#divLoading").hide()
+                    alert('Unexpected error - Please contact administrator');
+                }
+            });
+        }
+    }
+</script>

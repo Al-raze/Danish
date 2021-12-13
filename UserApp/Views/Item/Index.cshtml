@@ -1,0 +1,467 @@
+﻿﻿@{
+    ViewBag.Title = "Index - Items";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers
+@{ 
+   string pageName = "item";   
+   string searchString = ViewBag.ItemSearchString;   
+}
+
+<div class="filtering">
+    <form>
+        <div class="input-append">
+            <select id="filter">
+                <option value="ItemName">ItemName</option>
+                <option value="ItemCode">ItemCode</option>
+                <option value="Supplier">Supplier</option>
+                <option value="Notes">Notes</option>
+                <option value="ListingCount">Listing Count >=</option>
+            </select>
+            <input class="span4" id="filterText" type="text">
+            <button class="btn"  id="LoadRecordsButton" type="button">Search</button>
+            <button class="btn"  id="Refresh" type="button">Clear Search</button>
+        </div>
+    </form>
+</div>
+
+<div id="tblItems"></div>
+
+<form name="bulkInsert" id="bulkInsertForm" method="POST" action="@Url.Action("CreateListingLink")">
+    <input type="hidden" name="selectedvalues" id="selectedvalues"/>
+</form>
+
+<div id="dialog-confirm" title="Are you sure you want to proceed"></div>
+
+<script>
+
+    $(document).ready(pageLoad);
+
+    var cachedCityOptions = null;
+
+    function pageLoad() {
+        loadItems()
+    }
+
+    function loadItems() {
+        $('#tblItems').jtable({
+            title: 'Item Master',
+            useBootstrap: true,
+            paging: true,
+            sorting: true,
+            selecting: true,
+            multiselect: true,
+            selectingCheckboxes: true,
+            actions: {
+                listAction: '@Url.Action("GetItems/")@searchString',
+                deleteAction: '@Url.Action("DeleteItem/")'
+            },
+            recordsLoaded: function(event, data) {
+
+            },
+            fields: {
+                ItemMasterID: {
+                    key: true,
+                    list: false
+                },
+                Phones: {
+                    title: 'Select',
+                    width: '1%',
+                    sorting: false,
+                    edit: false,
+                    create: false,
+                    display: function (itemData) {
+                        //Create an image that will be used to open child table
+                        var $img = $('<img src="/Content/images/list_metro.png" style="cursor:pointer" title="Listing Submission" />');
+
+                        //Open child table when user clicks the image
+                        $img.click(function () {
+
+                            if ($('#tblItems').jtable('isChildRowOpen', $img.closest('tr'))) {
+                                $('#tblItems').jtable('closeChildRow', $img.closest('tr'));
+                                return;
+                            }
+
+
+                            $('#tblItems').jtable('openChildTable',
+                                    $img.closest('tr'),
+                                    {
+                                        title: ' Listings for ' + itemData.record.ItemName,
+                                        actions: {
+                                            listAction: '/Listing/GetItemSellerLink?id=' + itemData.record.ItemMasterID,
+                                            updateAction: '@Url.Action("UpdateLink","Listing")',
+                                            createAction: '@Url.Action("InsertLink","Listing")',
+                                            deleteAction: '@Url.Action("DeleteLink/","Listing")'
+                                        },
+
+                                        fields: {
+                                            ItemLinkId: {
+                                                key: true,
+                                                list: false
+                                            },
+                                            ItemCode: {
+                                                title: 'ItemCode',
+                                                width: '6%',
+                                                display: function (data) {
+                                                    return String.format("{0}", itemData.record.ItemCode);
+                                                },
+                                                input: function (data) {
+                                                    if (itemData.record.ItemCode) {
+                                                        var inp = '<input type="text" readonly class="jtable-input-readonly" name="ItemCode" value="' + itemData.record.ItemCode + '"/>';
+                                                        inp += '<input type="hidden" name="ItemMasterID" value="' + itemData.record.ItemMasterID + '"/>';
+
+                                                        return inp
+                                                    } else {
+                                                        //nothing to worry about here for your situation, data.value is undefined so the else is for the create/add new record user interaction, create is false for your usage so this else is not needed but shown just so you know when it would be entered
+                                                    }
+                                                }
+                                            },
+                                            ListingItemNo: {
+                                                title: 'ASIN/ItemNo',
+                                                width: '6%'
+                                            },
+                                            ItemName: {
+                                                title: 'ItemMiniTitle',
+                                                display: function (data) {
+                                                    return String.format("{0}", itemData.record.ItemName);
+                                                },
+                                                width: '10%',
+                                                input: function (data) {
+                                                    if (itemData.record.ItemName) {
+                                                        return '<input type="text" readonly class="jtable-input-readonly" name="ItemName" value="' + itemData.record.ItemName + '"/>';
+                                                    } else {
+                                                        //nothing to worry about here for your situation, data.value is undefined so the else is for the create/add new record user interaction, create is false for your usage so this else is not needed but shown just so you know when it would be entered
+                                                    }
+                                                }
+
+                                            },
+                                            SellerIndex: {
+                                                title: 'Shop/Seller',
+                                                width: '3%',
+                                                options: function () {
+
+                                                    if (cachedCityOptions) { //Check for cache
+                                                        return cachedCityOptions;
+                                                    }
+
+                                                    var options = [];
+
+                                                    $.ajax({ //Not found in cache, get from server
+                                                        url: '@Url.Action("GetSellers")',
+                                                        type: 'POST',
+                                                        dataType: 'json',
+                                                        async: false,
+                                                        success: function (data) {
+                                                            if (data.Result != 'OK') {
+                                                                alert(data.Message);
+                                                                return;
+                                                            }
+                                                            options = data.Options;
+                                                        }
+                                                    });
+
+                                                    return cachedCityOptions = options; //Cache results and return options
+                                                }
+                                            },
+                                            LinkUrl: {
+                                                title: 'Link',
+                                                display: function (data) {
+                                                    return String.format("<a class='btn btn-link btn-mini' href='{0}' target=\"_blank\">Link</a>", data.record.LinkUrl);
+                                                },
+                                                width: '3%'
+                                            },
+                                            SKU: {
+                                                title: 'SKU',
+                                                width: '6%'
+                                            }
+                                            ,
+                                            FNSKU: {
+                                                title: 'FNSKU',
+                                                width: '6%'
+                                            },
+                                            Postage: {
+                                                title: 'Postage',
+                                                width: '6%',
+                                                options: function () {
+
+                                                    var options = [];
+
+                                                    $.ajax({ //Not found in cache, get from server
+                                                        url: '@Url.Action("GetPostage")',
+                                                        type: 'POST',
+                                                        dataType: 'json',
+                                                        async: false,
+                                                        success: function (data) {
+                                                            if (data.Result != 'OK') {
+                                                                alert(data.Message);
+                                                                return;
+                                                            }
+                                                            options = data.Options;
+                                                        }
+                                                    });
+
+                                                    return options; //Cache results and return options
+                                                }
+                                            },
+                                            ActQty: {
+                                                title: 'ActQty',
+                                                width: '2%'
+                                            }
+                                        }
+                                    }, function (data) { //opened handler
+                                        data.childTable.jtable('load');
+                                    });
+                        });
+                        //Return image to show on the person row
+                        return $img;
+                    }
+                },
+                ItemName: {
+                    title: 'Item Name',
+                    width: '6%',
+                    edit: true,
+                    input: function (data) {
+                        if (data.record.ItemName) {
+                            return String.format("<textarea  rows='3' cols='50' readonly class='jtable-input-readonly' name='ItemName'>{0}</textarea>", data.record.ItemName);
+                        } else {
+                            //nothing to worry about here for your situation, data.value is undefined so the else is for the create/add new record user interaction, create is false for your usage so this else is not needed but shown just so you know when it would be entered
+                        }
+                    },
+                },
+                ItemCode: {
+                    title: 'Item Code',
+                    width: '7%',
+                    input: function (data) {
+                        if (data.record.ItemCode) {
+                            return String.format("<input type='text' readonly class='jtable-input-readonly' name='ItemCode' value={0}></input>", data.record.ItemCode);
+                        } else {
+                            //nothing to worry about here for your situation, data.value is undefined so the else is for the create/add new record user interaction, create is false for your usage so this else is not needed but shown just so you know when it would be entered
+                        }
+                    },
+                },
+                SupplierName: {
+                    title: 'Supplier Name',
+                    edit: false,
+                    width: '7%'
+
+                },
+                Brand: {
+                    title: 'Brand',
+                    edit: false,
+                    width: '3%'
+                },
+
+                Dimension: {
+                    title: 'Dimension',
+                    edit: false,
+                    width: '3%'
+                },
+                ItemWeight: {
+                    title: 'Item Weight',
+                    edit: false,
+                    width: '5%'
+                },
+                ItemCost: {
+                    title: 'Item Cost',
+                    edit: false,
+                    width: '5%'
+                },
+                VAT: {
+                    title: 'VAT%',
+                    edit: false,
+                    width: '1%'
+                },
+                TotalCost: {
+                    title: 'Total Cost',
+                    edit: false,
+                    width: '3%'
+                },
+                BarCode: {
+                    title: 'BarCode',
+                    edit: false,
+                    width: '3%'
+                },
+                ActiveListings: {
+                    title: '#Listings',
+                    edit: false,
+                    width: '1%'
+                },
+
+                Edit: {
+                        display: function (data) {
+                            //if (data.record.UserName != 'admin')
+                        return String.format("<a class='btn btn-success btn-mini' href='/Item/GetItemByID/{0}'>Edit</a>", data.record.ItemMasterID);
+                    },
+                    edit: false,
+                    width: '2%'
+                },
+                History: {
+                    width: '2%',
+                    display: function (data) {
+                        return String.format("<a class='btn btn-success btn-mini' target='_blank' href='/Item/ItemHistory/{0}'>History</a>", data.record.ItemMasterID);
+                    },
+                }
+            },
+            toolbar: {
+                items: [
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'Add Items',
+                        click: addItem
+                    },
+                    {
+                        icon: '../../Content/images/add_icon.png',
+                        text: 'Listing Submission',
+                        click: addListingSubmission
+                    }
+                ]
+            }
+        });
+                    $('#tblItems').jtable('load');
+                }
+
+                function addItem() {
+                    $(location).attr("href", "@Url.Action("AddItems")")
+        }
+
+
+        function addListingSubmission() {
+
+            var $selectedRows = $('#tblItems').jtable('selectedRows');
+            var selectedItems = new Array();
+
+            if ($selectedRows.length > 0) {
+
+                $('#selectedvalues').val('');
+
+                $selectedRows.each(function () {
+                    var record = $(this).data('record');
+
+                    $('#selectedvalues').val($('#selectedvalues').val() + ',' + record.ItemMasterID)
+
+                    selectedItems.push(record.ItemMasterID)
+                });
+
+                bulkInsertForm.submit();
+            }
+
+       @* $.ajax({
+            url: '@Url.Action("CreateListings")',
+            type: "post",
+            data: JSON.stringify({ 'items': selectedItems }),
+            contentType: 'application/json; charset=utf-8',
+            cache: false
+        });*@
+
+    }
+
+    $('#LoadRecordsButton').click(function (e) {
+        e.preventDefault();
+        $('#tblItems').jtable('load', {
+            filter: $('#filter').val(),
+            filterText: $('#filterText').val()
+        });
+    });
+
+    $('#Refresh').click(function (e) {
+        e.preventDefault();
+        $('#tblItems').jtable('load')
+        $('#filterText').val('')
+    });
+
+    function isDisabledAuto() {
+        var source = $("#filter").val()
+
+        return !(source == 'ItemName' || source == 'Supplier')
+    }
+
+    $("#filter").change(function () {
+        $("#filterText").autocomplete({
+            disabled: isDisabledAuto()
+        })
+    });
+
+    $("#filterText").autocomplete({
+        disabled: false,
+        source: function (request, response) {
+            var source = $("#filter").val()
+            var url = ''
+
+            if (source == 'ItemName') {
+                url = '@Url.Action("LookupItem")'
+            }
+            else if (source == 'Supplier') {
+                url = '@Url.Action("LookupSupplier")'
+            }
+            $.get(url, {
+                searchText: request.term,
+                onlyItemName: true
+            }, function (data) {
+                response(data);
+            });
+        },
+        minLength: 1,
+        change: function (event, ui) {
+
+        },
+        select: function (event, ui) {
+
+        }
+    });
+
+
+    function get(id) {
+
+
+        $("#dialog-confirm").dialog({
+            resizable: true,
+            height: 140,
+            modal: true,
+            buttons: {
+                "Yes": function () {
+                    $.ajax({
+                        url: '@Url.Action("DeleteItem/")' + id,
+                        type: 'post',
+                        dataType: 'html',
+                        success: function (result) {
+                            $('#tblItems').jtable('load');
+                        }
+                    });
+                    $(this).dialog("close");
+                },
+                "No": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+
+    //----Delete SKU --//
+    function get(ItemLinkId) {
+
+
+        $("#dialog-confirm").dialog({
+            resizable: true,
+            height: 140,
+            modal: true,
+            buttons: {
+                "Yes": function () {
+                    $.ajax({
+                        url: '@Url.Action("DeleteLink/", "Listing")' + ItemLinkId,
+                        type: 'post',
+                        dataType: 'html',
+                        success: function (result) {
+                            $('#tblItems').jtable('load');
+                        }
+                    });
+                    $(this).dialog("close");
+                },
+                "No": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+
+</script>

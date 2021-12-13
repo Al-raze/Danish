@@ -1,0 +1,79 @@
+﻿﻿@{
+    ViewBag.Title = "Index - Items";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+<div id="accounts"></div>
+
+<script type="text/javascript">
+
+    var cachedOptions = null;
+
+    $(document).ready(UserTable);
+
+    function UserTable() {
+        $('#accounts').jtable({
+            title: 'Seller Accounts',
+            actions: {
+                listAction: '@Url.Action("GetSellerAccounts")',
+                createAction: '@Url.Action("InsertSellerAccount")',
+                updateAction: '@Url.Action("UpdateSellerAccount")' 
+            },
+            fields: {
+                SellerIndex:{
+                    key: true,
+                    list:false
+                },
+                SellerID: {                  
+                    title: 'SellerID',
+                },
+                Synchronize: {
+                    title: 'Synchronize',
+                    type: 'checkbox',
+                    values: { 'false': 'No', 'true': 'Yes' },
+                    defaultValue: 'false'
+                },
+                ListingChannelID: {
+                    title: 'Channel',
+                    width: '3%',
+                    options: function () {
+
+                        if (cachedOptions) { //Check for cache
+                            return cachedOptions;
+                        }
+
+                        var options = [];
+
+                        $.ajax({ //Not found in cache, get from server
+                            url: '@Url.Action("GetChannels")',
+                            type: 'POST',
+                            dataType: 'json',
+                            async: false,
+                            success: function (data) {
+                                if (data.Result != 'OK') {
+                                    alert(data.Message);
+                                    return;
+                                }
+                                options = data.Options;
+                            }
+                        });
+
+                        return cachedOptions = options; //Cache results and return options
+                    }
+                },
+                Update: {
+                    width: '2%',
+                    create: false,
+                    edit:false,
+                    display: function (data) {
+                        return String.format("<a class='btn btn-success btn-mini' target='_blank' href='/Listing/AccountUpdate/{0}'>Update</a>", data.record.SellerIndex);
+                    },
+                }
+            }
+
+        });
+        $('#accounts').jtable('load');
+    }
+
+</script>
+

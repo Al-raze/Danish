@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/shared/_BootstrapLayout.empty.cshtml";
+}
+
+@model System.Web.Mvc.HandleErrorInfo
+
+<div class="alert alert-block alert-error">
+    You have encountered a unexpected server error. Please Contact Support.
+</div>
+
+    <div>
+        <p>
+            <b>Additional Information for Support:</b> <br />         
+        </p>
+        <div style="overflow: scroll">
+            <pre>
+                @Server.GetLastError()
+                </pre>
+        </div>
+    </div>
+
+<div class="alert">
+    <h5>Please click here to <a href="/Sample">Continue</a></h5>
+</div>

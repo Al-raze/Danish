@@ -1,0 +1,86 @@
+﻿@model Infrastrucutre.Core.Models.AmazonCategory
+
+@{
+    ViewBag.Title = "Categories For Amazon";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+<legend> Item Categories </legend>
+<div id="categoriesTable"></div>
+
+@Html.Partial("_addAmazonCategory")
+@*@Html.Partial("_editCategory")*@
+
+<script type="text/javascript">
+
+    $(document).ready(UserTable);
+
+    function UserTable() {
+        $('#categoriesTable').jtable({
+            title: 'Amazon Item Categories',
+            actions: {
+                listAction: '@Url.Action("GetAmazonItemCategories")'
+            },
+            fields: {
+                AmazonCategoryID: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                AmazonCategoryName: {
+                    title: 'Amazon Category Name',
+                    width: '15%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return "<input type=\"button\" class=\"btn btn-success btn-small\" value=\"Edit\" onclick=\"edit(" + data.record.AmazonCategoryID + ")\" />";
+                    },
+                    width: '4%'
+                }
+            },
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add.png',
+                    text: 'Add Amazon Category',
+                    click: add
+                }]
+            }
+
+
+        });
+        $('#categoriesTable').jtable('load');
+    }
+
+    function add() {
+        clearForm();
+        $('#btnAdd').text('Add Category');
+        $('#mode').val('ADD');
+        $('#modalAdd').modal('show');
+    }
+
+    function edit(id) {
+        clearForm();
+        $('#mode').val('EDIT');
+        $('#btnAdd').text('Update Category');
+        $.ajax({
+            url: '@Url.Action("GetAmazonItemCategoryByID/")' + id,
+                type: 'POST',
+                success: onSuccessEdit
+            });
+        }
+
+        function onSuccessEdit(result) {
+            clearForm();
+            $('#AmazonCategoryName').val(result.AmazonCategoryName)
+            $('#AmazonItemCategoryID').val(result.AmazonItemCategoryID)
+            $('#modalAdd').modal('show');
+        }
+
+        function clearForm() {
+            $('#CategoryName').val('')
+        }
+
+
+
+</script>
+

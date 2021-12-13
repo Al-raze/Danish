@@ -1,0 +1,291 @@
+﻿@model Infrastrucutre.Core.Models.ItemMaster
+
+@{
+    ViewBag.Title = "AddItems";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";   
+}
+
+@using (Html.BeginForm("AddItems","Item",FormMethod.Post))
+{
+     if (ViewBag.Mode == "Create")
+     {
+     @Html.Hidden("ItemMasterID","0")
+     }
+     else
+     {
+     @Html.HiddenFor(m=>m.ItemMasterID)    
+     }
+    
+    <fieldset>
+        <legend>@ViewBag.HeaderText</legend>
+        <div class="row-fluid">           
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.ItemName, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.ItemName, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.ItemName)
+
+            </div>
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.ItemCode, new { @class = "control-label" })
+                @if (ViewBag.IsAdmin == null)
+                {
+                    @Html.TextBoxFor(model => model.ItemCode, new { @class = "span12" });    
+                }
+                else
+	            {
+                    @Html.TextBoxFor(model => model.ItemCode, new { @class = "span12", @readonly = "readonly" });           
+	            }
+                
+                @Html.ValidationMessageFor(model => model.ItemCode)
+            </div>
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.Description, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.Description, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.Description)
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2 control-group">
+                @Html.LabelFor(model => model.Brand, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.Brand, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.Brand)
+            </div>
+            <div class="span2 control-group">
+                @Html.LabelFor(model => model.Dimension, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.Dimension, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.Dimension)
+            </div>
+            <div class="span1 control-group">
+                @Html.LabelFor(model => model.ItemWeight, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.ItemWeight, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.ItemWeight)
+            </div>
+            <div class="span2 control-group">
+                @Html.LabelFor(model => model.MasterCartonQty, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.MasterCartonQty, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.MasterCartonQty)
+            </div>
+            <div class="span1 control-group">
+                @Html.LabelFor(model => model.CartonQty, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.CartonQty, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.CartonQty)
+            </div>
+            <div class="span1 control-group">
+                @Html.LabelFor(model => model.Length, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.Length, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.Length)
+            </div>
+            <div class="span1 control-group">
+                @Html.LabelFor(model => model.Width, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.Width, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.Width)
+            </div>
+            <div class="span1 control-group">
+                @Html.LabelFor(model => model.Height, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.Height, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.Height)
+            </div>
+            <div class="span1 control-group">
+                @Html.LabelFor(model => model.CBM3, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.CBM3, new { @class = "span12" })
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2 control-group">
+                @Html.LabelFor(model => model.FNSKU, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.FNSKU, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.FNSKU)
+            </div>
+            <div class="span2 control-group">
+                @Html.LabelFor(model => model.BarCode, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.BarCode, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.BarCode)
+            </div>
+            <div class="span2 control-group">
+                @Html.LabelFor(model => model.LeadTime, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.LeadTime, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.LeadTime)
+            </div>                       
+            <div class="span2 control-group">
+                @Html.LabelFor(model => model.VAT, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.VAT, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.VAT)
+            </div>                       
+            <div class="span2 control-group">
+                @Html.LabelFor(model => model.ItemCost, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.ItemCost, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.ItemCost)
+            </div>
+            @*<div class="span2 control-group">
+                @Html.LabelFor(model => model.SellingPrice, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.SellingPrice, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.SellingPrice)
+            </div>*@
+        </div>
+        <div class="row-fluid">
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.SupplierID, new { @class = "control-label" })
+                <select class="combo-style combobox input-sm" data-val="true" required="required" data-val-required="Supplier is required" id="SupplierID" name="SupplierID">
+                <option value="">Select a Supplier</option>
+                @foreach (var item in (ViewBag.SupplierID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.Supplier>)
+                {
+                    if (ViewBag.SupplierID.SelectedValue == item.SupplierID)
+                    {
+                        <option value="@item.SupplierID" selected="selected">@item.SupplierName</option>
+                    }
+                    else
+                    {
+                        <option value="@item.SupplierID">@item.SupplierName</option>
+                    }
+                }
+                </select>                
+                @*Html.DropDownListFor(model => model.SupplierID, null, "Choose Supplier", new {  @class = "span12" })
+                @Html.ValidationMessageFor(model => model.SupplierID)*@
+            </div>
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.ItemCategoryID, new { @class = "control-label" })
+                <select class="combo-style combobox input-sm" data-val="true" required="required" data-val-required="Item Category is required" id="ItemCategoryID" name="ItemCategoryID">
+                <option value="">Select a Category</option>
+                @foreach (var item in (ViewBag.ItemCategoryID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.ItemCategory>)
+                {
+                    if (ViewBag.ItemCategoryID.SelectedValue == item.ItemCategoryID)
+                    {
+                        <option value="@item.ItemCategoryID" selected="selected">@item.CategoryName</option>
+                    }
+                    else
+                    {
+                        <option value="@item.ItemCategoryID">@item.CategoryName</option>
+                    }
+                }
+                </select>
+                @*@Html.DropDownListFor(model => model.ItemCategoryID, null, "Choose Category", new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.ItemCategoryID)*@
+            </div>
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.ItemColorID, new { @class = "control-label" })
+                <select class="combo-style combobox input-sm" data-val="true" required="required" data-val-required="Item Color is required" id="ItemColorID" name="ItemColorID">
+                <option value="">Select a Color</option>
+                @foreach (var item in (ViewBag.ItemColorID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.ItemColor>)
+                {
+                    if (ViewBag.ItemColorID.SelectedValue == item.ItemColorID)
+                    {
+                        <option value="@item.ItemColorID" selected="selected">@item.Color</option>
+                    }
+                    else
+                    {
+                        <option value="@item.ItemColorID">@item.Color</option>
+                    }
+                }
+                </select>
+
+
+
+                @*@Html.DropDownListFor(model => model.ItemColorID, null, "Choose Color", new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.ItemColorID)*@
+            </div>
+        </div>
+        <div class="row-fluid">
+             <div class="span4 control-group">
+                @Html.LabelFor(model => model.ItemManufacturerID, new { @class = "control-label" })                
+                
+                <select class="combo-style combobox input-sm" data-val="true" required="required" data-val-required="Item Manufacturer is required" id="ItemManufacturerID" name="ItemManufacturerID">
+                <option value="">Select a Manufacturer</option>
+                @foreach (var item in (ViewBag.ItemManufacturerID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.ItemManufacturer>)
+                {
+                    if (ViewBag.ItemManufacturerID.SelectedValue == item.ItemManufacturerID)
+                    {
+                        <option value="@item.ItemManufacturerID" selected="selected">@item.ManufacturerName</option>
+                    }
+                    else
+                    {
+                        <option value="@item.ItemManufacturerID">@item.ManufacturerName</option>
+                    }
+                }
+                </select>
+
+
+
+                @*@Html.DropDownListFor(model => model.ItemManufacturerID, null, "Choose Manufacturer", new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.ItemManufacturerID)*@
+            </div>            
+            <div class="span2 control-group">
+                @Html.LabelFor(model => model.ReOrderLevel, new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.ReOrderLevel, new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.ReOrderLevel)
+            </div>
+            <div class="span4 control-group">
+                @Html.LabelFor(model => model.LocationID, new { @class = "control-label" })
+
+                <select class="combo-style combobox input-sm" data-val="true" required="required" data-val-required="Item Location is required" id="LocationID" name="LocationID">
+                <option value="">Select a Location</option>
+                @foreach (var item in (ViewBag.LocationID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.ItemLocation>)
+                {
+                    if (ViewBag.LocationID.SelectedValue == item.LocationID)
+                    {
+                        <option value="@item.LocationID" selected="selected">@item.LocationName</option>
+                    }
+                    else
+                    {
+                        <option value="@item.LocationID">@item.LocationName</option>
+                    }
+                }
+                </select>
+                @*@Html.DropDownListFor(model => model.LocationID, null, "Choose Location", new { @class = "span12" })
+                @Html.ValidationMessageFor(model => model.LocationID)*@
+            </div>                       
+        </div>
+        <div class="row-fluid">
+                <div class="span4 control-group">
+                    @Html.LabelFor(model => model.DateOfSubmission, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.DateOfSubmission, new
+                       {
+                           @class = "span12 datepicker",
+                           @readonly = "readonly",
+                           @style = "cursor:pointer; background-color:white",
+                           @placeholder = "Submission Date"
+                       })                    
+                </div>
+                <div class="span8 control-group">
+                    @Html.LabelFor(model => model.Notes, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.Notes, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.Notes)
+                </div>
+         </div>
+        <div class="text-center widget-footer">
+            @Html.ActionLink("Back to List", "Index", null, new { @class = "btn" })
+            @if (ViewBag.Mode == "Create")
+            {
+                <button type="submit" class="btn btn-success" name="command" value="Save">Save</button>    
+            }
+            else
+            {
+                <button type="submit"  class="btn btn-success" name="command" value="Update">Update</button>     
+            }
+        </div>
+    </fieldset>
+}
+
+<div>
+</div>
+
+<script>
+    $('.combobox').combobox();    
+    $('.combobox-container input').css("width", "88%");
+    $(".datepicker").datepicker();
+    $(".datepicker").datepicker("option", "dateFormat", "d M, yy");
+
+    $('#CBM3').on('keydown', function (event) {
+        if(event.key == 'Tab' || event.key == 'Enter')
+            return true
+        return false
+    })
+
+    $("#Length,#Width,#Height").on('input propertychange paste', function () {
+        var l = $('#Length').val();
+        var w = $('#Width').val();
+        var h = $('#Height').val();
+        var precision = 10000
+        var cbm = Math.round(l * w * h / 1000000 * precision) / precision
+        $('#CBM3').val(cbm)
+    });
+</script>

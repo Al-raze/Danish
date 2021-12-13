@@ -1,0 +1,81 @@
+﻿@using AkraTechFramework.Helpers;
+@{
+    string pageName = "RivalDetails";
+   
+}
+@model Infrastructure.Core.Models.Color
+<style type="text/css">
+    .custom-Cyan {
+        background-color:#E0FFFF;
+    }
+    .custom-Rose {
+        background-color:#FFE4E1;
+    }
+    .custom-Pearl {
+        background-color:#FDEEF4;
+    }
+    .custom-Lavender {
+        background-color:#E6E6FA;
+    }
+    .custom-LavenderBlush {
+        background-color:#FFF0F5;
+    }
+    .custom-PeachPuff {
+        background-color:#FFDAB9;
+    }
+    .custom-NavajoWhite {
+        background-color:#FFDEAD;
+    }
+    .custom-GhostWhite {
+        background-color:#F8F8FF;
+    }
+     .custom-AliceBlue {
+        background-color:#F0F8FF;
+    }
+      .custom-Azure {
+        background-color:#F0FFFF;
+    }
+       .custom-PapayaWhip {
+        background-color:#FFEFD5;
+    }
+   
+</style>
+@using (Html.BeginForm("AddColor", "Tender", FormMethod.Post, new { @id = "frmAddRivalColor" }))
+{
+    <div class="modal hide fade" id="modalAddRivalColor">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>@LanguageHelper.GetLabelCaption("RivalDetails.AddCaptionColor", pageName)</h3>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="hdnRivalID" />
+            <fieldset>
+                
+                <div class="control-group">
+                    <label class="control-label">@LanguageHelper.GetLabelCaption("RivalDetails.ColorName", pageName)</label>
+                    <select class="span3 " data-val="true" data-val-required=" " id="ColorID" name="ColorID">
+                        <option value="">@LanguageHelper.GetLabelCaption("RivalDetails.SelectColor", pageName)     </option>
+                        <option class="custom-Cyan" value="#E0FFFF">Cyan</option>
+                        <option class="custom-Rose" value="#FFE4E1">Rose</option>
+                        <option class="custom-Pearl" value="#FDEEF4">Pearl</option>
+                        <option class="custom-Lavender" value="#E6E6FA">Lavender </option>
+                        <option class="custom-LavenderBlush" value="#FFF0F5">LavenderBlush </option>
+                        <option class="custom-PeachPuff" value="#FFDAB9">PeachPuff </option>
+                        <option class="custom-NavajoWhite" value="#FFDEAD">NavajoWhite </option>
+                        <option class="custom-GhostWhite"  value="#F8F8FF">GhostWhite </option>
+                        <option class="custom-AliceBlue"  value="#F0F8FF">AliceBlue </option>
+                        <option class="custom-Azure" value="#F0FFFF">Azure </option>
+                        <option class="custom-PapayaWhip" value="#FFEFD5">PapayaWhip</option>
+                    </select>
+                     @Html.ValidationMessageFor(model => model.ColorID)
+                </div>
+                
+
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">@LanguageHelper.GetLabelCaption("RivalDetails.Close", pageName) </a>
+            <a id="btnAddRivalDetailss" onclick="addColor()" class="btn btn-success">@LanguageHelper.GetLabelCaption("RivalDetails.Add", pageName)</a>
+        </div>
+    </div>
+}

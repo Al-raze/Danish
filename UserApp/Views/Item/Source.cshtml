@@ -1,0 +1,42 @@
+﻿﻿@{
+    ViewBag.Title = "Index - Items";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+<div id="sourceTable"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(SourceTable);
+
+    function SourceTable() {
+        $('#sourceTable').jtable({
+            title: 'StockOut Source',
+            actions: {
+                listAction: '@Url.Action("GetStockOut")',
+                createAction: '@Url.Action("AddStockOut")',
+                updateAction: '@Url.Action("UpdateStockOut")',
+            },
+            fields: {
+                Id: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                Source: {
+                    title: 'Source',
+                    width: '15%'
+                }
+            }
+
+
+        });
+        $('#sourceTable').jtable('load');
+}
+
+
+
+
+</script>
+

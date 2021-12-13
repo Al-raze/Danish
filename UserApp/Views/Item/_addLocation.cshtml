@@ -1,0 +1,84 @@
+﻿@model Infrastrucutre.Core.Models.ItemLocation
+
+<form id="frmAddUpdate" name="frmAddUpdate">
+    <div class="modal hide fade" id="modalAdd">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>
+                 Add Item Location
+            </h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">
+                         Location Name
+                        </label>
+                    @Html.TextBoxFor(model => model.LocationName, new { @class = "input-large", @placeholder = "Enter Item Location" })
+                    @Html.ValidationMessageFor(model => model.LocationName)
+                    @Html.Hidden("LocationID","0")
+                    @Html.Hidden("mode")
+                </div>
+               
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" class="btn">
+                 Close
+            </a>
+            <button type="button" id="btnAdd" onclick="addLocationDetails()" class="btn btn-success">
+                 Add Category
+            </button>
+        </div>
+    </div>
+</form>
+<script>
+
+    function addLocationDetails() {
+        $('#btnAdd').prop('disabled', true);
+        var data = $('#frmAddUpdate').serialize();
+        var posturl = '';
+        var formMode = $("#mode").val();
+
+        debugger
+
+        if (formMode == 'ADD') {
+            posturl = '@Url.Action("AddItemLocation", "Item")'
+        }
+        else {
+            posturl = '@Url.Action("UpdateItemLocation", "Item")'
+        }
+
+
+        if ($('#frmAddUpdate').valid()) {
+            $.ajax({
+                url: posturl,
+                type:'post',
+                data: data,
+                success: onSuccessAdd,
+                error: onErrorAdd
+            });
+        }
+
+        $('#btnAdd').prop('disabled', false);
+    }
+
+    function onSuccessAdd() {
+        var formMode = $("#mode").val();
+        if (formMode == 'ADD') {
+            $('#successMessage').text('Item Location Added Successfully')
+        }
+        else {
+            $('#successMessage').text('Item Location Updated Successfully')
+        }
+        $('#successAlert').show();
+        $('#locationTable').jtable('reload');
+        $('#modalAdd').modal('hide');
+    }
+
+    function onErrorAdd() {
+        $('#errorAlert').show();
+        $('#modalAdd').modal('hide');
+    }
+
+</script>

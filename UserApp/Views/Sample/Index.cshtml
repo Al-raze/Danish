@@ -1,0 +1,80 @@
+﻿@using AkraTechFramework.Helpers;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@model Infrastructure.Core.Models.ViewModels.User
+<div class="span6 offset2">
+    <table id="userInfo"></table>
+</div>
+@*@using (Html.BeginForm("AddUser", "Sample", FormMethod.Post))
+{
+    <div class="hide fade modal" id="addUser">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                ×</button>
+            <h4>Create User</h4>
+        </div>
+        <div class="modal-body">
+            <div>
+                <div class="control-group ">
+                    <label>
+                        UserName</label>
+                    @Html.TextBoxFor(model => model.UserName, new { @class = "input-large", @placeholder = "Enter Your UserName" })
+                    @Html.ValidationMessageFor(model => model.UserName)
+                    <label>
+                        Phone Number</label>
+                    @Html.TextBoxFor(model => model.Phone, new { @class = "input-large", @placeholder = "Enter Your Phone Number" })
+                    @Html.ValidationMessageFor(model => model.Phone)
+                    <label>
+                        Location</label>
+                    @Html.TextBoxFor(model => model.Location, new { @class = "input-large", @placeholder = "Enter Your Location" })
+                    @Html.ValidationMessageFor(model => model.Location)
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <input type="submit" class='btn btn-success' value="Create" />
+            <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("EditUser", "Sample", FormMethod.Post))
+{
+    <div class="hide fade modal" id="editUser">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                ×</button>
+            <h4>Edit User</h4>
+        </div>
+        <div class="modal-body">
+            <div>
+                <div class="control-group ">
+                    <label>
+                        UserName</label>
+                    @Html.TextBoxFor(model => model.UserName, new {id = "edtUserName", @class = "input-large", @placeholder = "Enter Your UserName" })
+                    @Html.ValidationMessageFor(model => model.UserName)
+                    <label>
+                        Phone Number</label>
+                    @Html.TextBoxFor(model => model.Phone, new {id = "edtPhoneNumber", @class = "input-large", @placeholder = "Enter Your Phone Number" })
+                    @Html.ValidationMessageFor(model => model.Phone)
+                    <label>
+                        Location</label>
+                    @Html.TextBoxFor(model => model.Location, new {id = "edtLocation", @class = "input-large", @placeholder = "Enter Your Location" })
+                    @Html.ValidationMessageFor(model => model.Location)
+                   
+                    @Html.HiddenFor(model => model.UserID, new { id = "hdnUserID" })
+                    
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <input type="submit" class='btn btn-success' value="Update" />
+            <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+        </div>
+    </div>
+}
+*@

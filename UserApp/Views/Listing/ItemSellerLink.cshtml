@@ -1,0 +1,198 @@
+﻿@{
+    ViewBag.Title = "Link Item Seller";
+}
+
+<div class="filtering">
+    <form>
+        <div class="input-append">
+            <select id="sellers">
+                @if (ViewBag.Sellers !=null)
+                {
+                    foreach (var item in ViewBag.Sellers)
+                    {
+                        <option value="@item.id">@item.label</option>
+                    }
+                }
+            </select>
+            <select id="filter">
+                <option value="ItemName">ItemName</option>                
+                <option value="ItemCode">ItemCode</option>
+                <option value="SKU">SKU</option>
+                <option value="ASIN">ASIN/ItemNo</option>
+                <option value="NotLinked">Items Not Linked</option>
+            </select>
+            <input class="span4" id="filterText" type="text">
+            <button class="btn" id="LoadRecordsButton" type="button">Search</button>
+            <button class="btn" id="Refresh" type="button">Clear Search</button>
+        </div>
+    </form>
+</div>
+
+<div id="tblItems"></div>
+
+<script>
+    $(document).ready(pageLoad);
+
+    function pageLoad() {
+        loadItems()
+    }
+
+    function isDisabledAuto() {
+        var source = $("#filter").val()
+
+        return !(source == 'ItemName')
+    }
+
+    $("#filter").change(function () {
+        $("#filterText").autocomplete({
+            disabled: isDisabledAuto()
+        })
+    });
+
+    $("#filterText").autocomplete({
+        disabled: false,
+        source: function (request, response) {
+            var source = $("#filter").val()
+            var url = ''
+
+            if (source == 'ItemName') {
+                url = '@Url.Action("LookupItem","Item")'
+            }
+
+            $.get(url, {
+                searchText: request.term,
+                onlyItemName: true
+            }, function (data) {
+                response(data);
+            });
+        },
+        minLength: 1,
+        change: function (event, ui) {
+
+        },
+        select: function (event, ui) {
+
+        }
+    });
+
+    function loadItems() {
+        $('#tblItems').jtable({
+            title: 'Seller Item Link',
+            useBootstrap: true,
+            paging: true,
+            sorting: true,
+            selecting: false,
+            multiselect: false,
+            selectingCheckboxes: true,
+            actions: {
+                listAction: '@Url.Action("GetSellerItemLink")',                
+            },
+            formCreated : function(event, data){
+                $(data.form).addClass("custom_horizontal_form_field");
+            },
+            fields: {
+                ItemMasterID: {
+                    key: true,
+                    list: false
+                },
+                SellerIndex: {
+                    key: true,
+                    list: false
+                },
+                ItemName: {
+                    title: 'Item Name',
+                    width: '6%',
+                    edit: true,
+                    input: function (data) {
+                        if (data.record.ItemName) {
+                            return '<input type="text" readonly class="jtable-input-readonly" name="ItemName" value="' + data.record.ItemName + '"/>';
+                        } else {
+                            //nothing to worry about here for your situation, data.value is undefined so the else is for the create/add new record user interaction, create is false for your usage so this else is not needed but shown just so you know when it would be entered
+                        }
+                    }
+                },
+                ItemCode: {
+                    title: 'Item Code',
+                    width: '6%',
+                    default:'test',
+                    edit: true,
+                    input: function (data) {
+                        if (data.record.ItemCode) {
+                            return '<input type="text" readonly class="jtable-input-readonly" name="ItemCode" value="' + data.record.ItemCode + '"/>';
+                        } else {
+                            //nothing to worry about here for your situation, data.value is undefined so the else is for the create/add new record user interaction, create is false for your usage so this else is not needed but shown just so you know when it would be entered
+                        }
+                    }
+                },
+                SellerID: {
+                    title: 'Seller Name',
+                    width: '6%',
+                    edit: true,
+                    input: function (data) {
+                        if (data.record.SellerID) {
+                            return '<input type="text" readonly class="jtable-input-readonly" name="SellerID" value="' + data.record.SellerID + '"/>';
+                        } else {
+                            //nothing to worry about here for your situation, data.value is undefined so the else is for the create/add new record user interaction, create is false for your usage so this else is not needed but shown just so you know when it would be entered
+                        }
+                    }
+                },
+                ListingChannelName: {
+                    title: 'Channel',
+                    width: '6%',
+                    edit: false,
+                },
+                SKU: {
+                    title: 'SKU',
+                    width: '6%',
+                    edit: true,
+                },
+                ListingItemNo: {
+                    title: 'ASIN/ItemNo',
+                    width: '6%',
+                    edit: true,
+                },
+                LinkUrl: {
+                    title: 'Link',
+                    width: '6%',
+                    display: function (data) {
+                        if (data.record.LinkUrl) {
+                            return String.format("<a class='btn-mini' href='{0}' target=\"_blank\">{0}</a>", data.record.LinkUrl);
+                        }
+                    },
+                    edit: true,
+                }
+            }
+        });
+
+        $('#tblItems').jtable('load', {
+            id: $('#sellers').val()
+        });
+    }
+
+    $('#Refresh').click(function (e) {
+        e.preventDefault();
+        $('#tblItems').jtable('load', {
+            id: $('#sellers').val()
+        })
+        $('#filterText').val('')
+    });
+
+    $(function () {
+        $("#sellers").change(function () {
+            $('#tblItems').jtable('load', {
+                id: $('#sellers').val()
+            })
+        });
+    });
+
+    $('#LoadRecordsButton').click(function (e) {
+        e.preventDefault();
+        $('#tblItems').jtable('load', {
+            id: $('#sellers').val(),
+            filter: $('#filter').val(),
+            filterText: $('#filterText').val()
+        });
+    });
+
+
+</script>

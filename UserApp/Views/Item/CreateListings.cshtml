@@ -1,0 +1,140 @@
+﻿@{
+    ViewBag.Title = "Create Listings";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@model List<Infrastrucutre.Core.Models.BulkInsert>
+<style>
+    input.span2 {
+        width: 100px;
+    }
+</style>
+
+<div style="padding-left:10px">
+
+<div class="row">
+<input type="submit" name="name" value="Submit Listings" class="btn btn-success"  onclick="frmCreateListings.submit()"/>
+<a class="btn btn-success" href="@Url.Action("Index","Item")">Go Back</a>
+</div>
+
+
+<div style="overflow:auto;" class="row">
+
+@using (Html.BeginForm("CreateListingItems", "Item", FormMethod.Post, new { @id = "frmCreateListings" }))
+{
+<table class="table  table-bordered pull-left">
+    <thead>
+        <tr>
+            <th>Item Name</th>
+            <th>Item Price</th>
+            <th>EBay Price</th>
+            <th>EBay Category</th>
+            <th>Amazon Price</th>
+            <th>Amazon Category</th>
+            <th>Status</th>            
+            <th>Listing ItemNo</th>
+            <th>Mini Title</th>
+            <th>Listing Link</th>
+            <th>Listing Channel</th>
+        </tr>
+    </thead>
+    <tbody >
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>
+                    <input type="hidden" name="ItemsInserted[@i].ItemMasterID" class="span2" value="@Model[i].ItemMasterID" />
+                    <input type="text" name="ItemsInserted[@i].ItemName" class="span2" value="@Model[i].ItemName" />
+                </td>
+                 <td>
+                    <input type="text" name="ItemsInserted[@i].ListingItemPrice"  readonly="readonly" class="span2" value="@Model[i].ListingItemPrice" />
+                </td>
+                <td>
+                    <input type="text" name="ItemsInserted[@i].EBayPrice" class="span2" value="@Model[i].EBayPrice" />
+                </td>
+                <td>
+                    <select class="span2" name="ItemsInserted[@i].EBayCategoryID">
+                        <option value="">--Choose EBay Category--</option>
+                        @foreach (var category in ViewBag.EBayCategory)
+                        {
+                            if (category.EbayCategoryID == Model[i].EBayCategoryID)
+                            {
+                            <option selected="selected" value="@category.EbayCategoryID">@category.EbayCategoryName</option>
+                            }
+                            else
+                            {
+                            <option value="@category.EbayCategoryID">@category.EbayCategoryName</option>    
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="ItemsInserted[@i].AmazonPrice" class="span2" value="@Model[i].AmazonPrice" />
+                </td>
+                <td>
+                    <select class="span2" name="ItemsInserted[@i].AmazonCategoryID">
+                        <option value="">--Choose Amazon Category--</option>
+                        @foreach (var category in ViewBag.AmazonCategory)
+                        {
+                            if (category.AmazonCategoryID == Model[i].AmazonCategoryID)
+                            {
+                            <option selected="selected" value="@category.AmazonCategoryID">@category.AmazonCategoryName</option>
+                            }
+                            else
+                            {
+                            <option value="@category.AmazonCategoryID">@category.AmazonCategoryName</option>    
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <select class="span2" name="ItemsInserted[@i].ListingStatus">
+                        <option value="">--Choose Listing Status--</option>
+                        @foreach (var category in ViewBag.ListingStatus)
+                        {
+                            if (category.StatusCode == Model[i].ListingStatus)
+                            {
+                            <option selected="selected" value="@category.StatusCode">@category.StatusDescription</option>
+                            }
+                            else
+                            {
+                            <option value="@category.StatusCode">@category.StatusDescription</option>    
+                            }
+                        }
+                    </select>
+                </td>               
+                <td>
+                    <input type="text" name="ItemsInserted[@i].ListingItemNo" class="span2" value="@Model[i].ListingItemNo" />
+                </td>
+                <td>
+                    <input type="text" name="ItemsInserted[@i].ItemMiniTitle" class="span2" value="@Model[i].ItemMiniTitle" />
+                </td>
+                <td>
+                    <input type="text" name="ItemsInserted[@i].ListingLink" value="@Model[i].ListingLink" />
+                </td>
+                <td>
+                    <select class="span2" name="ItemsInserted[@i].ListingChannelID">
+                        <option value="">--Choose Listing Channel--</option>
+                        @foreach (var listing in ViewBag.ListingChannelID)
+                        {
+                            if (listing.ListingChannelID == Model[i].ListingChannelID)
+                            {
+                            <option selected="selected" value="@listing.ListingChannelID">@listing.ListingChannelName</option>
+                            }
+                            else
+                            {
+                            <option value="@listing.ListingChannelID">@listing.ListingChannelName</option>    
+                            }
+                        }
+                    </select>
+                </td>
+            </tr>
+        }
+        
+    </tbody>
+</table>
+
+}
+
+    </div>
+</div>

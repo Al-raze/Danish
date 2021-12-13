@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "Listing Submissions";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers
+
+
+
+<div id="tblItems"></div>
+
+<script>
+
+    $(document).ready(pageLoad);
+
+    function pageLoad() {
+        loadItems()
+    }
+
+    function loadItems() {
+        $('#tblItems').jtable({
+            title: 'Listing Submissions',
+            useBootstrap: true,
+            sorting: true,
+            actions: {
+                listAction: '@Url.Action("GetListingSubmissions")'
+            },
+            fields: {
+                ListingSubmissionID: {
+                    key: true,
+                    list: false
+                },
+                ListingRequestNo: {
+                    title: 'ListingRequestNo#',
+                    width: '6%'
+                },
+                ItemCode: {
+                    title: 'ItemCode',
+                    width: '6%'
+                },
+                ListingItemNo: {
+                    title: 'ListingItemNo',
+                    width: '6%'
+                },
+                ItemMiniTitle: {
+                    title: 'ItemMiniTitle',
+                    width: '10%'
+                },
+                ListingItemPrice: {
+                    title: 'ListingItemPrice',
+                    width: '6%'
+                },
+                ListingChannelName: {
+                    title: 'ListingChannelName',
+                    width: '3%'
+                },
+                ListingLink: {
+                    title: '',
+                    display: function (data) {
+                        return String.format("<a class='btn btn-link btn-mini' href='{0}' target=\"_blank\">Link</a>", data.record.ListingLink);
+                    },
+                    width: '3%'
+                },
+                StatusDescription: {
+                    title: 'Status',
+                    width: '6%'
+                },
+                Edit: {
+                    display: function (data) {
+                        return String.format("<a class='btn btn-success btn-mini' href='GetListingSubmissionByID/{0}'>Edit</a>", data.record.ListingSubmissionID);
+                    },
+                    width: '2%'
+                }
+            }, 
+            toolbar: {
+                items: [{
+                    icon: '../../Content/images/add_icon.png',
+                    text: 'Add Submission',
+                    click: addItem
+                }]
+            }
+        });
+            $('#tblItems').jtable('load');
+        }
+
+        function addItem() {
+            $(location).attr("href","@Url.Action("SubmitListing")")
+        }
+
+</script>

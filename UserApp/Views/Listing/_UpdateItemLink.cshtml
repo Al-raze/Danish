@@ -1,0 +1,199 @@
+﻿<form id="frmFixError" name="frmFixError">
+    <div class="modal hide fade" id="modalFixError" style="width: 700px;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>Fix Sync Item Link</h3>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="span7">
+                    <div class="row">
+                        <div class="span7">
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label>Seller Item Name</label>
+                                    <input id="SellerItemName" type="text" class="span12 input-disabled" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span7">
+                            <div class="row-fluid">
+                                <div class="span3">
+                                    <label>Seller Name</label>
+                                    <input id="SellerName" type="text" class="span12 input-disabled">
+                                </div>
+                                <div class="span4">
+                                    <label>Listing Item No</label>
+                                    <input id="ListingItemNo" type="text" class="span12 input-disabled" />
+                                </div>
+                                <div class="span5">
+                                    <label>Seller SKU</label>
+                                    <input id="SellerSKU" type="text" class="span12 input-disabled">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span7">
+                            <div class="row-fluid">
+                                <div class="span8">
+                                    <label>Item Name</label>
+                                    <input id="ItemName" type="text" class="span12 itemname" />
+                                </div>
+                                <div class="span4">
+                                    <label>Item Code</label>
+                                    <input id="ItemCode" type="text" class="span12 input-disabled">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span7">
+                            <div class="row-fluid">
+                                <div class="span8">
+                                    <label>FNSKU</label>
+                                    <input id="FNSKU" type="text" class="span12 Fnsku" />
+                                </div>
+                                <div class="span4 ">
+                                    <label>Postage List</label>
+                                    <select class="combo-style combobox input-sm" data-val="true" id="Postage" name="Postage">
+                                        <option value="">Select a Postage</option>
+                                        @foreach (var item in (ViewBag.PostalCarrierID as System.Web.Mvc.SelectList).Items as List<Infrastrucutre.Core.Models.PostalCarrier>)
+                                        {
+                                            <option value="@item.PostalCarrierID">@item.PostalCarrierName</option>
+
+                                        }
+                                    </select>
+
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span7">
+                            <div class="row-fluid">
+                                <div class="span8">
+                                    <label>Link Url</label>
+                                    <input type="text" id="LinkUrl" name="LinkUrl" class="span12" placeholder="Enter Item Url">
+                                </div>
+                                <div class="span2">
+                                    <label>Actual Qty</label>
+                                    <input id="ActQty" type="text" class="span12 ActQty">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <input type="hidden" id="ItemMasterId" name="ItemMasterId" />
+                        <input type="hidden" id="SellerIndex" name="SellerIndex" />
+                        <input type="submit" id="btnAdd" class="btn btn-success" value="Update Stock" />
+                        <a href="#" data-dismiss="modal" class="btn">
+                            Close
+                        </a>
+                    </div>
+                </div>
+                <!--End of Tab Content -->
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+
+    $('.input-disabled').on('keydown', function (event) {
+        if (event.key == 'Tab' || event.key == 'Enter')
+            return true
+        return false
+    })
+
+    $(".itemname").autocomplete({
+        source: function (request, response) {
+            $.get('@Url.Action("LookupItem","Item")', {
+                searchText: request.term
+            }, function (data) {
+                response(data);
+            });
+        },
+        minLength: 1,
+        change: function (event, ui) {
+            var currentItemId = event.target.id.split('.')[0]            
+            if (!ui.item) {
+                $(event.target).val('')
+                $('#ItemCode').val('')
+                $('#ItemMasterId').val('')
+            }
+        },
+        select: function (event, ui) {
+            var currentItemId = event.target.id.split('.')[0]
+            $.ajax({
+                url: '@Url.Action("GetItemByIDJson/","Item")' + ui.item.id,
+                type: 'GET',
+                success: function (result) {                                  
+                    $('#ItemCode').val(result.ItemCode)
+                    $('#ItemMasterId').val(result.ItemMasterID)                    
+                }
+            });
+        }
+    });
+
+
+    $('#frmFixError').validate({ // initialize the plugin
+        rules: {
+           
+        },
+        submitHandler: function (form) { // for demo
+            
+            if ($('.itemname').val() == '') {
+                $('.itemname').notify("Please select item name to be linked sir");
+            }
+            
+            var posturl = '@Url.Action("InsertAndFix", "Listing")'
+
+            var post = new Object()
+            post.ItemMasterID = $('#ItemMasterId').val()
+            post.ListingItemNo = $('#ListingItemNo').val()
+            post.Fnsku = $('#FNSKU').val()
+            post.Postage = $('#Postage').val()
+            post.ActQty = $('#ActQty').val()
+            post.LinkUrl = $('#LinkUrl').val()
+            post.SKU = $('#SellerSKU').val()
+            post.SellerIndex = $('#SellerIndex').val()
+
+            //console.log($('#SellerIndex').val())
+          
+            console.log(post)
+
+            $.ajax({
+                url: posturl,
+                type: 'post',
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(post),
+                success: function (data) {
+                    if (data.Result == 'OK') {
+                        $.notify("Stock Link error Fixed for  for " + $('.itemname').val(), "success");
+
+                        $('#modalFixError').modal('hide');
+
+                        $('#tblItems').jtable('deleteRecord', {
+                            clientOnly: true,
+                            key: post.SKU
+                        });
+                    } else {
+                        $.notify("Cannot fix error for " + $('.itemname').val() + data.Message);
+                    }
+                },
+                error: function (data) {
+                    $.notify("Cannot fix error for " + $('.itemname').val());
+                    console.log(data)
+                }
+            });
+
+            return false;
+        }
+    });
+</script>

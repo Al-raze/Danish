@@ -1,0 +1,130 @@
+﻿@{
+    ViewBag.Title = "AddTender";
+    Layout = "~/Views/shared/_LoggedInLayout.cshtml";
+}
+
+@using AkraTechFramework.Helpers;
+@using Infrastructure.Core.DataAccess;
+@using Infrastructure.Core.Models
+@model Infrastructure.Core.Models.AddTender
+
+@{
+    string pageName = "AddTender";
+
+    List<Company> company = new TenderRepository().GetCompanyDetails();
+
+    List<Tender> bank = new TenderRepository().GetBankNameDetails();
+}
+
+<style>
+    .widget-footer {
+        padding: 1%;
+        background-color: #EEEEEC;
+        border-top: 1px solid #DDD;
+        height: 35px;
+    }
+</style>
+
+<div class="container-fluid">
+    @using (Html.BeginForm("AddTender", "Tender", FormMethod.Post, new { @id = "frmAddTender" }))
+    {
+      
+        <legend>@LanguageHelper.GetLabelCaption("AddTenderHeader", pageName)</legend>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="row-fluid">
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderAdd.CompanyName", pageName) </label>
+                        <select class="span12" data-val="true" data-val-required=" " id="CompanyID" name="CompanyID">
+                            <option value="">@LanguageHelper.GetLabelCaption("TenderAddPlaceHolder.SelectCompany", pageName)  </option>
+                            @foreach (var item in company)
+                            {
+                                <option value="@item.CompanyID">@item.CompanyName</option>
+                            }
+                        </select>
+                        @Html.ValidationMessageFor(model => model.CompanyID)
+                    </div>
+
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderAdd.TenderNo", pageName)</label>
+                        @Html.TextBoxFor(model => model.TenderNo, new { @class = "span12", @placeholder = @LanguageHelper.GetLabelCaption("EnterTender", pageName) })
+                        @Html.ValidationMessageFor(model => model.TenderNo)
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderAdd.TenderName", pageName)</label>
+                        @Html.TextBoxFor(model => model.TenderName, new { @class = "span12", @placeholder = @LanguageHelper.GetLabelCaption("EnterTenderName", pageName) })
+                        @Html.ValidationMessageFor(model => model.TenderName)
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderAdd.PurchaseDate", pageName)</label>
+                        @Html.TextBoxFor(model => model.PurchaseDate, new
+                   {
+                       @class = "span12 DatePicker",
+                       @readonly = "readonly",
+                       @style = "cursor:pointer; background-color:white",
+                       @placeholder = LanguageHelper.GetLabelCaption("TenderAddPlaceHolder.EnterValidDate", pageName)
+                   })
+                        @Html.ValidationMessageFor(model => model.PurchaseDate)
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderAdd.PurchaseValue", pageName)</label>
+                        @Html.TextBoxFor(model => model.PurchaseValue, new
+                   {
+                       @class = "span12",
+                       @placeholder = @LanguageHelper.GetLabelCaption("TenderAddPlaceHolder.PurchaseValue", pageName)
+                   })
+                        @Html.ValidationMessageFor(model => model.PurchaseValue)
+                    </div>
+                    <div class="span4 control-group lightblue">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderAdd.ClosingDate", pageName) </label>
+
+                        @Html.TextBoxFor(model => model.ClosingDate, new
+                   {
+                       @class = "span12 DatePicker",
+                       @readonly = "readonly",
+                       @style = "cursor:pointer; background-color:white",
+                       @placeholder = LanguageHelper.GetLabelCaption("TenderAddPlaceHolder.EnterValidDate", pageName)
+                   })
+                        @Html.ValidationMessageFor(model => model.ClosingDate)
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6 control-group bgcolor">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderAdd.SecurityBankName", pageName) </label>
+                        <select class="span12" data-val="true" data-val-required=" " id="BankID" name="BankID">
+                            <option value="">@LanguageHelper.GetLabelCaption("TenderAddPlaceHolder.BankName", pageName)</option>
+                            @foreach (var item in bank)
+                            {
+                                <option value="@item.BankID">@item.BankName</option>
+                            }
+                        </select>
+                        @Html.ValidationMessageFor(model => model.BankID)
+                    </div>
+                    <div class="span6 control-group bgcolor">
+                        <label class="control-label">@LanguageHelper.GetLabelCaption("TenderAdd.BankType", pageName) </label>
+                        <select class="span12" data-val="true" data-val-required=" " id="BankTypeID" name="BankTypeID">
+                            <option value="">@LanguageHelper.GetLabelCaption("TenderAddPlaceHolder.SelectBankType", pageName) </option>
+                            <option value="1">@LanguageHelper.GetLabelCaption("TenderAddPlaceHolder.SelectBankTypePrimary", pageName) </option>
+                            <option value="2">@LanguageHelper.GetLabelCaption("TenderAddPlaceHolder.SelectBankTypeFinal", pageName) </option>
+                        </select>
+                        @Html.ValidationMessageFor(model => model.BankTypeID)
+
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <div class="text-center widget-footer">
+            <a href="@Url.Action("ModifyTender")" class="btn btn-default" >@LanguageHelper.GetLabelCaption("TenderAdd.Back", pageName) </a>
+            <button type="submit" class="btn btn-success">@LanguageHelper.GetLabelCaption("TenderAdd.Add", pageName) </button>
+        </div>
+        
+    }
+</div>
+<script>
+    $(function () {
+        $(".DatePicker").datepicker($.datepicker.regional["ar"]);
+    });
+</script>
